@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}System Architecture | Smart Irrigation{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 2rem;">
+    <!-- Section 1 & 2: Overview Diagram & Data Flow Explanation -->
+    <h1 class="section-title">System Architecture</h1>
+    <p class="section-subtitle">How data flows from the field to automated irrigation control</p>
+    
+    <div class="card mb-4 text-center" style="padding: 3rem;">
+        <h2 style="color: var(--primary); margin-bottom: 2rem;">End-to-End Diagram</h2>
+        <div style="font-family: monospace; font-size: 1.1rem; color: var(--text-muted);">
+            <div>[ 📡 IoT Sensors (Temp, Humidity, Soil, Rain, Wind) ]</div>
+            <div style="margin: 1rem 0;">⬇ (MQTT / HTTP)</div>
+            <div>[ ☁️ Ingestion API / Message Broker ]</div>
+            <div style="margin: 1rem 0;">⬇</div>
+            <div>[ 💾 Database (PostgreSQL) ] ↔️ [ 🔄 Backend Application (Django) ]</div>
+            <div style="margin: 1rem 0;">⬇ (Data Processing) ⬇</div>
+            <div>[ 🧠 Machine Learning Inference Service ]</div>
+            <div style="margin: 1rem 0;">⬇</div>
+            <div>[ 💻 Irrigation Dashboard ] & [ ⏱️ Automated Actuators (Valves) ]</div>
+        </div>
+    </div>
+
+    <!-- Section 3: Data Flow Detailed -->
+    <div class="card mb-4">
+        <h2 class="card-header">1. Data Flow Pipeline</h2>
+        <p>Sensors collect environmental data every 15 minutes. This data is transmitted securely to the cloud ingestion layer, parsed, cleaned, and stored in our normalized database schemas before being served to the analytics engine.</p>
+    </div>
+
+    <div class="grid-2 mb-4">
+        <!-- Section 4: ML Service -->
+        <div class="card">
+            <h2 class="card-header">2. Machine Learning Service</h2>
+            <p>Our predictive models are trained offline using Scikit-Learn (Random Forest & Gradient Boosting). Once validated, the models are serialized (Pickle/Joblib) and loaded into a specialized inference endpoint wrapped by Django.</p>
+            <ul style="margin-top: 1rem; margin-left:1.5rem;">
+                <li>Real-time scoring</li>
+                <li>Feature scaling pre-processing</li>
+                <li>Confidence thresholding for automated actions</li>
+            </ul>
+        </div>
+        
+        <!-- Section 5: Backend Architecture -->
+        <div class="card">
+            <h2 class="card-header">3. Backend (Django MVT)</h2>
+            <p>The core application follows the Model-View-Template pattern. Django orchestrates user authentication, database ORM queries, handles API requests via Django REST Framework, and serves the interactive frontend templates.</p>
+        </div>
+    </div>
+
+    <!-- Section 6: Database -->
+    <div class="card mb-4" style="background: var(--bg-color);">
+        <h2 class="card-header">4. Database Architecture</h2>
+        <p>The system utilizes a relational database optimally structured for time-series sensor data. Key tables include:</p>
+        <div class="grid-3 mt-4">
+            <div class="card"><strong>SensorReadings:</strong> Raw telemetry.</div>
+            <div class="card"><strong>FieldZones:</strong> Geo-spatial topology.</div>
+            <div class="card"><strong>IrrigationLogs:</strong> Historical acts.</div>
+        </div>
+    </div>
+
+    <!-- Section 7 & 8: Cloud, Deployment, DevOps Pipeline -->
+    <div class="grid-2">
+        <div class="card">
+            <h2 class="card-header">5. Cloud & Deployment</h2>
+            <p>The application is containerized using Docker, allowing for identical development, staging, and production environments. Horizontal scaling is achieved via Kubernetes or managed PaaS solutions depending on the farm's scale.</p>
+        </div>
+        <div class="card">
+            <h2 class="card-header">6. CI/CD DevOps Pipeline</h2>
+            <p>Continuous Integration (Github Actions/GitLab CI) runs automated unit tests on every commit. Successful builds trigger automated deployment (Continuous Delivery) to the staging environment for MLOps validation before production release.</p>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

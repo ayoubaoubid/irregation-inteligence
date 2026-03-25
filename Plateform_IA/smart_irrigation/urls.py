@@ -1,0 +1,10 @@
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('core.urls')),
+    path('dataset/', include('dataset.urls')),
+    path('prediction/', include('prediction.urls')),
+    path('dashboard/', include('dashboard.urls')),
+]

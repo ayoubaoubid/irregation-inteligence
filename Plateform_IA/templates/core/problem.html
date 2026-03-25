@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Agricultural Problem | Smart Irrigation{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 2rem;">
+    <!-- Section 1: Intro -->
+    <h1 class="section-title">The Agricultural Water Crisis</h1>
+    <p class="section-subtitle">Understanding the delicate balance of soil moisture and its global implications.</p>
+
+    <!-- Section 2: Inefficiency -->
+    <div class="card mb-4" style="border-left: 5px solid var(--danger);">
+        <h2 class="card-header">1. Irrigation Inefficiency</h2>
+        <p>Agriculture accounts for approximately 70% of global freshwater usage. Alarmingly, up to 40% of this water is lost due to inefficient irrigation systems, evaporation, surface runoff, or poor land management.</p>
+    </div>
+
+    <!-- Section 3: Soil Moisture Imbalance -->
+    <div class="grid-2 mb-4">
+        <div class="card">
+            <h2 class="card-header">2. The Soil Moisture Dilemma</h2>
+            <p>Soil acts as a sponge. If it's too dry, plants cannot extract nutrients and experience wilting. If it's over-saturated, the roots are deprived of oxygen, leading to root rot and fungal diseases.</p>
+        </div>
+        
+        <!-- Section 4: Climate Impact -->
+        <div class="card" style="background: var(--bg-color);">
+            <h2 class="card-header text-warning">3. Climate Change Impact</h2>
+            <p>Unpredictable weather patterns, prolonged droughts, and sudden intense rainfall make historical farming schedules obsolete. Dynamic responsiveness is now mandatory.</p>
+        </div>
+    </div>
+
+    <!-- Section 5: Traditional irrigation limits -->
+    <div class="card mb-4">
+        <h2 class="card-header">4. Limitations of Traditional Irrigation</h2>
+        <div style="display: flex; gap: 2rem;">
+            <ul style="flex: 1; list-style-position: inside;">
+                <li class="mb-1"><strong>Timer-based systems:</strong> Irrigate regardless of actual weather or soil conditions.</li>
+                <li class="mb-1"><strong>Visual inspection:</strong> Rely on surface appearance, which doesn't reflect sub-soil moisture.</li>
+                <li class="mb-1"><strong>Uniform application:</strong> Treat all soil zones identically despite varying terrain and soil composition.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Section 6: Risks of Over -->
+    <!-- Section 7: Risks of Under -->
+    <div class="grid-2 mb-4">
+        <div class="card">
+            <h2 class="card-header text-danger">5. Risks of Over-Irrigation</h2>
+            <ul>
+                <li>Nutrient leaching (fertilizers wash below root zone)</li>
+                <li>High pumping costs</li>
+                <li>Waterlogging and plant asphyxiation</li>
+                <li>Pesticide runoff polluting local water supplies</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h2 class="card-header text-warning">6. Risks of Under-Irrigation</h2>
+            <ul>
+                <li>Stunted plant growth</li>
+                <li>Irreversible yield reduction</li>
+                <li>Increased susceptibility to pests</li>
+                <li>Poor crop quality and market value</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Section 8: Precision Ag Concept -->
+    <!-- Section 9: Transition to Smart Irrigation -->
+    <div class="card" style="background: var(--primary-dark); color: white;">
+        <h2 style="color: var(--accent); margin-bottom: 1rem;">7. The Shift to Precision Agriculture</h2>
+        <p class="mb-3">Precision agriculture involves observing, measuring, and responding to inter and intra-field variability in crops. Smart irrigation is a core pillar of this paradigm.</p>
+        <p><strong>Transitioning to Smart Systems:</strong> By adopting sensor networks and machine learning, modern farming transforms from a reactive estimating game into a proactive, optimized science. This platform demonstrates exactly how this transition is achieved.</p>
+        <a href="{% url 'dataset' %}" class="btn btn-primary mt-4">Discover the Data We Use</a>
+    </div>
+
+</section>
+{% endblock %}

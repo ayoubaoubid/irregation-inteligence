@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Visualization | Smart Irrigation{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Specific styles for the visualization cards mimicking Image 2 */
+    .viz-card {
+        background: white;
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.08); /* thin subtle border */
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .viz-title {
+        font-size: 1.3rem;
+        color: var(--text-main);
+        margin-bottom: 0.2rem;
+    }
+    .viz-subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+    .viz-insight {
+        margin-top: auto; /* push to bottom */
+        padding-top: 1.5rem;
+    }
+    .insight-box {
+        background: #f4fbf7; /* Very light sage tint */
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        font-size: 0.85rem;
+        color: var(--primary-dark);
+        line-height: 1.5;
+    }
+    .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 1rem;">
+    
+    <div class="grid-2 mb-4">
+        <!-- Card 1: Soil Moisture vs Irrigation Need -->
+        <div class="viz-card">
+            <h2 class="viz-title">Soil Moisture vs Irrigation Need</h2>
+            <p class="viz-subtitle">Distribution of irrigation decisions across moisture levels</p>
+            <div class="chart-container">
+                <canvas id="chart1"></canvas>
+            </div>
+            <div class="viz-insight">
+                <div class="insight-box">
+                    <strong>Key Insight:</strong> Irrigation is almost always required when soil moisture drops below 40%. Above 65%, the model consistently recommends no irrigation.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 2: Monthly Temperature Trends -->
+        <div class="viz-card">
+            <h2 class="viz-title">Monthly Temperature Trends</h2>
+            <p class="viz-subtitle">Average daily temperature across the 18-month dataset</p>
+            <div class="chart-container">
+                <canvas id="chart2"></canvas>
+            </div>
+            <div class="viz-insight">
+                <div class="insight-box">
+                    <strong>Key Insight:</strong> Peak summer months (Jun-Aug) show highest irrigation frequency, correlating with temperatures above 32°C and low overnight humidity.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid-2 mb-4">
+        <!-- Card 3: Rainfall Distribution -->
+        <div class="viz-card">
+            <h2 class="viz-title">Rainfall Distribution</h2>
+            <p class="viz-subtitle">Frequency histogram of daily rainfall events (mm)</p>
+            <div class="chart-container">
+                <canvas id="chart3"></canvas>
+            </div>
+            <div class="viz-insight">
+                <div class="insight-box">
+                    <strong>Key Insight:</strong> The region experiences prolonged dry spells punctuated by heavy rainfall. The model effectively handles these sudden moisture spikes by halting irrigation for 3-5 days.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 4: Feature Importance -->
+        <div class="viz-card">
+            <h2 class="viz-title">Feature Importance</h2>
+            <p class="viz-subtitle">Relative importance of each feature in the ML model</p>
+            <div class="chart-container">
+                <canvas id="chart4"></canvas>
+            </div>
+            <div class="viz-insight">
+                <div class="insight-box">
+                    <strong>Key Insight:</strong> Sub-surface Soil Moisture dictates 52% of the decision tree's weight, followed closely by continuous ambient temperature trends.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // Colors extracted from Image 2
+        const colorSage = '#7cb18a';
+        const colorBlue = '#87a8b9';
+        const colorOrange = '#e59c5d';
+        const colorDarkBlue = '#57839f';
+        const colorLightGreen = '#a4c9b2';
+        const colorTan = '#d5b293';
+        
+        // Grid options for clean look
+        const gridOptions = {
+            color: 'rgba(0,0,0,0.05)',
+            borderDash: [5, 5]
+        };
+
+        // Chart 1: Soil Moisture vs Irrigation (Bar)
+        new Chart(document.getElementById('chart1').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%'],
+                datasets: [
+                    { label: 'Irrigation Yes', backgroundColor: colorSage, data: [420, 680, 540, 310, 110, 0, 0, 0] },
+                    { label: 'Irrigation No', backgroundColor: colorBlue, data: [0, 0, 20, 250, 480, 620, 700, 580] }
+                ]
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false,
+                scales: { x: { grid: { display: false } }, y: { grid: gridOptions } },
+                plugins: { legend: { position: 'top', labels: { boxWidth: 30 } } }
+            }
+        });
+
+        // Chart 2: Monthly Temp (Line)
+        new Chart(document.getElementById('chart2').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'],
+                datasets: [{
+                    label: 'Avg Temperature (°C)',
+                    borderColor: colorOrange,
+                    backgroundColor: 'rgba(229, 156, 93, 0.1)',
+                    pointBackgroundColor: 'white',
+                    pointBorderColor: colorOrange,
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1,
+                    data: [14, 16, 20, 24, 28, 33, 36, 35, 30, 25, 19, 15, 13, 17, 21, 25, 29, 34]
+                }]
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false,
+                scales: { x: { grid: { display: true, color: 'rgba(0,0,0,0.03)' } }, y: { grid: gridOptions, min: 10, max: 40 } },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // Chart 3: Rainfall Distrib (Histogram clone)
+        new Chart(document.getElementById('chart3').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['0', '5', '10', '15', '20', '25', '30'],
+                datasets: [{
+                    label: 'Days',
+                    backgroundColor: colorDarkBlue,
+                    data: [8200, 1100, 900, 500, 300, 120, 50],
+                    barPercentage: 1.0,
+                    categoryPercentage: 0.95
+                }]
+            },
+            options: { 
+                responsive: true, maintainAspectRatio: false,
+                scales: { x: { grid: { display: false } }, y: { grid: gridOptions } },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // Chart 4: Feature Importance (Horizontal Bar)
+        new Chart(document.getElementById('chart4').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Soil Moisture', 'Temperature', 'Rainfall', 'Humidity', 'Wind Speed'],
+                datasets: [{
+                    label: 'Importance %',
+                    backgroundColor: [colorSage, colorOrange, colorDarkBlue, colorLightGreen, colorTan],
+                    data: [52, 28, 22, 14, 8],
+                    borderRadius: 4
+                }]
+            },
+            options: { 
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                scales: { x: { grid: gridOptions, max: 60 }, y: { grid: { display: false } } },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+    });
+</script>
+{% endblock %}

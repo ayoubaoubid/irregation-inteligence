@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Live Prediction | Smart Irrigation{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 2rem;">
+    <!-- Section 1: Intro -->
+    <h1 class="section-title">Prediction System API</h1>
+    <p class="section-subtitle">Input real-time variables to test the inference engine.</p>
+    
+    <div class="grid-2">
+        <!-- Section 2: Input Form -->
+        <div class="card">
+            <h2 class="card-header">1. Manual Data Entry</h2>
+            
+            {% if error %}
+            <div style="background: rgba(220, 53, 69, 0.1); color: var(--danger); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'prediction' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Temperature (°C)</label>
+                    <input type="number" step="0.1" name="temperature" class="form-control" value="{{ inputs.temperature|default:'25.0' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Humidity (%)</label>
+                    <input type="number" step="0.1" name="humidity" class="form-control" value="{{ inputs.humidity|default:'45.0' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Soil Moisture (%)</label>
+                    <input type="number" step="0.1" name="soil_moisture" class="form-control" value="{{ inputs.soil_moisture|default:'20.0' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rainfall (Past 24h - mm)</label>
+                    <input type="number" step="0.1" name="rainfall" class="form-control" value="{{ inputs.rainfall|default:'0.0' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Wind Speed (km/h)</label>
+                    <input type="number" step="0.1" name="wind" class="form-control" value="{{ inputs.wind|default:'10.0' }}" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" style="font-size: 1.1rem;">Run Inference 🧠</button>
+            </form>
+        </div>
+        
+        <!-- Results Column -->
+        <div>
+            <!-- Section 3 & 4: Result display and recommendation -->
+            {% if result %}
+            <div class="card mb-4" style="border-top: 5px solid {% if needs_irrigation %}var(--warning){% else %}var(--success){% endif %}; text-align: center;">
+                <h2 class="card-header">2. Inference Result</h2>
+                
+                {% if needs_irrigation %}
+                    <div style="font-size: 4rem; margin: 1rem;">🚰</div>
+                    <h1 class="text-warning mb-2">PUMPS ON</h1>
+                {% else %}
+                    <div style="font-size: 4rem; margin: 1rem;">✅</div>
+                    <h1 class="text-success mb-2">STANDBY</h1>
+                {% endif %}
+                
+                <p style="font-size: 1.2rem; margin: 1rem 0;">{{ recommendation }}</p>
+                
+                <!-- Section 5: Explanation -->
+                <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-sm); margin-top: 1rem; text-align: left;">
+                    <strong style="color: var(--primary-dark);">Model Confidence:</strong> {{ probability }}%
+                    <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.5rem;">Confidence metric based on Random Forest tree consensus.</p>
+                </div>
+            </div>
+            {% else %}
+            <!-- Initial state -->
+            <div class="card mb-4 text-center" style="display: flex; flex-direction: column; justify-content: center; min-height: 250px;">
+                <h2 style="color: var(--text-muted);">Awaiting Input...</h2>
+                <p>Fill out the parameters and click "Run Inference" to see the Machine Learning model in action.</p>
+            </div>
+            {% endif %}
+
+            <!-- Section 6: Example Scenarios -->
+            <div class="card mb-4">
+                <h2 class="card-header">3. Try These Scenarios</h2>
+                <ul style="padding-left: 1rem;">
+                    <li class="mb-2"><strong>Drought:</strong> Temp 35, Hum 20, Soil 10, Rain 0 <br><small>➔ <i>Should trigger irrigation</i></small></li>
+                    <li class="mb-2"><strong>Post-Storm:</strong> Temp 22, Hum 85, Soil 50, Rain 25 <br><small>➔ <i>Should standby</i></small></li>
+                </ul>
+            </div>
+            
+            <!-- Section 7: Prediction History Placeholder -->
+            <div class="card text-center text-muted" style="background: #fafafa;">
+                <h2 class="card-header" style="font-size:1rem;">4. Last 3 API Requests</h2>
+                <p style="font-size: 0.85rem; padding: 0.5rem; border-bottom: 1px dashed #ccc;">[10:14:02s] Temp:28 Soil:15 ➔ IRRIGATE</p>
+                <p style="font-size: 0.85rem; padding: 0.5rem; border-bottom: 1px dashed #ccc;">[10:12:44s] Temp:24 Soil:45 ➔ STANDBY</p>
+                <p style="font-size: 0.85rem; padding: 0.5rem;">[09:55:12s] Temp:21 Soil:48 ➔ STANDBY</p>
+            </div>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

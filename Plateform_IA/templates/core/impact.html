@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Project Impact | Smart Irrigation{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 2rem;">
+    <!-- Section 1: Intro -->
+    <h1 class="section-title">Measurable Impact</h1>
+    <p class="section-subtitle">Transforming agriculture through intelligent resource management.</p>
+    
+    <div class="grid-3 mb-4 text-center">
+        <!-- Section 2: Water Saving -->
+        <div class="card" style="border-top: 4px solid var(--info);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">💧</div>
+            <h2 class="card-header">Water Conservation</h2>
+            <p>By irrigating only when physiological plant thresholds are met, the system reduces agricultural water consumption by an estimated <strong>30% - 45%</strong> compared to static timer schedules.</p>
+        </div>
+        
+        <!-- Section 3: Productivity -->
+        <div class="card" style="border-top: 4px solid var(--success);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🌾</div>
+            <h2 class="card-header">Crop Yield & Health</h2>
+            <p>Maintaining optimal soil moisture prevents both drought stress and root rot. Consistent ideal conditions have demonstrated <strong>15% - 20% increases</strong> in overall harvest yields.</p>
+        </div>
+        
+        <!-- Section 4: Economic -->
+        <div class="card" style="border-top: 4px solid var(--warning);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">💰</div>
+            <h2 class="card-header">Economic Benefit</h2>
+            <p>Reduced water pumping means significantly lower energy and electricity costs. Combined with higher yields, farms see ROI on the smart irrigation system within <strong>1-2 growing seasons</strong>.</p>
+        </div>
+    </div>
+
+    <div class="grid-2 mb-4">
+        <!-- Section 5: Sustainability -->
+        <div class="card" style="background: var(--primary-dark); color: white;">
+            <h2 style="color: var(--accent); margin-bottom: 1rem;">Environmental Sustainability</h2>
+            <p>Precision irrigation prevents fertilizer and pesticide runoff from entering local rivers and aquifers. By keeping agrochemicals in the root zone where they belong, we protect local wildlife and downstream water quality.</p>
+            <p class="mt-4">Furthermore, reducing the energy required for massive water pumping significantly lowers the agricultural carbon footprint.</p>
+        </div>
+        
+        <!-- Section 6: Scalability -->
+        <div class="card">
+            <h2 class="card-header">System Scalability</h2>
+            <p>The IoT and Cloud architecture is innately scalable. Whether managing a 5-hectare family orchard or a 5,000-hectare commercial enterprise, the system dynamically handles increased data throughput without architectural redesign.</p>
+            <p class="mt-4">New fields, new sensors, and new crop types can simply be registered in the unified dashboard.</p>
+        </div>
+    </div>
+
+    <!-- Section 7: Future Improvements -->
+    <div class="card text-center">
+        <h2 class="card-header">Future Evolution & Expansion</h2>
+        <div class="grid-3 mt-4 text-left">
+            <div>
+                <h4 class="mb-2 text-primary">Satellite Imagery</h4>
+                <p class="text-muted">Integrating NDVI (Normalized Difference Vegetation Index) satellite data to correlate surface soil moisture with high-altitude crop health monitoring.</p>
+            </div>
+            <div>
+                <h4 class="mb-2 text-primary">Weather Forecasting Integration</h4>
+                <p class="text-muted">Direct API integration with global weather models to delay irrigation automatically if rainfall is predicted with high certainty within 24 hours.</p>
+            </div>
+            <div>
+                <h4 class="mb-2 text-primary">Deep Learning Models</h4>
+                <p class="text-muted">Transitioning from standard ML classifiers to LSTM neural networks perfectly suited for time-series climatic prediction.</p>
+            </div>
+        </div>
+    </div>
+
+</section>
+{% endblock %}
