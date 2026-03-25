@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Machine Learning Model | Smart Irrigation{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 2rem;">
+    <!-- Section 1: ML Objective -->
+    <h1 class="section-title">The Predictive Engine</h1>
+    <p class="section-subtitle">Deep dive into the algorithm powering the AgriSmart System.</p>
+    
+    <div class="card mb-4" style="border-left: 5px solid var(--primary);">
+        <h2 class="card-header">1. ML Objective</h2>
+        <p>The primary objection of our machine learning pipeline is to perform a binary classification: <strong>Irrigate (1) vs. Do Not Irrigate (0)</strong>, maximizing recall (to ensure crops never dry out) while maintaining high precision (to prevent water waste).</p>
+    </div>
+
+    <!-- Section 2: Model Description -->
+    <!-- Section 3: Training Process -->
+    <div class="grid-2 mb-4">
+        <div class="card">
+            <h2 class="card-header">2. Model Selection</h2>
+            <p>After evaluating Logistic Regression, SVM, and XGBoost, we deployed a <strong>Random Forest Classifier</strong>. It was chosen for its inherent resistance to overfitting, its ability to capture non-linear climatic relationships, and its high interpretability via feature importance metrics.</p>
+        </div>
+        <div class="card">
+            <h2 class="card-header">3. Training Process</h2>
+            <p>Training involves a rigorous pipeline via Scikit-Learn utilizing GridSearch Cross-Validation (K=5) to optimize hyperparameters such as <code>n_estimators</code>, <code>max_depth</code>, and <code>min_samples_split</code>.</p>
+        </div>
+    </div>
+
+    <!-- Section 4: Data Split -->
+    <!-- Section 5: Evaluation metrics -->
+    <!-- Section 6: Model Performance -->
+    <div class="grid-3 mb-4 text-center">
+        <div class="card">
+            <h2 class="card-header">4. Data Split</h2>
+            <div style="font-size: 2.5rem; color: var(--info);">80/20</div>
+            <p class="mt-2 text-muted">A standard 80% training and 20% hold-out test set was utilized, stratified by the target variable.</p>
+        </div>
+        <div class="card">
+            <h2 class="card-header">5. ROC-AUC Score</h2>
+            <div style="font-size: 2.5rem; color: var(--success);">0.96</div>
+            <p class="mt-2 text-muted">Indicates excellent separability between the 'needs water' and 'sufficiently moist' classes.</p>
+        </div>
+        <div class="card">
+            <h2 class="card-header">6. F1-Score</h2>
+            <div style="font-size: 2.5rem; color: var(--primary);">0.94</div>
+            <p class="mt-2 text-muted">The harmonic mean of precision and recall, proving the model's balanced performance.</p>
+        </div>
+    </div>
+
+    <!-- Section 7: Confusion Matrix -->
+    <div class="card mb-4">
+        <h2 class="card-header text-center">7. Confusion Matrix (Test Set)</h2>
+        <div style="display: flex; justify-content: center; margin-top: 1rem;">
+            <table style="border-collapse: collapse; text-align: center; font-size: 1.1rem;">
+                <tr>
+                    <td></td>
+                    <th style="padding: 1rem; border-bottom: 2px solid #ccc;">Predicted: No Water</th>
+                    <th style="padding: 1rem; border-bottom: 2px solid #ccc;">Predicted: Water</th>
+                </tr>
+                <tr>
+                    <th style="padding: 1rem; border-right: 2px solid #ccc;">Actual: No Water</th>
+                    <td style="padding: 1rem; background: rgba(40, 167, 69, 0.2); font-weight: bold;">True Negative (2450)</td>
+                    <td style="padding: 1rem; background: rgba(220, 53, 69, 0.2);">False Positive (85)<br><small><i>(Unnecessary watering)</i></small></td>
+                </tr>
+                <tr>
+                    <th style="padding: 1rem; border-right: 2px solid #ccc;">Actual: Water</th>
+                    <td style="padding: 1rem; background: rgba(255, 193, 7, 0.2);">False Negative (42)<br><small><i>(Crop stress risk)</i></small></td>
+                    <td style="padding: 1rem; background: rgba(40, 167, 69, 0.2); font-weight: bold;">True Positive (2323)</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 8: Limitations -->
+    <div class="card" style="background: var(--primary-dark); color: white;">
+        <h2 style="color: var(--warning); margin-bottom: 1rem;">8. Known Limitations</h2>
+        <ul style="padding-left: 1.5rem; line-height: 1.8;">
+            <li><strong>Sensor Drift:</strong> The model assumes sensors are perfectly calibrated. Soil degradation over time can reduce capacitance accuracy.</li>
+            <li><strong>Hardcoded Crop Type:</strong> Currently, the model is generalized. Different crops (e.g., rice vs. grapes) have vastly different transpiration rates requiring specialized transfer-learning.</li>
+            <li><strong>Extreme Anomalies:</strong> Unexpected extreme weather events not present in the 24-month dataset may cause a drop in confidence intervals.</li>
+        </ul>
+        <div class="text-center mt-4">
+            <a href="{% url 'prediction' %}" class="btn btn-primary">Test the Model via API</a>
+        </div>
+    </div>
+
+</section>
+{% endblock %}
