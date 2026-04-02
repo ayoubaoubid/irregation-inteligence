@@ -17,7 +17,7 @@ def prediction(request):
             
             # Simple dummy model heuristic
             score = (temperature * 0.5) - (humidity * 0.2) - (soil_moisture * 0.8) - (rainfall * 1.5)
-            
+
             needs_irrigation = score > 0
             probability = min(100, max(0, int((score + 50))))
             
