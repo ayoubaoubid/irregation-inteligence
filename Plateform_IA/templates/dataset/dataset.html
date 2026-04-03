@@ -5,40 +5,40 @@
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1: Intro -->
-    <h1 class="section-title">The Agricultural Dataset</h1>
-    <p class="section-subtitle">Understanding the foundation of our predictive machine learning model.</p>
+    <h1 class="section-title">Le Dataset Agricole</h1>
+    <p class="section-subtitle">Comprendre la fondation de notre modèle prédictif d'irrigation intelligente.</p>
     
     <div class="card mb-4">
-        <h2 class="card-header">1. Dataset Introduction</h2>
-        <p>The "AgriSmart-Climate" dataset is a comprehensive collection of time-series observations gathered from multiple IoT sensor nodes distributed across hypothetical experimental farm plots. It spans 24 months of continuous hourly measurements, providing the robust statistical foundation required to train highly accurate supervised learning algorithms.</p>
+        <h2 class="card-header">1. Introduction au Dataset</h2>
+        <p>Le dataset "Smart Irrigation Water Requirement Prediction" vise à optimiser l'utilisation de l'eau en agriculture. Grâce à 14 variables indépendantes clés (type de culture, propriétés du sol, micro-climat), les modèles de régression peuvent anticiper la demande en eau afin de maximiser les rendements et préserver la nappe phréatique des régions sensibles.</p>
     </div>
 
     <!-- Section 2: Data Sources -->
     <div class="grid-2 mb-4">
         <div class="card" style="border-left: 5px solid var(--primary);">
-            <h2 class="card-header">2. Primary Data Sources</h2>
+            <h2 class="card-header">2. Sources Principales des Données</h2>
             <ul>
-                <li class="mb-1"><strong>Soil Sensors:</strong> Capacitive moisture sensors planted at depth (20cm & 60cm).</li>
-                <li class="mb-1"><strong>Weather Stations:</strong> On-site microclimate telemetry for Temp, Humidity, and Wind speed.</li>
-                <li class="mb-1"><strong>Rain Gauges:</strong> Specialized tipping-bucket sensors measuring pluvial precipitation.</li>
+                <li class="mb-1"><strong>Capteurs Pédologiques :</strong> Sondes mesurant le pH, le carbone et l'humidité racinaire.</li>
+                <li class="mb-1"><strong>Stations Agrométéos :</strong> Télémesure des facteurs thermiques (soleil, température, vent, précipitations).</li>
+                <li class="mb-1"><strong>Pratiques de Culture :</strong> Type de culture, stade de croissance saisonnier et utilisation du paillage.</li>
             </ul>
         </div>
         
         <!-- Section 3: Preprocessing -->
         <div class="card">
-            <h2 class="card-header">6. Data Preprocessing</h2>
-            <p>Prior to machine learning, raw telemetry data undergoes strict preprocessing:</p>
+            <h2 class="card-header">6. Prétraitement des Données (Preprocessing)</h2>
+            <p>Avant l'ingestion par les modèles, les données brutes sont préparées :</p>
             <ul>
-                <li>Missing value interpolation via K-Nearest Neighbors (KNN).</li>
-                <li>Outlier removal using Isolation Forest.</li>
-                <li>StandardScaler applied to continuous numeric features.</li>
+                <li>Traitement des valeurs manquantes et aberrantes (Outliers).</li>
+                <li>Encodage des variables catégorielles (Cultivars, Paillage).</li>
+                <li>Mise à l'échelle (Standardisation) des variables métriques étendues.</li>
             </ul>
         </div>
     </div>
 
     <!-- Section 4: Features Table -->
     <div class="card mb-4" style="overflow-x: auto;">
-        <h2 class="card-header">3. Feature Descriptions</h2>
+        <h2 class="card-header">3. Description des Variables (Features)</h2>
         <table class="w-100" style="border-collapse: collapse; text-align: left;">
             <thead>
                 <tr style="border-bottom: 2px solid var(--primary-light);">
@@ -49,34 +49,79 @@
             </thead>
             <tbody>
                 <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 1rem;"><code>temperature</code></td>
+                    <td style="padding: 1rem;"><code>Soil_pH</code></td>
+                    <td style="padding: 1rem;">Numeric</td>
+                    <td style="padding: 1rem;">Soil pH level.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
+                    <td style="padding: 1rem;"><code>Soil_Moisture</code></td>
+                    <td style="padding: 1rem;">Percentage (%)</td>
+                    <td style="padding: 1rem;">Volumetric water content in the root zone.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem;"><code>Organic_Carbon</code></td>
+                    <td style="padding: 1rem;">Numeric</td>
+                    <td style="padding: 1rem;">Organic carbon content in the soil.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
+                    <td style="padding: 1rem;"><code>Electrical_Conductivity</code></td>
+                    <td style="padding: 1rem;">Numeric</td>
+                    <td style="padding: 1rem;">Soil salinity and ion concentration.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem;"><code>Temperature_C</code></td>
                     <td style="padding: 1rem;">Celsius (°C)</td>
                     <td style="padding: 1rem;">Ambient air temperature at 2m above ground.</td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
-                    <td style="padding: 1rem;"><code>humidity</code></td>
+                    <td style="padding: 1rem;"><code>Humidity</code></td>
                     <td style="padding: 1rem;">Percentage (%)</td>
                     <td style="padding: 1rem;">Relative atmospheric humidity.</td>
                 </tr>
                 <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 1rem;"><code>soil_moisture</code></td>
-                    <td style="padding: 1rem;">Percentage (% v/v)</td>
-                    <td style="padding: 1rem;">Volumetric water content in the root zone.</td>
-                </tr>
-                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
-                    <td style="padding: 1rem;"><code>rainfall</code></td>
+                    <td style="padding: 1rem;"><code>Rainfall_mm</code></td>
                     <td style="padding: 1rem;">Millimeters (mm)</td>
                     <td style="padding: 1rem;">Accumulated precipitation over past 24h.</td>
                 </tr>
+                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
+                    <td style="padding: 1rem;"><code>Sunlight_Hours</code></td>
+                    <td style="padding: 1rem;">Hours</td>
+                    <td style="padding: 1rem;">Total daily duration of uninterrupted sunshine.</td>
+                </tr>
                 <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td style="padding: 1rem;"><code>wind_speed</code></td>
+                    <td style="padding: 1rem;"><code>Wind_Speed_kmh</code></td>
                     <td style="padding: 1rem;">km/h</td>
                     <td style="padding: 1rem;">Affects evapotranspiration rates.</td>
                 </tr>
+                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
+                    <td style="padding: 1rem;"><code>Crop_Growth_Stage</code></td>
+                    <td style="padding: 1rem;">Categorical</td>
+                    <td style="padding: 1rem;">E.g. Sowing, Vegetative, Flowering, Harvest.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem;"><code>Irrigation_Type</code></td>
+                    <td style="padding: 1rem;">Categorical</td>
+                    <td style="padding: 1rem;">E.g. Rainfed, Canal, Drip, Sprinkler.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
+                    <td style="padding: 1rem;"><code>Field_Area_hectare</code></td>
+                    <td style="padding: 1rem;">Hectares</td>
+                    <td style="padding: 1rem;">Total crop covering area under scope.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem;"><code>Mulching_Used</code></td>
+                    <td style="padding: 1rem;">Categorical</td>
+                    <td style="padding: 1rem;">Whether mulching techniques are used.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(128,128,128,0.05);">
+                    <td style="padding: 1rem;"><code>Previous_Irrigation_mm</code></td>
+                    <td style="padding: 1rem;">Millimeters (mm)</td>
+                    <td style="padding: 1rem;">Volume of previous watering session.</td>
+                </tr>
                 <tr>
-                    <td style="padding: 1rem;"><code>needs_irrigation</code> <strong>(TARGET)</strong></td>
-                    <td style="padding: 1rem;">Binary (0/1)</td>
-                    <td style="padding: 1rem;">Human expert classification for required watering.</td>
+                    <td style="padding: 1rem;"><code>Irrigation_Need</code> <strong>(TARGET)</strong></td>
+                    <td style="padding: 1rem;">Categorical</td>
+                    <td style="padding: 1rem;">Classification for required watering (Low, Medium, High).</td>
                 </tr>
             </tbody>
         </table>
@@ -86,68 +131,77 @@
     <div style="margin-top: 4rem; margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
             <div>
-                <div style="color: var(--primary); font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; font-family: var(--font-body);">— PREVIEW</div>
-                <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Sample Data</h2>
-                <div style="color: var(--text-muted); font-size: 0.95rem;">Showing first 8 records from the dataset</div>
+                <div style="color: var(--primary); font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; font-family: var(--font-body);">— APERÇU</div>
+                <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Extrait des Données</h2>
+                <div style="color: var(--text-muted); font-size: 0.95rem;">Affichage des 8 premières lignes et de l'ensemble des 14 features (défilement horizontal si besoin)</div>
             </div>
             <button class="btn btn-outline" style="border-radius: var(--radius-sm); font-size: 0.9rem; padding: 0.6rem 1.2rem; background: var(--bg-color); border-color: var(--border-color); color: var(--text-main); font-weight: 600; font-family: var(--font-body); box-shadow: var(--shadow-sm);">
-                ⬇ Download CSV
+                ⬇ Télécharger CSV
             </button>
         </div>
         
-        <div style="background: var(--card-bg); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: var(--font-body); font-size: 0.95rem;">
+        <div style="background: var(--card-bg); border-radius: var(--radius-md); overflow-x: auto; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: var(--font-body); font-size: 0.95rem; white-space: nowrap; min-width: max-content;">
                 <thead>
                     <tr style="background: var(--primary); color: white;">
                         <th style="padding: 1.2rem; font-weight: 600;">#</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">pH</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Moiste (%)</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Carbon</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">EC</th>
                         <th style="padding: 1.2rem; font-weight: 600;">Temp (°C)</th>
-                        <th style="padding: 1.2rem; font-weight: 600;">Humidity (%)</th>
-                        <th style="padding: 1.2rem; font-weight: 600;">Soil Moisture (%)</th>
-                        <th style="padding: 1.2rem; font-weight: 600;">Rainfall (mm)</th>
-                        <th style="padding: 1.2rem; font-weight: 600;">Wind (km/h)</th>
-                        <th style="padding: 1.2rem; font-weight: 600;">Irrigation</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Hum (%)</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Rain (mm)</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Sun (hrs)</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Wind</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Stage</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Irrig Type</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Area</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Mulch</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Prev (mm)</th>
+                        <th style="padding: 1.2rem; font-weight: 600;">Need</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr style="border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.02);">
                         <td style="padding: 1.2rem;">1</td>
-                        <td style="padding: 1.2rem;">28.4</td><td style="padding: 1.2rem;">65</td><td style="padding: 1.2rem;">32</td><td style="padding: 1.2rem;">0.0</td><td style="padding: 1.2rem;">12</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-yes">Yes</span></td>
+                        <td style="padding: 1.2rem;">6.14</td><td style="padding: 1.2rem;">36.48</td><td style="padding: 1.2rem;">0.42</td><td style="padding: 1.2rem;">2.17</td><td style="padding: 1.2rem;">21.9</td><td style="padding: 1.2rem;">31.19</td><td style="padding: 1.2rem;">1167.7</td><td style="padding: 1.2rem;">4.01</td><td style="padding: 1.2rem;">1.97</td><td style="padding: 1.2rem;">Vegetative</td><td style="padding: 1.2rem;">Rainfed</td><td style="padding: 1.2rem;">4.73</td><td style="padding: 1.2rem;">Yes</td><td style="padding: 1.2rem;">1.98</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#28a745;color:white;">Low</span></td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 1.2rem;">2</td>
-                        <td style="padding: 1.2rem;">22.1</td><td style="padding: 1.2rem;">80</td><td style="padding: 1.2rem;">71</td><td style="padding: 1.2rem;">12.5</td><td style="padding: 1.2rem;">8</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-no">No</span></td>
+                        <td style="padding: 1.2rem;">6.41</td><td style="padding: 1.2rem;">50.56</td><td style="padding: 1.2rem;">0.38</td><td style="padding: 1.2rem;">0.23</td><td style="padding: 1.2rem;">36.5</td><td style="padding: 1.2rem;">26.01</td><td style="padding: 1.2rem;">831.28</td><td style="padding: 1.2rem;">10.72</td><td style="padding: 1.2rem;">16.82</td><td style="padding: 1.2rem;">Flowering</td><td style="padding: 1.2rem;">Canal</td><td style="padding: 1.2rem;">12.22</td><td style="padding: 1.2rem;">Yes</td><td style="padding: 1.2rem;">33.56</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#ffc107;color:black;">Medium</span></td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.02);">
                         <td style="padding: 1.2rem;">3</td>
-                        <td style="padding: 1.2rem;">35.2</td><td style="padding: 1.2rem;">42</td><td style="padding: 1.2rem;">18</td><td style="padding: 1.2rem;">0.0</td><td style="padding: 1.2rem;">22</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-yes">Yes</span></td>
+                        <td style="padding: 1.2rem;">7.71</td><td style="padding: 1.2rem;">40.07</td><td style="padding: 1.2rem;">1.09</td><td style="padding: 1.2rem;">2.18</td><td style="padding: 1.2rem;">41.83</td><td style="padding: 1.2rem;">76.41</td><td style="padding: 1.2rem;">1844.45</td><td style="padding: 1.2rem;">7.75</td><td style="padding: 1.2rem;">19.03</td><td style="padding: 1.2rem;">Harvest</td><td style="padding: 1.2rem;">Drip</td><td style="padding: 1.2rem;">5.52</td><td style="padding: 1.2rem;">Yes</td><td style="padding: 1.2rem;">34.62</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#28a745;color:white;">Low</span></td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 1.2rem;">4</td>
-                        <td style="padding: 1.2rem;">19.8</td><td style="padding: 1.2rem;">88</td><td style="padding: 1.2rem;">82</td><td style="padding: 1.2rem;">28.0</td><td style="padding: 1.2rem;">5</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-no">No</span></td>
+                        <td style="padding: 1.2rem;">5.96</td><td style="padding: 1.2rem;">12.75</td><td style="padding: 1.2rem;">1.56</td><td style="padding: 1.2rem;">0.40</td><td style="padding: 1.2rem;">37.22</td><td style="padding: 1.2rem;">43.32</td><td style="padding: 1.2rem;">306.26</td><td style="padding: 1.2rem;">8.90</td><td style="padding: 1.2rem;">11.44</td><td style="padding: 1.2rem;">Sowing</td><td style="padding: 1.2rem;">Canal</td><td style="padding: 1.2rem;">1.43</td><td style="padding: 1.2rem;">Yes</td><td style="padding: 1.2rem;">84.03</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#ffc107;color:black;">Medium</span></td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.02);">
                         <td style="padding: 1.2rem;">5</td>
-                        <td style="padding: 1.2rem;">31.0</td><td style="padding: 1.2rem;">55</td><td style="padding: 1.2rem;">45</td><td style="padding: 1.2rem;">2.0</td><td style="padding: 1.2rem;">15</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-yes">Yes</span></td>
+                        <td style="padding: 1.2rem;">7.76</td><td style="padding: 1.2rem;">18.58</td><td style="padding: 1.2rem;">0.95</td><td style="padding: 1.2rem;">2.52</td><td style="padding: 1.2rem;">22.38</td><td style="padding: 1.2rem;">86.44</td><td style="padding: 1.2rem;">1875.63</td><td style="padding: 1.2rem;">10.39</td><td style="padding: 1.2rem;">11.26</td><td style="padding: 1.2rem;">Sowing</td><td style="padding: 1.2rem;">Canal</td><td style="padding: 1.2rem;">2.52</td><td style="padding: 1.2rem;">No</td><td style="padding: 1.2rem;">60.86</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#ffc107;color:black;">Medium</span></td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 1.2rem;">6</td>
-                        <td style="padding: 1.2rem;">24.6</td><td style="padding: 1.2rem;">72</td><td style="padding: 1.2rem;">58</td><td style="padding: 1.2rem;">8.0</td><td style="padding: 1.2rem;">10</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-no">No</span></td>
+                        <td style="padding: 1.2rem;">5.10</td><td style="padding: 1.2rem;">20.50</td><td style="padding: 1.2rem;">0.37</td><td style="padding: 1.2rem;">1.43</td><td style="padding: 1.2rem;">33.34</td><td style="padding: 1.2rem;">62.51</td><td style="padding: 1.2rem;">402.92</td><td style="padding: 1.2rem;">7.03</td><td style="padding: 1.2rem;">13.55</td><td style="padding: 1.2rem;">Sowing</td><td style="padding: 1.2rem;">Sprinkler</td><td style="padding: 1.2rem;">7.56</td><td style="padding: 1.2rem;">Yes</td><td style="padding: 1.2rem;">7.33</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#ffc107;color:black;">Medium</span></td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.02);">
                         <td style="padding: 1.2rem;">7</td>
-                        <td style="padding: 1.2rem;">38.5</td><td style="padding: 1.2rem;">38</td><td style="padding: 1.2rem;">12</td><td style="padding: 1.2rem;">0.0</td><td style="padding: 1.2rem;">30</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-yes">Yes</span></td>
+                        <td style="padding: 1.2rem;">7.44</td><td style="padding: 1.2rem;">22.70</td><td style="padding: 1.2rem;">0.59</td><td style="padding: 1.2rem;">2.95</td><td style="padding: 1.2rem;">28.02</td><td style="padding: 1.2rem;">58.50</td><td style="padding: 1.2rem;">764.95</td><td style="padding: 1.2rem;">7.08</td><td style="padding: 1.2rem;">7.38</td><td style="padding: 1.2rem;">Flowering</td><td style="padding: 1.2rem;">Sprinkler</td><td style="padding: 1.2rem;">2.18</td><td style="padding: 1.2rem;">No</td><td style="padding: 1.2rem;">51.47</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#ffc107;color:black;">Medium</span></td>
                     </tr>
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 1.2rem;">8</td>
-                        <td style="padding: 1.2rem;">17.3</td><td style="padding: 1.2rem;">91</td><td style="padding: 1.2rem;">75</td><td style="padding: 1.2rem;">35.5</td><td style="padding: 1.2rem;">4</td>
-                        <td style="padding: 1.2rem;"><span class="badge badge-no">No</span></td>
+                        <td style="padding: 1.2rem;">7.68</td><td style="padding: 1.2rem;">40.23</td><td style="padding: 1.2rem;">0.62</td><td style="padding: 1.2rem;">3.30</td><td style="padding: 1.2rem;">35.60</td><td style="padding: 1.2rem;">79.10</td><td style="padding: 1.2rem;">833.33</td><td style="padding: 1.2rem;">5.17</td><td style="padding: 1.2rem;">3.73</td><td style="padding: 1.2rem;">Vegetative</td><td style="padding: 1.2rem;">Rainfed</td><td style="padding: 1.2rem;">12.54</td><td style="padding: 1.2rem;">Yes</td><td style="padding: 1.2rem;">118.96</td>
+                        <td style="padding: 1.2rem;"><span class="badge" style="background:#28a745;color:white;">Low</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -156,38 +210,46 @@
 
     <div class="grid-2 mb-4">
         <div class="card text-center">
-            <h2 class="card-header">5. Dataset Statistics</h2>
+            <h2 class="card-header">5. Statistiques du Dataset</h2>
             <div class="grid-2">
                 <div>
                     <h3 style="color: var(--primary); font-size: 2rem;">24,500+</h3>
-                    <p class="text-muted">Total Records</p>
+                    <p class="text-muted">Enregistrements</p>
                 </div>
                 <div>
-                    <h3 style="color: var(--primary); font-size: 2rem;">6</h3>
-                    <p class="text-muted">Features</p>
+                    <h3 style="color: var(--primary); font-size: 2rem;">14</h3>
+                    <p class="text-muted">Variables (Features)</p>
                 </div>
                 <div>
                     <h3 style="color: var(--primary); font-size: 2rem;">0.8%</h3>
-                    <p class="text-muted">Missing Values</p>
+                    <p class="text-muted">Valeurs Manquantes</p>
                 </div>
                 <div>
-                    <h3 style="color: var(--primary); font-size: 2rem;">48/52</h3>
-                    <p class="text-muted">Class Balance (Target)</p>
+                    <h3 style="color: var(--primary); font-size: 2rem;">R²=0.91</h3>
+                    <p class="text-muted">Précision de Régression</p>
                 </div>
             </div>
         </div>
         
         <div class="card" style="font-family: monospace; font-size: 0.85rem; background: #2b2b2b; color: #a9b7c6;">
-            <h2 class="card-header" style="color: #bbb; border-bottom: 1px solid #444;">5. Sample Data Record (JSON)</h2>
+            <h2 class="card-header" style="color: #bbb; border-bottom: 1px solid #444;">5. Exemple d'Enregistrement (JSON)</h2>
             <pre style="margin-top: 1rem;">
 {
-  "timestamp": "2023-06-12T14:00:00Z",
-  "temperature": 28.5,
-  "humidity": 45.2,
-  "soil_moisture": 18.5,
-  "rainfall": 0.0,
-  "wind_speed": 12.4,
-  "needs_irrigation": 1
+  "soil_ph": 6.14,
+  "soil_moisture": 36.48,
+  "organic_carbon": 0.42,
+  "electrical_conductivity": 2.17,
+  "temperature_c": 21.9,
+  "humidity": 31.19,
+  "rainfall_mm": 1167.7,
+  "sunlight_hours": 4.01,
+  "wind_speed_kmh": 1.97,
+  "crop_growth_stage": "Vegetative",
+  "irrigation_type": "Rainfed",
+  "field_area_hectare": 4.73,
+  "mulching_used": "Yes",
+  "previous_irrigation_mm": 1.98,
+  "irrigation_need": "Low"
 }
             </pre>
         </div>
@@ -195,13 +257,13 @@
 
     <!-- Section 8: Feature Eng / 9: Importance -->
     <div class="card" style="background: var(--primary-dark); color: white;">
-        <h2 style="color: var(--accent); margin-bottom: 1rem;">7. Feature Engineering</h2>
-        <p class="mb-3">To boost model performance, we derive new features from the raw data. <strong>Evapotranspiration Index (ET0)</strong> is synthetically calculated from temperature, humidity, and wind speed. <strong>Rolling Averages (3-day and 7-day)</strong> of soil moisture are computed to give the model historical trend context, preventing reactive over-irrigation from single anomalous readings.</p>
+        <h2 style="color: var(--accent); margin-bottom: 1rem;">7. Feature Engineering & Insight</h2>
+        <p class="mb-3">Pour optimiser la régression, un traitement des variables continues et discrètes est fondamental. Nos études mettent en exergue le rôle critique du triptyque Température-Radiations-Précipitations (Évapotranspiration), couplé à la porosité et au taux de carbone organique (Organic Carbon).</p>
         
-        <h2 style="color: var(--accent); margin-top: 2rem; margin-bottom: 1rem;">8. Why High-Quality Data Matters</h2>
-        <p>In machine learning, "garbage in equals garbage out." A highly robust, well-distributed dataset covering all four seasons prevents the model from overfitting to summer droughts or spring floods. This ensures the <em>AgriSmart System</em> remains reliable year-round.</p>
+        <h2 style="color: var(--accent); margin-top: 2rem; margin-bottom: 1rem;">8. Pourquoi la qualité de la donnée est critique ?</h2>
+        <p>Mettre en place une agriculture intelligente "Smart Agriculture" implique des prédictions parfaitement ancrées dans la réalité physique (Data-Driven Ecosystems). Un modèle correctement alimenté réduit considérablement la consommation de pompes à eau et combat activement l'assèchement local.</p>
         
-        <a href="{% url 'analysis' %}" class="btn btn-primary mt-4">View Data Analysis & Charts</a>
+        <a href="{% url 'analysis' %}" class="btn btn-primary mt-4">Explorer l'Analyse Visuelle</a>
     </div>
 
 </section>

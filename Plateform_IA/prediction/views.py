@@ -8,10 +8,7 @@ def ml_model(request):
 import pandas as pd
 import numpy as np
 
-def data_set(data) :
-    
-    
-    return dataset
+
 
 def prediction(request):
     if request.method == 'POST':

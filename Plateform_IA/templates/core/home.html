@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Smart Irrigation System{% endblock %}
+{% block title %}Système d'Irrigation Intelligent{% endblock %}
 
 {% block top_full_width %}
 <!-- EXACT MATCH OF IMAGE 1 (Hero Section) -->
@@ -8,25 +8,25 @@
     <!-- Left text content -->
     <div>
         <div style="display: inline-block; background: rgba(16, 185, 129, 0.15); color: var(--primary-light); padding: 0.25rem 0.75rem; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 2rem; border: 1px solid rgba(16, 185, 129, 0.3);">
-            ● AI-POWERED AGRICULTURE
+            ● AGRICULTURE PROPULSÉE PAR L'IA
         </div>
         
-        <h1>
-            <span style="display: block; color: white;">Smart</span>
-            <span style="display: block; color: var(--primary-light);">Irrigation</span>
-            <span style="display: block; color: white;">System</span>
+        <h1 style="line-height: 1.1; margin-bottom: 1.5rem;">
+            <span style="display: block; color: white;">Système de Prédiction</span>
+            <span style="display: block; color: var(--primary-light);">des Besoins en Eau</span>
+            <span style="display: block; color: white;">d'Irrigation</span>
         </h1>
         
         <p style="font-size: 1.15rem; color: #a3b8ad; max-width: 500px; margin-bottom: 3rem; line-height: 1.7; font-family: var(--font-body);">
-            Optimize water usage and prevent soil stress with machine learning. Real-time environmental data meets intelligent prediction.
+            Optimisez l'utilisation de l'eau en agriculture grâce à l'intelligence artificielle. Croisez les données environnementales, météorologiques et agronomiques pour construire des systèmes d'irrigation durables et hautement précis.
         </p>
         
         <div style="display: flex; gap: 1rem;">
             <a href="{% url 'prediction' %}" class="btn btn-primary" style="padding: 1rem 2rem; border-radius: var(--radius-sm);">
-                <span style="margin-right: 8px;">💧</span> Try Prediction
+                <span style="margin-right: 8px;">💧</span> Tester la Prédiction
             </a>
-            <a href="{% url 'analysis' %}" class="btn btn-glass" style="padding: 1rem 2rem; border-radius: var(--radius-sm);">
-                View Analytics
+            <a href="{% url 'dataset' %}" class="btn btn-glass" style="padding: 1rem 2rem; border-radius: var(--radius-sm);">
+                Découvrir le Dataset
             </a>
         </div>
     </div>
@@ -37,24 +37,24 @@
         <!-- Widget 1: Soil Moisture -->
         <div class="dark-widget">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <div class="dark-widget-label" style="margin: 0;">SOIL MOISTURE</div>
-                <div style="background: rgba(16, 185, 129, 0.2); color: var(--primary-light); padding: 0.2rem 0.8rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 600;">Optimal</div>
+                <div class="dark-widget-label" style="margin: 0;">HUMIDITÉ DU SOL</div>
+                <div style="background: rgba(16, 185, 129, 0.2); color: var(--primary-light); padding: 0.2rem 0.8rem; border-radius: var(--radius-pill); font-size: 0.75rem; font-weight: 600;">Optimale</div>
             </div>
             <div class="dark-widget-value">
-                68 <span style="font-size: 1.25rem; font-weight: 600; color: #a3b8ad;">%</span>
+                42 <span style="font-size: 1.25rem; font-weight: 600; color: #a3b8ad;">% Vol</span>
             </div>
             <div class="progress-bg">
-                <div class="progress-fill" style="width: 68%;"></div>
+                <div class="progress-fill" style="width: 42%;"></div>
             </div>
         </div>
         
         <!-- Widget 2: AI Recommendation -->
         <div class="dark-widget" style="display: flex; align-items: center; gap: 1.5rem;">
-            <div style="font-size: 2.5rem;">💧</div>
+            <div style="font-size: 2.5rem;">🧠</div>
             <div>
-                <div class="dark-widget-label" style="margin-bottom: 0.2rem;">AI RECOMMENDATION</div>
-                <div style="font-size: 1.25rem; font-weight: 700; font-family: var(--font-heading);">Irrigate in 2 hours</div>
-                <div style="font-size: 0.85rem; color: #a3b8ad;">18L/m² recommended</div>
+                <div class="dark-widget-label" style="margin-bottom: 0.2rem;">RÉGRESSION IA (PRÉDICTION)</div>
+                <div style="font-size: 1.25rem; font-weight: 700; font-family: var(--font-heading);">Volume : 34.5 mm</div>
+                <div style="font-size: 0.85rem; color: #a3b8ad;">Calcul basé sur 14 variables</div>
             </div>
         </div>
         
@@ -66,16 +66,16 @@
                     <div style="font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading);">26°C</div>
                 </div>
                 <div>
-                    <div class="dark-widget-label">Humidity</div>
-                    <div style="font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading);">72%</div>
+                    <div class="dark-widget-label">Carb. Org</div>
+                    <div style="font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading);">0.8%</div>
                 </div>
                 <div>
-                    <div class="dark-widget-label">Rain</div>
-                    <div style="font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading);">2mm</div>
+                    <div class="dark-widget-label">Pluie</div>
+                    <div style="font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading);">0mm</div>
                 </div>
                 <div>
-                    <div class="dark-widget-label">Wind</div>
-                    <div style="font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading);">12km/h</div>
+                    <div class="dark-widget-label">pH Sol</div>
+                    <div style="font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading);">6.5</div>
                 </div>
             </div>
         </div>
@@ -85,50 +85,49 @@
 {% endblock %}
 
 {% block content %}
-<!-- Additional home content for the problem/features below the hero -->
 <section class="section text-center" style="margin-top: 2rem;">
-    <h2 class="section-title">Why Smart Irrigation?</h2>
-    <p class="section-subtitle" style="margin-left: auto; margin-right: auto;">Moving beyond timer-based guessing to precision agriculture.</p>
+    <h2 class="section-title">Pourquoi prédire les besoins en eau ?</h2>
+    <p class="section-subtitle" style="margin-left: auto; margin-right: auto;">Accompagner une agriculture durable face à la raréfaction des ressources en eau mondiales.</p>
     
     <div class="grid-3 mt-4 text-left">
         <div class="card" style="border-top: 4px solid var(--secondary);">
             <div style="font-size: 3rem; margin-bottom: 1rem;">📉</div>
-            <h3 class="card-header" style="border: none; padding: 0;">Water Scarcity</h3>
-            <p>Agriculture uses 70% of global freshwater. Our model saves up to 40% of water by only irrigating when the plant physiologically requires it.</p>
+            <h3 class="card-header" style="border: none; padding: 0;">Optimisation des Ressources</h3>
+            <p>L'agriculture consomme 70% de l'eau douce mondiale. En prédisant avec précision quantitative la demande, nous prévenons le gaspillage hydrique, une priorité absolue dans les régions soumises au stress hydrique.</p>
         </div>
         <div class="card" style="border-top: 4px solid var(--primary);">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
-            <h3 class="card-header" style="border: none; padding: 0;">Yield Maximization</h3>
-            <p>Eliminate root rot from over-watering and stunted growth from drought stress. Maintain the perfect <i>Goldilocks zone</i> for moisture.</p>
+            <h3 class="card-header" style="border: none; padding: 0;">Agriculture Intelligente</h3>
+            <p>Notre approche prend en compte les spécificités uniques du terrain. Type de sol, de culture, conditions thermiques locales et taux d'évapotranspiration dictent dynamiquement la quantité exacte d'eau sans abîmer les racines.</p>
         </div>
         <div class="card" style="border-top: 4px solid var(--info);">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
-            <h3 class="card-header" style="border: none; padding: 0;">Machine Learning</h3>
-            <p>Our Scikit-Learn Random Forest model cross-references live temperature, humidity, and rainfall to predict soil moisture depletion rates.</p>
+            <h3 class="card-header" style="border: none; padding: 0;">Modèles de Machine Learning</h3>
+            <p>Les données alimentent de puissants modèles de régression (ex: Random Forest, Gradient Boosting). Ceux-ci isolent statistiquement le lien entre votre phénologie locale et le volume prédictif idéal (en mm).</p>
         </div>
     </div>
 </section>
 
 <!-- NEW SECTION: How it works step-by-step -->
 <section class="section text-center" style="margin-top: 6rem; padding: 4rem 2rem; background: rgba(0,0,0,0.02); border-radius: var(--radius-lg);">
-    <h2 class="section-title">How It Works</h2>
-    <p class="section-subtitle" style="margin-left: auto; margin-right: auto;">From soil to cloud, a seamless pipeline.</p>
+    <h2 class="section-title">La logique métier derrière les données</h2>
+    <p class="section-subtitle" style="margin-left: auto; margin-right: auto;">Comment notre dataset modifie le paradigme de l'irrigation traditionnelle.</p>
     
     <div class="grid-3 mt-4 text-center">
         <div>
             <div style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.5rem auto; box-shadow: var(--shadow-sm); border: 2px solid var(--primary-light); color: var(--primary);">1</div>
-            <h3 style="margin-bottom: 0.5rem;">Data Collection</h3>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">Live IoT sensors push soil telemetry, temperature, and humidity directly to our data lake.</p>
+            <h3 style="margin-bottom: 0.5rem;">Fusion des Variables</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Nous recueillons jusqu'à 14 dimensions distinctes qui brossent un portrait exhaustif du champ : du pH du sol à la vélocité du vent.</p>
         </div>
         <div>
             <div style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.5rem auto; box-shadow: var(--shadow-sm); border: 2px solid var(--secondary); color: var(--secondary);">2</div>
-            <h3 style="margin-bottom: 0.5rem;">Machine Learning Processing</h3>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">The predictive model processes historical patterns and outputs precise moisture depletion curves.</p>
+            <h3 style="margin-bottom: 0.5rem;">Entraînement Algorithmique</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Le modèle de régression analyse la variance historique pour dégager une formule fiable déterminant le <code>Irrigation_Need</code> en millilitres.</p>
         </div>
         <div>
             <div style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.5rem auto; box-shadow: var(--shadow-sm); border: 2px solid var(--accent); color: var(--accent);">3</div>
-            <h3 style="margin-bottom: 0.5rem;">Automated Irrigation</h3>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">When the threshold is breached, the API signals physical water pumps to deploy exact liters per m².</p>
+            <h3 style="margin-bottom: 0.5rem;">Automatisation Ciblée</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">La prédiction est distribuée par une API vers les systèmes cyber-physiques de la ferme connectée, déclenchant l'eau de façon parfaitement ciblée.</p>
         </div>
     </div>
 </section>
@@ -137,22 +136,22 @@
 <section class="section" style="margin-top: 6rem;">
     <div style="display: flex; gap: 4rem; align-items: center; flex-wrap: wrap;">
         <div style="flex: 1; min-width: 300px;">
-            <h2 class="section-title">Adaptable to Any Environment</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">Whether you are operating high-density greenhouses or broadacre farms, our model calibrates to your specific soil morphology (clay, loam, sand) and crop type.</p>
+            <h2 class="section-title">Essentiel pour les Zones Sensibles</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">Construire des systèmes d'irrigation intelligents offre une résilience accrue face au changement climatique. Les modèles s'adaptent et trouvent du profit dans la calibration des paramètres que l'humain aura du mal à jauger intuitivement avec un arrosoir ou une minuterie.</p>
             <ul style="list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Precision Orchards</li>
-                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Open-field Vegetables</li>
-                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Arid-climate Grains</li>
-                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Smart Greenhouses</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Cultures en zone aride</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Gestion des nappes phréatiques</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Atténuation du climat extrême</li>
+                <li style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary);">✓</span> Rendement soutenu des sols</li>
             </ul>
         </div>
         <div style="flex: 1; min-width: 300px; background: var(--card-bg); padding: 3rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-color);">
-            <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary-dark);">"Since deploying the AgriSmart ML model, our water consumption dropped 34% while crop health increased globally across 50 hectares."</div>
+            <div style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary-dark); line-height: 1.5;">"Depuis l'intégration de nos données météorologiques avec la matrice de croissance agraire, notre API est capable d'annoncer les besoins hydrologiques exacts du terroir de demain, économisant une fortune en ressources naturelles."</div>
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">JD</div>
+                <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">RC</div>
                 <div>
-                    <div style="font-weight: bold;">Jean Dupont</div>
-                    <div style="font-size: 0.9rem; color: var(--text-muted);">Lead Agronomist, EcoFarms</div>
+                    <div style="font-weight: bold;">Recherche et Développement Data</div>
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">Laboratoire AgriSmart Tech</div>
                 </div>
             </div>
         </div>
@@ -161,9 +160,9 @@
 
 <!-- NEW SECTION: Final Call To Action -->
 <section class="section text-center" style="padding: 4rem 2rem; background: var(--primary-dark); color: white; border-radius: var(--radius-lg); margin-top: 6rem; margin-bottom: 2rem;">
-    <h2 style="font-size: 3rem; margin-bottom: 1.5rem; color: white;">Ready to Optimize Your Yield?</h2>
-    <p style="font-size: 1.2rem; color: #a3b8ad; max-width: 600px; margin: 0 auto 3rem auto;">Join hundreds of data-driven agricultural operations saving millions of liters of water annually while boosting crop performance.</p>
-    <a href="{% url 'prediction' %}" class="btn" style="background: white; color: var(--primary-dark); padding: 1.2rem 2.5rem; font-size: 1.1rem; border-radius: var(--radius-pill);">Test the ML Model Now</a>
+    <h2 style="font-size: 3rem; margin-bottom: 1.5rem; color: white;">Prêt à Manipuler la Donnée ?</h2>
+    <p style="font-size: 1.2rem; color: #a3b8ad; max-width: 600px; margin: 0 auto 3rem auto;">Testez dès maintenant notre interface logicielle pour renseigner vos variables et observer nos algorithmes d'IA formuler des recommandations optimales en direct.</p>
+    <a href="{% url 'prediction' %}" class="btn" style="background: white; color: var(--primary-dark); padding: 1.2rem 2.5rem; font-size: 1.1rem; border-radius: var(--radius-pill);">Exécuter l'Inférence</a>
 </section>
 
 {% endblock %}
