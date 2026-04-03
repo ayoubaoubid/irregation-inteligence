@@ -22,8 +22,15 @@
             <form method="POST" action="{% url 'prediction' %}">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label class="form-label">Temperature (°C)</label>
-                    <input type="number" step="0.1" name="temperature" class="form-control" value="{{ inputs.temperature|default:'25.0' }}" required>
+                    <label class="form-label">Soil_Type Le type du sol</label>
+
+                    <!-- ajoute les données de type de sol -->
+                    <select name="soil_type" class="form-control" required>
+                        <option value="">Select Soil Type</option>
+                        {% for type in soil_types %}
+                            <option value="{{ type }}" {% if inputs.soil_type == type %}selected{% endif %}>{{ type }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Humidity (%)</label>
