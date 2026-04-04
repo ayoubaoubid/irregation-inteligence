@@ -36,7 +36,7 @@ DATASETS = {
 'Soil_pH', 'Soil_Moisture', 'Organic_Carbon', 'Electrical_Conductivity',
        'Temperature_C', 'Humidity', 'Rainfall_mm', 'Sunlight_Hours',
        'Wind_Speed_kmh', 'Crop_Growth_Stage_Vegetative','Crop_Growth_Stage_Flowering','Crop_Growth_Stage_Sowing','Crop_Growth_Stage_Harvest',
-         'Irrigation_Type_Drip','Irrigation_Type_Sprinkler','Irrigation_Type_Rainfed','Irrigation_Type_Canal'
+         'Irrigation_Type_Drip','Irrigation_Type_Sprinkler','Irrigation_Type_Rainfed','Irrigation_Type_Canal',
        'Field_Area_hectare', 'Mulching_Used_Yes','Mulching_Used_No', 'Previous_Irrigation_mm',
        'Irrigation_Need',
         }
