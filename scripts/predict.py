@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
-import numpy as np
 import pandas as pd
 import os
 
@@ -14,36 +13,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MODEL_PATH = os.path.join(BASE_DIR, "models", "best_model.pkl")
 SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.pkl")
+FEATURES_PATH = os.path.join(BASE_DIR, "models", "features.pkl")
+CLASSES_PATH = os.path.join(BASE_DIR, "models", "classes.pkl")
 
 model = joblib.load(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH)
+FEATURES = joblib.load(FEATURES_PATH)
+CLASSES = joblib.load(CLASSES_PATH)
 
 # =========================
-# 📊 FEATURES ORDER (IMPORTANT)
-# =========================
-FEATURES = [
-    "Soil_pH",
-    "Soil_Moisture",
-    "Organic_Carbon",
-    "Electrical_Conductivity",
-    "Temperature_C",
-    "Humidity",
-    "Rainfall_mm",
-    "Sunlight_Hours",
-    "Wind_Speed_kmh",
-    "Field_Area_hectare",
-    "Previous_Irrigation_mm",
-    "Crop_Growth_Stage_Harvest",
-    "Crop_Growth_Stage_Sowing",
-    "Crop_Growth_Stage_Vegetative",
-    "Irrigation_Type_Drip",
-    "Irrigation_Type_Rainfed",
-    "Irrigation_Type_Sprinkler",
-    "Mulching_Used_Yes"
-]
-
-# =========================
-# 🧾 INPUT VALIDATION (Pydantic)
+# 🧾 INPUT MODEL
 # =========================
 class InputData(BaseModel):
     Soil_pH: float
@@ -57,13 +36,19 @@ class InputData(BaseModel):
     Wind_Speed_kmh: float
     Field_Area_hectare: float
     Previous_Irrigation_mm: float
+
+    Crop_Growth_Stage_Flowering: float
     Crop_Growth_Stage_Harvest: float
     Crop_Growth_Stage_Sowing: float
     Crop_Growth_Stage_Vegetative: float
-    Irrigation_Type_Drip: float
-    Irrigation_Type_Rainfed: float
-    Irrigation_Type_Sprinkler: float
-    Mulching_Used_Yes: float
+
+    Irrigation_Type_Canal: float = 0
+    Irrigation_Type_Drip: float = 0
+    Irrigation_Type_Rainfed: float = 0
+    Irrigation_Type_Sprinkler: float = 0
+
+    Mulching_Used_No: float = 0
+    Mulching_Used_Yes: float = 0
 
 
 # =========================
@@ -74,29 +59,35 @@ def home():
     return {"status": "API running 🚀"}
 
 # =========================
-# 🔥 PREDICTION ENDPOINT
+# 🔥 PREDICT
 # =========================
 @app.post("/predict")
 def predict(data: InputData):
 
     try:
-        # 1️⃣ convert input to dict
-        input_data = data.model_dump()
+        # 1. dict input
+        input_dict = data.model_dump()
 
-        # 2️⃣ dataframe
-        df = pd.DataFrame([input_data])
+        # 2. dataframe
+        df = pd.DataFrame([input_dict])
 
-        # 3️⃣ ensure correct column order
-        df = df.reindex(columns=FEATURES)
+        # 3. FORCE correct feature order (CRITICAL FIX)
+        df = df.reindex(columns=FEATURES, fill_value=0)
 
-        # 4️⃣ scaling
-        scaled_data = scaler.transform(df)
+        # 4. scaling
+        X_scaled = scaler.transform(df)
 
-        # 5️⃣ prediction
-        prediction = model.predict(scaled_data)
+        # 5. prediction
+        pred = model.predict(X_scaled)[0]
+
+        # 6. optional probability (if supported)
+        prob = None
+        if hasattr(model, "predict_proba"):
+            prob = model.predict_proba(X_scaled).max()
 
         return {
-            "prediction": str(prediction[0]),
+            "prediction": str(pred),
+            "confidence": float(prob) if prob is not None else None,
             "status": "success"
         }
 

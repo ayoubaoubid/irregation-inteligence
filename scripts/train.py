@@ -20,12 +20,10 @@ with open("irregation-inteligence/params.yml", "r") as f:
 # 📂 Load data
 df = pd.read_csv("irregation-inteligence/DataOps/Statics/irrigation_prediction_processed.csv")
 
-X = df.drop("Irrigation_Need", axis=1)
-y = pd.Categorical(
-    df["Irrigation_Need"],
-    categories=["Low", "Medium", "High"],
-    ordered=True
-)
+mapping = {0: "High", 1: "Low", 2: "Medium"}
+y = df["y"].map(mapping)
+
+X = df.drop("y", axis=1)
 
 # ✂️ Split
 X_train, X_test, y_train, y_test = train_test_split(
@@ -65,7 +63,6 @@ for name, model in models.items():
 
         acc = accuracy_score(y_test, preds)
 
-        # 📊 LOG MLFLOW
         mlflow.log_param("model_name", name)
         mlflow.log_params(params["models"][name])
         mlflow.log_metric("accuracy", acc)
@@ -79,14 +76,23 @@ for name, model in models.items():
             best_score = acc
             best_name = name
 
-# 🏆 Save best model
+# =========================
+# 🏆 SAVE BEST MODEL
+# =========================
 joblib.dump(best_model, "irregation-inteligence/models/best_model.pkl")
 joblib.dump(scaler, "irregation-inteligence/models/scaler.pkl")
+joblib.dump(X.columns.tolist(), "irregation-inteligence/models/features.pkl")
+joblib.dump(best_model.classes_, "irregation-inteligence/models/classes.pkl")
 
+# =========================
+# 🧠 FINAL LOG
+# =========================
 with mlflow.start_run(run_name="BEST_MODEL"):
     mlflow.log_param("best_model", best_name)
     mlflow.log_metric("best_accuracy", best_score)
     mlflow.sklearn.log_model(best_model, "best_model")
 
-print("Training finished!")
-print(model.classes_)
+print("Training finished ")
+print("Best model:", best_name)
+print("Best accuracy:", best_score)
+print("Classes:", best_model.classes_)

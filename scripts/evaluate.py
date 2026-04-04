@@ -5,9 +5,12 @@ from sklearn.metrics import accuracy_score
 
 df = pd.read_csv("irregation-inteligence/DataOps/Statics/irrigation_prediction_processed.csv")
 
-X = df.drop("Irrigation_Need", axis=1)
-y = df["Irrigation_Need"]
+mapping = {0: "High", 1: "Low", 2: "Medium"}
+y = df["y"].map(mapping)
 
+X = df.drop("y", axis=1)
+
+print(df["y"].value_counts())
 model = joblib.load("irregation-inteligence/models/best_model.pkl")
 
 preds = model.predict(X)
