@@ -5,6 +5,11 @@ import random
 def ml_model(request):
     return render(request, 'prediction/ml_model.html')
 
+import pandas as pd
+import numpy as np
+
+
+
 def prediction(request):
     if request.method == 'POST':
         # Dummy prediction logic

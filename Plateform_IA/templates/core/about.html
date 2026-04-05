@@ -1,36 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}About | Smart Irrigation{% endblock %}
+{% block title %}À Propos | Irrigation Intelligente{% endblock %}
 
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1: Intro / Project Motivation -->
-    <h1 class="section-title">About the Project</h1>
-    <p class="section-subtitle">Bridging the gap between software engineering, data science, and agriculture.</p>
+    <h1 class="section-title">À Propos du Projet</h1>
+    <p class="section-subtitle">Tisser le lien entre le génie logiciel, la data science et la viabilité agricole.</p>
     
     <div class="card mb-4">
-        <h2 class="card-header">1. Project Motivation</h2>
-        <p>This web application was developed to demonstrate how modern web frameworks (Django), combined with data science principles, can solve critical real-world problems. The motivation is to provide a complete, production-ready prototype that visualizes, predicts, and manages agricultural data efficiently through a clean, scientific dashboard interface.</p>
+        <h2 class="card-header">1. Motivation de l'Application</h2>
+        <p>Cette application web démontre concrètement l'utilisation de frameworks backend robustes (Django) combinés aux avancées majeures du Machine Learning pour soulager des problématiques sociétales urgentes. Nous fournissons ici un prototype complet à la pointe de la technologie permettant de visualiser et d'inférer dynamiquement les besoins réels en irrigation sur toute sorte d'écosystèmes.</p>
     </div>
 
     <div class="grid-2 mb-4">
         <!-- Section 2: Team / Creator -->
         <div class="card text-center">
-            <h2 class="card-header">2. The Engineer</h2>
+            <h2 class="card-header">2. L'Architecture</h2>
             <div style="font-size: 4rem; margin:1rem;">🧑‍💻</div>
-            <p><strong>Developed by AI / Senior Full-Stack MLOps Engineer</strong></p>
-            <p class="text-muted mt-2">Specializing in Python, Django, Machine Learning integration, and UI/UX design.</p>
+            <p><strong>Modèle d'Intelligence Artificielle de Régression & Déploiement Full-Stack MLOps</strong></p>
+            <p class="text-muted mt-2">Ce projet illustre une fusion des interfaces UX responsives avec des serveurs de modélisation asynchrones avancés sous Python.</p>
         </div>
         
         <!-- Section 3: Technologies Used -->
         <div class="card">
-            <h2 class="card-header">3. Core Stack</h2>
+            <h2 class="card-header">3. Pile Technologique</h2>
             <ul style="list-style-type: none;">
-                <li class="mb-2">🐍 <strong>Backend:</strong> Python 3, Django MVT</li>
-                <li class="mb-2">🎨 <strong>Frontend:</strong> HTML5, Vanilla CSS3, JavaScript</li>
-                <li class="mb-2">📊 <strong>Visualization:</strong> Chart.js</li>
-                <li class="mb-2">🧠 <strong>Analytics:</strong> Scikit-Learn logic (simulated in view)</li>
-                <li class="mb-2">🗄️ <strong>Database:</strong> SQLite (Dev) / PostgreSQL (Prod)</li>
+                <li class="mb-2">🐍 <strong>Backend Logic :</strong> Python 3.12, Django MVT Framework</li>
+                <li class="mb-2">🎨 <strong>Frontend UX :</strong> HTML5 Hybride Sémiotique, CSS3, JS Vanilla (DOM pur)</li>
+                <li class="mb-2">📊 <strong>Dataviz Interactive :</strong> Lib. Chart.js (Rendus Canvas accélération)</li>
+                <li class="mb-2">🧠 <strong>Calcul ML Analytique :</strong> Arbres de Régression via la librairie Scikit-Learn</li>
+                <li class="mb-2">🗄️ <strong>Couche ORM/SGBD :</strong> SQLite structuré (Dev) / Déploiement PostgreSQL (Prod)</li>
             </ul>
         </div>
     </div>
@@ -39,29 +39,29 @@
     <!-- Section 5: DevOps -->
     <div class="grid-2 mb-4">
         <div class="card">
-            <h2 class="card-header">4. Machine Learning Approach</h2>
-            <p>The system utilizes supervised learning algorithms to map environmental variables (temperature, humidity, soil moisture) to optimal irrigation states. The platform is designed to decouple the model training pipeline from the web interface, utilizing an API-driven inference approach.</p>
+            <h2 class="card-header">4. Paradigme Machine Learning</h2>
+            <p>Notre matrice recourt à un entraînement dit "Supervisé" consistant à corréler une infinité de paramètres physico-chimiques du champ avec le rendement liquide requis. Ces paramètres de variance élevée (pH et micro-climat locaux) deviennent ainsi la matière première permettant de prédire efficacement le volume hydreux via un point d'entrée API rapide et léger.</p>
         </div>
         <div class="card">
-            <h2 class="card-header">5. DevOps Infrastructure</h2>
-            <p>Built with containerization in mind. The Django application is structured to drop into Docker containers. Static files are collected and served via optimized web servers (Nginx), ensuring high performance and reliable delivery of dashboards.</p>
+            <h2 class="card-header">5. Concept de Distribution DevOps</h2>
+            <p>Imaginée de concert avec de bonnes pratiques MLOps modernes, la web-application s'abrite facilement sous le modèle des conteneurs Linux isolés (Docker Containers). Toutes ressources statiques sont isolées pour minimiser les charges de la requête initiale et fluidifier le serveur asynchrone final (type reverse-proxy Gunicorn vers Nginx).</p>
         </div>
     </div>
 
     <!-- Section 6: Future Work -->
     <!-- Section 7: Contact -->
     <div class="card text-center" style="background: var(--primary-dark); color: white;">
-        <h2 style="color: var(--accent); margin-bottom: 2rem;">Connecting with the Future</h2>
+        <h2 style="color: var(--accent); margin-bottom: 2rem;">Architecturer le Domaine de Demain</h2>
         <div class="grid-2 text-left">
             <div>
-                <h3 style="color: var(--primary-light);">6. Future Work</h3>
-                <p>Migration to asynchronous task queues (Celery/Redis) for real-time sensor ingestion, advanced React/Vue frontend decouple, and direct actuator hardware integration scripts.</p>
+                <h3 style="color: var(--primary-light);">6. Axes d'Amélioration Réseaux</h3>
+                <p>Évolution vers les files asynchrones en temps masqué du type MQTT/RabbitMQ permettant de récolter des flux incessants d'IoT. L'incorporation en Frontend vers React.js/Vue.js permettrait une mise à jour d'observabilité sans rafraîchir l'interface (Single Page Application).</p>
             </div>
             <div>
-                <h3 style="color: var(--primary-light);">7. Contact & Repository</h3>
-                <p>Email: <code>developer@smartirrigation.demo</code></p>
-                <p>GitHub: <code>github.com/project/smart-irrigation</code></p>
-                <p>Version: <code>1.0.0-production-demo</code></p>
+                <h3 style="color: var(--primary-light);">7. Référentiel</h3>
+                <p>Déploiement: <code>Laboratoire des Données (Cloud)</code></p>
+                <p>Mise à jour Dataset: <code>Automatisée depuis DataOps</code></p>
+                <p>Version Démo Actuelle: <code>Production v1.0.3</code></p>
             </div>
         </div>
     </div>

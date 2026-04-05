@@ -1,41 +1,41 @@
 {% extends "base.html" %}
 
-{% block title %}Agricultural Problem | Smart Irrigation{% endblock %}
+{% block title %}Crise Agricole | Irrigation Intelligente{% endblock %}
 
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1: Intro -->
-    <h1 class="section-title">The Agricultural Water Crisis</h1>
-    <p class="section-subtitle">Understanding the delicate balance of soil moisture and its global implications.</p>
+    <h1 class="section-title">La Gestion de la Sécheresse et des Sols</h1>
+    <p class="section-subtitle">Mesurer le déséquilibre du cycle hydrologique global pour l'optimiser au champ.</p>
 
     <!-- Section 2: Inefficiency -->
     <div class="card mb-4" style="border-left: 5px solid var(--danger);">
-        <h2 class="card-header">1. Irrigation Inefficiency</h2>
-        <p>Agriculture accounts for approximately 70% of global freshwater usage. Alarmingly, up to 40% of this water is lost due to inefficient irrigation systems, evaporation, surface runoff, or poor land management.</p>
+        <h2 class="card-header">1. Le Coût de l'Irrigation Antique</h2>
+        <p>L'espace agricole requiert souvent jusqu'à 70% de la matrice hydrique douce d'un bassin versant. Hélas, quasiment la lisière des 40% de cette eau s'envole en évapotranspiration inutile ou en percolation des nappes à cause d'une planification d'aspersion défaillante (sans feedback Data).</p>
     </div>
 
     <!-- Section 3: Soil Moisture Imbalance -->
     <div class="grid-2 mb-4">
         <div class="card">
-            <h2 class="card-header">2. The Soil Moisture Dilemma</h2>
-            <p>Soil acts as a sponge. If it's too dry, plants cannot extract nutrients and experience wilting. If it's over-saturated, the roots are deprived of oxygen, leading to root rot and fungal diseases.</p>
+            <h2 class="card-header">2. L'Équilibre du Substrat Terrien</h2>
+            <p>Une terre asséchée ferme irréversiblement ses pores organiques, tuant l'osmose racinaire en quelques jours. Cependant, sursaturer la terre s'avère pire, provoquant le blocage respiratoire des radicelles, l'asphyxie globale puis l'invasion fatale des bio-parasites (champignons, pourritures).</p>
         </div>
         
         <!-- Section 4: Climate Impact -->
         <div class="card" style="background: var(--bg-color);">
-            <h2 class="card-header text-warning">3. Climate Change Impact</h2>
-            <p>Unpredictable weather patterns, prolonged droughts, and sudden intense rainfall make historical farming schedules obsolete. Dynamic responsiveness is now mandatory.</p>
+            <h2 class="card-header text-warning">3. Le Changement Climatique : Fin de l'Empirisme</h2>
+            <p>Les agriculteurs ne peuvent plus deviner de tête les volumes d'eaux dictés par la météo. L'impact écrasant d'événements extrêmes soudains rend les calendriers manuels d'antan obsolètes. Une intelligence logicielle constante devient donc irréfutable pour combler cet écart adaptatif.</p>
         </div>
     </div>
 
     <!-- Section 5: Traditional irrigation limits -->
     <div class="card mb-4">
-        <h2 class="card-header">4. Limitations of Traditional Irrigation</h2>
+        <h2 class="card-header">4. L'Incroyable Limite des Actions Programmées Simples</h2>
         <div style="display: flex; gap: 2rem;">
             <ul style="flex: 1; list-style-position: inside;">
-                <li class="mb-1"><strong>Timer-based systems:</strong> Irrigate regardless of actual weather or soil conditions.</li>
-                <li class="mb-1"><strong>Visual inspection:</strong> Rely on surface appearance, which doesn't reflect sub-soil moisture.</li>
-                <li class="mb-1"><strong>Uniform application:</strong> Treat all soil zones identically despite varying terrain and soil composition.</li>
+                <li class="mb-1"><strong>Chronologie d'Horloge (Timers) :</strong> Inonde les cultures lors de la temporisation absolue quoiqu'il pleuve.</li>
+                <li class="mb-1"><strong>Inspection à la Volée :</strong> La croute séchée qui rompt ne donne strictement aucun indice du taux volumétrique aqueux logé à -20cm sous racine.</li>
+                <li class="mb-1"><strong>Pluviométrie Statique Absolue :</strong> Oublie radicalement de fractionner les apports en volumes mesurés par parcelles ensoleillées et parcelles ombrées.</li>
             </ul>
         </div>
     </div>
@@ -44,21 +44,21 @@
     <!-- Section 7: Risks of Under -->
     <div class="grid-2 mb-4">
         <div class="card">
-            <h2 class="card-header text-danger">5. Risks of Over-Irrigation</h2>
+            <h2 class="card-header text-danger">5. Désastres d'une Sur-Irrigation</h2>
             <ul>
-                <li>Nutrient leaching (fertilizers wash below root zone)</li>
-                <li>High pumping costs</li>
-                <li>Waterlogging and plant asphyxiation</li>
-                <li>Pesticide runoff polluting local water supplies</li>
+                <li>Entraînement des intrants vitaux (engrais lessivés) loin sous terre</li>
+                <li>Hémorragie financière en surcoût électricité & pompage massif</li>
+                <li>Mort de la porosité aérienne et anoxie structurelle de la rhizosphère</li>
+                <li>Exfiltration toxique des résidus de pesticides vers les eaux buvables de nappe</li>
             </ul>
         </div>
         <div class="card">
-            <h2 class="card-header text-warning">6. Risks of Under-Irrigation</h2>
+            <h2 class="card-header text-warning">6. Conséquences de la Sous-Irrigation</h2>
             <ul>
-                <li>Stunted plant growth</li>
-                <li>Irreversible yield reduction</li>
-                <li>Increased susceptibility to pests</li>
-                <li>Poor crop quality and market value</li>
+                <li>Croissance définitivement retardée / Morphogenèse anormale de la tige</li>
+                <li>Effondrement chiffrable et sans précédent du poids global organique ou du fruit</li>
+                <li>Brèches immunitaires exposant la culture à l'avidité des insectes & moisissures</li>
+                <li>Flétrissement partiel conduisant à une non-standardisation sur le circuit économique</li>
             </ul>
         </div>
     </div>
@@ -66,10 +66,10 @@
     <!-- Section 8: Precision Ag Concept -->
     <!-- Section 9: Transition to Smart Irrigation -->
     <div class="card" style="background: var(--primary-dark); color: white;">
-        <h2 style="color: var(--accent); margin-bottom: 1rem;">7. The Shift to Precision Agriculture</h2>
-        <p class="mb-3">Precision agriculture involves observing, measuring, and responding to inter and intra-field variability in crops. Smart irrigation is a core pillar of this paradigm.</p>
-        <p><strong>Transitioning to Smart Systems:</strong> By adopting sensor networks and machine learning, modern farming transforms from a reactive estimating game into a proactive, optimized science. This platform demonstrates exactly how this transition is achieved.</p>
-        <a href="{% url 'dataset' %}" class="btn btn-primary mt-4">Discover the Data We Use</a>
+        <h2 style="color: var(--accent); margin-bottom: 1rem;">7. Capter l'Architecture Data-Driven en Agriculture</h2>
+        <p class="mb-3">La dénommée « Ingénierie de Précision » intègre le cycle global de gestion des variables. Ses sondes transmettent de l'information numérisée massivement convertie au profit de décisions statistiques éclairées pour réguler le millimètre exact d'eau.</p>
+        <p><strong>Devenir un Expert en Smart Agriculture :</strong> Face à cet immense volume d'attributs météorologiques (Capteurs IoT, Historique DataOps, Climatologie Satellitaire), confier l'analyse algorithmique aux couches Machine Learning est l'unique stratégie tenable pour préserver un cycle éco-biologique de l'eau pure. Ce projet valide ce postulat scientifique.</p>
+        <a href="{% url 'dataset' %}" class="btn btn-primary mt-4">Inspecter Rétrospectivement Le Dataset</a>
     </div>
 
 </section>

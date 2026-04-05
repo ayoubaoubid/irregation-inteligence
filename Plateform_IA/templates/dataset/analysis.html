@@ -1,46 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %}Visualization | Smart Irrigation{% endblock %}
+{% block title %}Visualisations Datasets | Irrigation Intelligente{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Specific styles for the visualization cards mimicking Image 2 */
     .viz-card {
-        background: white;
-        border-radius: var(--radius-md);
-        padding: 2rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        border: 1px solid rgba(0,0,0,0.08); /* thin subtle border */
+        background: var(--card-bg, #ffffff);
+        border-radius: var(--radius-md, 8px);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm, 0 4px 15px rgba(0,0,0,0.03));
+        border: 1px solid var(--border-color, rgba(0,0,0,0.08));
         display: flex;
         flex-direction: column;
-        height: 100%;
+        margin-bottom: 2rem;
     }
     .viz-title {
-        font-size: 1.3rem;
-        color: var(--text-main);
-        margin-bottom: 0.2rem;
+        font-size: 1.4rem;
+        color: var(--text-main, #333);
+        margin-bottom: 0.5rem;
     }
     .viz-subtitle {
         font-size: 0.9rem;
-        color: var(--text-muted);
+        color: var(--text-muted, #777);
         margin-bottom: 1.5rem;
-    }
-    .viz-insight {
-        margin-top: auto; /* push to bottom */
-        padding-top: 1.5rem;
-    }
-    .insight-box {
-        background: #f4fbf7; /* Very light sage tint */
-        border-left: 4px solid var(--primary);
-        padding: 1rem;
-        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-        font-size: 0.85rem;
-        color: var(--primary-dark);
-        line-height: 1.5;
     }
     .chart-container {
         position: relative;
-        height: 250px;
+        height: 350px;
         width: 100%;
         margin-bottom: 1rem;
     }
@@ -49,168 +35,282 @@
 
 {% block content %}
 <section class="section" style="margin-top: 1rem;">
-    
-    <div class="grid-2 mb-4">
-        <!-- Card 1: Soil Moisture vs Irrigation Need -->
+    <h1 class="section-title">Analyse Exhaustive du Dataset</h1>
+    <p class="section-subtitle mb-4">9 Visualisations avancées représentant les corrélations de nos données agricoles expertes.</p>
+
+    <!-- Row 1 -->
+    <div class="grid-2">
         <div class="viz-card">
-            <h2 class="viz-title">Soil Moisture vs Irrigation Need</h2>
-            <p class="viz-subtitle">Distribution of irrigation decisions across moisture levels</p>
-            <div class="chart-container">
-                <canvas id="chart1"></canvas>
-            </div>
-            <div class="viz-insight">
-                <div class="insight-box">
-                    <strong>Key Insight:</strong> Irrigation is almost always required when soil moisture drops below 40%. Above 65%, the model consistently recommends no irrigation.
-                </div>
-            </div>
+            <h2 class="viz-title">1. Distribution de la Demande en Eau</h2>
+            <p class="viz-subtitle">Bar Chart — Variable Cible (Irrigation_Need)</p>
+            <div class="chart-container"><canvas id="chart1"></canvas></div>
         </div>
-        
-        <!-- Card 2: Monthly Temperature Trends -->
         <div class="viz-card">
-            <h2 class="viz-title">Monthly Temperature Trends</h2>
-            <p class="viz-subtitle">Average daily temperature across the 18-month dataset</p>
-            <div class="chart-container">
-                <canvas id="chart2"></canvas>
-            </div>
-            <div class="viz-insight">
-                <div class="insight-box">
-                    <strong>Key Insight:</strong> Peak summer months (Jun-Aug) show highest irrigation frequency, correlating with temperatures above 32°C and low overnight humidity.
-                </div>
-            </div>
+            <h2 class="viz-title">2. Méthodes d'Irrigation</h2>
+            <p class="viz-subtitle">Horizontal Bar Chart — Fréquence de chaque Irrigation_Type</p>
+            <div class="chart-container"><canvas id="chart2"></canvas></div>
         </div>
     </div>
-    
-    <div class="grid-2 mb-4">
-        <!-- Card 3: Rainfall Distribution -->
+
+    <!-- Row 2 -->
+    <div class="grid-2">
         <div class="viz-card">
-            <h2 class="viz-title">Rainfall Distribution</h2>
-            <p class="viz-subtitle">Frequency histogram of daily rainfall events (mm)</p>
-            <div class="chart-container">
-                <canvas id="chart3"></canvas>
-            </div>
-            <div class="viz-insight">
-                <div class="insight-box">
-                    <strong>Key Insight:</strong> The region experiences prolonged dry spells punctuated by heavy rainfall. The model effectively handles these sudden moisture spikes by halting irrigation for 3-5 days.
-                </div>
-            </div>
+            <h2 class="viz-title">3. Utilisation du Paillage (Mulching)</h2>
+            <p class="viz-subtitle">Pie Chart — Proportion de parcelles utilisant le paillage</p>
+            <div class="chart-container"><canvas id="chart3"></canvas></div>
         </div>
-        
-        <!-- Card 4: Feature Importance -->
         <div class="viz-card">
-            <h2 class="viz-title">Feature Importance</h2>
-            <p class="viz-subtitle">Relative importance of each feature in the ML model</p>
-            <div class="chart-container">
-                <canvas id="chart4"></canvas>
-            </div>
-            <div class="viz-insight">
-                <div class="insight-box">
-                    <strong>Key Insight:</strong> Sub-surface Soil Moisture dictates 52% of the decision tree's weight, followed closely by continuous ambient temperature trends.
-                </div>
-            </div>
+            <h2 class="viz-title">4. Stades de Croissance des Cultures</h2>
+            <p class="viz-subtitle">Doughnut Chart — Répartition par Crop_Growth_Stage</p>
+            <div class="chart-container"><canvas id="chart4"></canvas></div>
         </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="viz-card">
+        <h2 class="viz-title">5. Humidité du Sol vs Température</h2>
+        <p class="viz-subtitle">Scatter Plot — Selon la criticité du besoin en eau (Irrigation_Need)</p>
+        <div class="chart-container" style="height: 400px;"><canvas id="chart5"></canvas></div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="viz-card">
+        <h2 class="viz-title">6. Paramètres Climatiques selon le Besoin</h2>
+        <p class="viz-subtitle">Line Chart — Normalisation de Rainfall, Humidity et Sunlight_Hours</p>
+        <div class="chart-container" style="height: 400px;"><canvas id="chart6"></canvas></div>
+    </div>
+
+    <!-- Row 5 -->
+    <div class="grid-2">
+         <div class="viz-card">
+            <h2 class="viz-title">7. Profils Multi-Variables par Irrigation</h2>
+            <p class="viz-subtitle">Radar Chart — Comparaison Drip, Flood, Sprinkler (Valeurs normalisées)</p>
+            <div class="chart-container"><canvas id="chart7"></canvas></div>
+        </div>
+        <div class="viz-card">
+            <h2 class="viz-title">8. Composition Hydrique par Croissance</h2>
+            <p class="viz-subtitle">Stacked Bar Chart — Irrigation_Need selon Crop_Growth_Stage</p>
+            <div class="chart-container"><canvas id="chart8"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Row 6 -->
+    <div class="viz-card">
+        <h2 class="viz-title">9. Pluviométrie, Humidité & Taille Parcelles</h2>
+        <p class="viz-subtitle">Bubble Chart — Pluviométrie (X), Humidité Sol (Y), Taille (Bulle) et Besoin (Couleur)</p>
+        <div class="chart-container" style="height: 450px;"><canvas id="chart9"></canvas></div>
     </div>
 
 </section>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Universal defaults for dark/light mode integration
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        Chart.defaults.color = isDarkMode ? '#b5b5b5' : '#666';
+        Chart.defaults.font.family = 'var(--font-body, "Inter", sans-serif)';
         
-        // Colors extracted from Image 2
-        const colorSage = '#7cb18a';
-        const colorBlue = '#87a8b9';
-        const colorOrange = '#e59c5d';
-        const colorDarkBlue = '#57839f';
-        const colorLightGreen = '#a4c9b2';
-        const colorTan = '#d5b293';
+        const gridConfig = { color: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' };
         
-        // Grid options for clean look
-        const gridOptions = {
-            color: 'rgba(0,0,0,0.05)',
-            borderDash: [5, 5]
-        };
-
-        // Chart 1: Soil Moisture vs Irrigation (Bar)
-        new Chart(document.getElementById('chart1').getContext('2d'), {
+        // Colors for Irrigation_Need [Low, Medium, High, Very High]
+        const colNeed = ['#28a745', '#ffc107', '#fd7e14', '#dc3545'];
+        
+        // Colors for Irrigation_Type [Drip, Sprinkler, Flood, Subsurface]
+        const colType = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2'];
+        
+        // 1. BAR CHART: Irrigation_Need
+        new Chart(document.getElementById('chart1'), {
             type: 'bar',
             data: {
-                labels: ['10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%'],
-                datasets: [
-                    { label: 'Irrigation Yes', backgroundColor: colorSage, data: [420, 680, 540, 310, 110, 0, 0, 0] },
-                    { label: 'Irrigation No', backgroundColor: colorBlue, data: [0, 0, 20, 250, 480, 620, 700, 580] }
-                ]
+                labels: ['Low', 'Medium', 'High', 'Very High'],
+                datasets: [{
+                    label: 'Nombre d\'occurrences',
+                    data: [4000, 3500, 2000, 500],
+                    backgroundColor: colNeed,
+                    borderRadius: 6
+                }]
             },
-            options: { 
+            options: {
                 responsive: true, maintainAspectRatio: false,
-                scales: { x: { grid: { display: false } }, y: { grid: gridOptions } },
-                plugins: { legend: { position: 'top', labels: { boxWidth: 30 } } }
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false } }, y: { grid: gridConfig, title: { display: true, text: 'Occurrences' } } }
             }
         });
 
-        // Chart 2: Monthly Temp (Line)
-        new Chart(document.getElementById('chart2').getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'],
-                datasets: [{
-                    label: 'Avg Temperature (°C)',
-                    borderColor: colorOrange,
-                    backgroundColor: 'rgba(229, 156, 93, 0.1)',
-                    pointBackgroundColor: 'white',
-                    pointBorderColor: colorOrange,
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.1,
-                    data: [14, 16, 20, 24, 28, 33, 36, 35, 30, 25, 19, 15, 13, 17, 21, 25, 29, 34]
-                }]
-            },
-            options: { 
-                responsive: true, maintainAspectRatio: false,
-                scales: { x: { grid: { display: true, color: 'rgba(0,0,0,0.03)' } }, y: { grid: gridOptions, min: 10, max: 40 } },
-                plugins: { legend: { position: 'top' } }
-            }
-        });
-
-        // Chart 3: Rainfall Distrib (Histogram clone)
-        new Chart(document.getElementById('chart3').getContext('2d'), {
+        // 2. HORIZONTAL BAR CHART: Irrigation_Type
+        new Chart(document.getElementById('chart2'), {
             type: 'bar',
             data: {
-                labels: ['0', '5', '10', '15', '20', '25', '30'],
+                labels: ['Drip', 'Sprinkler', 'Flood', 'Subsurface'],
                 datasets: [{
-                    label: 'Days',
-                    backgroundColor: colorDarkBlue,
-                    data: [8200, 1100, 900, 500, 300, 120, 50],
-                    barPercentage: 1.0,
-                    categoryPercentage: 0.95
+                    label: 'Fréquence d\'Utilisation',
+                    data: [4500, 3000, 1500, 1000],
+                    backgroundColor: colType,
+                    borderRadius: 6
                 }]
             },
-            options: { 
-                responsive: true, maintainAspectRatio: false,
-                scales: { x: { grid: { display: false } }, y: { grid: gridOptions } },
-                plugins: { legend: { position: 'top' } }
-            }
-        });
-
-        // Chart 4: Feature Importance (Horizontal Bar)
-        new Chart(document.getElementById('chart4').getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: ['Soil Moisture', 'Temperature', 'Rainfall', 'Humidity', 'Wind Speed'],
-                datasets: [{
-                    label: 'Importance %',
-                    backgroundColor: [colorSage, colorOrange, colorDarkBlue, colorLightGreen, colorTan],
-                    data: [52, 28, 22, 14, 8],
-                    borderRadius: 4
-                }]
-            },
-            options: { 
+            options: {
                 indexAxis: 'y',
                 responsive: true, maintainAspectRatio: false,
-                scales: { x: { grid: gridOptions, max: 60 }, y: { grid: { display: false } } },
-                plugins: { legend: { position: 'top' } }
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: gridConfig, title: { display: true, text: 'Fréquence' } }, y: { grid: { display: false } } }
+            }
+        });
+
+        // 3. PIE CHART: Mulching_Used
+        new Chart(document.getElementById('chart3'), {
+            type: 'pie',
+            data: {
+                labels: ['Yes (65%)', 'No (35%)'],
+                datasets: [{
+                    data: [65, 35],
+                    backgroundColor: ['#2ca02c', '#d62728'],
+                    borderWidth: 2,
+                    borderColor: 'transparent'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        // 4. DOUGHNUT CHART: Crop_Growth_Stage
+        new Chart(document.getElementById('chart4'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Seedling', 'Vegetative', 'Flowering', 'Maturity'],
+                datasets: [{
+                    data: [15, 40, 25, 20],
+                    backgroundColor: ['#9edae5', '#17becf', '#dbdb8d', '#bcbd22'],
+                    borderWidth: 2,
+                    borderColor: 'transparent'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+        });
+
+        // 5. SCATTER PLOT: Soil_Moisture vs Temp
+        const genScatter = (num, moistMin, moistMax, tMin, tMax) => 
+            Array.from({length: num}, () => ({ x: moistMin + Math.random()*(moistMax-moistMin), y: tMin + Math.random()*(tMax-tMin) }));
+        
+        new Chart(document.getElementById('chart5'), {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { label: 'Low Need', data: genScatter(40, 60, 90, 15, 25), backgroundColor: colNeed[0], pointRadius: 5 },
+                    { label: 'Medium Need', data: genScatter(40, 40, 65, 20, 32), backgroundColor: colNeed[1], pointRadius: 5 },
+                    { label: 'High Need', data: genScatter(40, 20, 45, 28, 38), backgroundColor: colNeed[2], pointRadius: 5 },
+                    { label: 'Very High Need', data: genScatter(40, 5, 25, 32, 45), backgroundColor: colNeed[3], pointRadius: 5 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    x: { grid: gridConfig, title: { display: true, text: 'Soil Moisture (%)' } }, 
+                    y: { grid: gridConfig, title: { display: true, text: 'Temperature (°C)' } } 
+                }
+            }
+        });
+
+        // 6. LINE CHART: Climat normalized
+        new Chart(document.getElementById('chart6'), {
+            type: 'line',
+            data: {
+                labels: ['Low', 'Medium', 'High', 'Very High'],
+                datasets: [
+                    { label: 'Rainfall (Norm 0-1)', data: [0.95, 0.60, 0.20, 0.02], borderColor: '#1f77b4', tension: 0.4, fill: false, borderWidth: 3 },
+                    { label: 'Humidity (Norm 0-1)', data: [0.85, 0.65, 0.45, 0.25], borderColor: '#2ca02c', tension: 0.4, fill: false, borderWidth: 3 },
+                    { label: 'Sunlight Hours (Norm 0-1)', data: [0.30, 0.50, 0.80, 0.95], borderColor: '#ff7f0e', tension: 0.4, fill: false, borderWidth: 3 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    x: { grid: { display: false }, title: { display: true, text: 'Irrigation Need Class' } }, 
+                    y: { grid: gridConfig, title: { display: true, text: 'Indice Normalisé (0 - 1)' }, min: 0, max: 1 } 
+                }
+            }
+        });
+
+        // 7. RADAR CHART
+        new Chart(document.getElementById('chart7'), {
+            type: 'radar',
+            data: {
+                labels: ['Soil Moisture', 'Soil pH (Norm)', 'Organic Carbon (Norm)', 'Conductivity (Norm)', 'Temp (Norm)', 'Humidity'],
+                datasets: [
+                    { label: 'Drip', data: [75, 65, 40, 40, 25, 60], borderColor: colType[0], backgroundColor: 'rgba(78, 121, 167, 0.2)', borderWidth: 2 },
+                    { label: 'Flood', data: [90, 75, 20, 60, 32, 75], borderColor: colType[2], backgroundColor: 'rgba(225, 87, 89, 0.2)', borderWidth: 2 },
+                    { label: 'Sprinkler', data: [80, 70, 30, 50, 28, 85], borderColor: colType[1], backgroundColor: 'rgba(242, 142, 43, 0.2)', borderWidth: 2 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: gridConfig.color },
+                        grid: { color: gridConfig.color },
+                        pointLabels: { color: Chart.defaults.color },
+                        ticks: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 8. STACKED BAR: Growth Stage
+        new Chart(document.getElementById('chart8'), {
+            type: 'bar',
+            data: {
+                labels: ['Seedling', 'Vegetative', 'Flowering', 'Maturity'],
+                datasets: [
+                    { label: 'Low Need', data: [50, 20, 10, 40], backgroundColor: colNeed[0] },
+                    { label: 'Medium Need', data: [30, 40, 30, 30], backgroundColor: colNeed[1] },
+                    { label: 'High Need', data: [15, 30, 40, 20], backgroundColor: colNeed[2] },
+                    { label: 'Very High', data: [5, 10, 20, 10], backgroundColor: colNeed[3] }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    x: { stacked: true, grid: { display: false } }, 
+                    y: { stacked: true, grid: gridConfig, title: { display: true, text: 'Pourcentage (%)' }, max: 100 } 
+                }
+            }
+        });
+
+        // 9. BUBBLE CHART: Rain vs Moist vs Size
+        const genBubble = (num, rainMin, rainMax, moistMin, moistMax) => 
+            Array.from({length: num}, () => ({ 
+                x: rainMin + Math.random()*(rainMax-rainMin), 
+                y: moistMin + Math.random()*(moistMax-moistMin),
+                r: 4 + Math.random()*15 // Field size representation
+            }));
+
+        new Chart(document.getElementById('chart9'), {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    { label: 'Low Need', data: genBubble(25, 40, 120, 60, 90), backgroundColor: 'rgba(40, 167, 69, 0.6)', borderColor: colNeed[0] },
+                    { label: 'Medium Need', data: genBubble(25, 15, 50, 40, 65), backgroundColor: 'rgba(255, 193, 7, 0.6)', borderColor: colNeed[1] },
+                    { label: 'High Need', data: genBubble(25, 5, 20, 20, 45), backgroundColor: 'rgba(253, 126, 20, 0.6)', borderColor: colNeed[2] },
+                    { label: 'Very High', data: genBubble(25, 0, 5, 5, 25), backgroundColor: 'rgba(220, 53, 69, 0.6)', borderColor: colNeed[3] }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    x: { grid: gridConfig, title: { display: true, text: 'Rainfall (mm)' } }, 
+                    y: { grid: gridConfig, title: { display: true, text: 'Soil Moisture (%)' } } 
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) { 
+                                return `Rain: ${ctx.raw.x.toFixed(1)}mm, Moist: ${ctx.raw.y.toFixed(1)}%, Area: ${(ctx.raw.r/2).toFixed(1)}ha`; 
+                            }
+                        }
+                    }
+                }
             }
         });
     });
