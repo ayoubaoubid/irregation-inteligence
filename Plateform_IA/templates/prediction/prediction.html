@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Live Prediction | Smart Irrigation{% endblock %}
+{% block title %}Prédiction ML | Irrigation Intelligente{% endblock %}
 
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1: Intro -->
-    <h1 class="section-title">Prediction System API</h1>
-    <p class="section-subtitle">Input real-time variables to test the inference engine.</p>
+    <h1 class="section-title">Modèle de Prédiction API</h1>
+    <p class="section-subtitle">Ajustez les variables temps-réel de vos parcelles pour extrapoler les besoins en eau.</p>
     
     <div class="grid-2">
         <!-- Section 2: Input Form -->
@@ -19,30 +19,147 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{% url 'prediction' %}">
+            <style>
+                .wizard-step { display: none; }
+                .wizard-step.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                .step-indicator { display: flex; justify-content: space-between; margin-bottom: 2rem; background: var(--bg-color); border-radius: var(--radius-sm); padding: 0.5rem; }
+                .step-dot { flex: 1; text-align: center; padding: 0.8rem; border-radius: var(--radius-sm); color: #aaa; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
+                .step-dot:hover { background: rgba(0,0,0,0.02); }
+                .step-dot.active { background: var(--primary-light); color: var(--primary-dark); box-shadow: var(--shadow-sm); }
+                .step-dot.completed { color: var(--success); }
+                .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+                .form-group-full { grid-column: span 2; }
+                .btn-group { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; }
+            </style>
+
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot-1" onclick="goToStep(1)">1. Sol 🌍</div>
+                <div class="step-dot" id="dot-2" onclick="goToStep(2)">2. Météo 🌤️</div>
+                <div class="step-dot" id="dot-3" onclick="goToStep(3)">3. Culture 🌱</div>
+            </div>
+
+            <form id="predictionForm" method="POST" action="{% url 'prediction' %}">
                 {% csrf_token %}
-                <div class="form-group">
-                    <label class="form-label">Temperature (°C)</label>
-                    <input type="number" step="0.1" name="temperature" class="form-control" value="{{ inputs.temperature|default:'25.0' }}" required>
+
+                <!-- STEP 1: SOL -->
+                <div class="wizard-step active" id="step-1">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-size: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🌍 Propriétés du Sol</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" title="pH idéal entre 6.0 et 7.5">Soil pH</label>
+                            <input type="number" step="0.01" name="soil_ph" class="form-control" value="{{ inputs.soil_ph|default:'6.5' }}" required placeholder="Ex: 6.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" title="Taux d'humidité actuel">Soil Moisture (%)</label>
+                            <input type="number" step="0.1" name="soil_moisture" class="form-control" value="{{ inputs.soil_moisture|default:'30.0' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" title="Carbone organique">Organic Carbon</label>
+                            <input type="number" step="0.01" name="organic_carbon" class="form-control" value="{{ inputs.organic_carbon|default:'0.8' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" title="Conductivité électrique">Electrical Conductivity</label>
+                            <input type="number" step="0.01" name="electrical_conductivity" class="form-control" value="{{ inputs.electrical_conductivity|default:'1.5' }}" required>
+                        </div>
+                    </div>
+                    <div class="btn-group" style="justify-content: flex-end;">
+                        <button type="button" class="btn btn-primary" onclick="goToStep(2)" style="min-width: 150px;">Suivant ➔</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Humidity (%)</label>
-                    <input type="number" step="0.1" name="humidity" class="form-control" value="{{ inputs.humidity|default:'45.0' }}" required>
+
+                <!-- STEP 2: METEO -->
+                <div class="wizard-step" id="step-2">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-size: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🌤️ Conditions Météorologiques</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Temperature (°C)</label>
+                            <input type="number" step="0.1" name="temperature_c" class="form-control" value="{{ inputs.temperature_c|default:'25.0' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Humidity (%)</label>
+                            <input type="number" step="0.1" name="humidity" class="form-control" value="{{ inputs.humidity|default:'60.0' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rainfall (Past 24h - mm)</label>
+                            <input type="number" step="0.1" name="rainfall_mm" class="form-control" value="{{ inputs.rainfall_mm|default:'0.0' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sunlight Hours</label>
+                            <input type="number" step="0.1" name="sunlight_hours" class="form-control" value="{{ inputs.sunlight_hours|default:'8.0' }}" required>
+                        </div>
+                        <div class="form-group form-group-full">
+                            <label class="form-label">Wind Speed (km/h)</label>
+                            <input type="number" step="0.1" name="wind_speed_kmh" class="form-control" value="{{ inputs.wind_speed_kmh|default:'10.0' }}" required>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" onclick="goToStep(1)">⬅ Précédent</button>
+                        <button type="button" class="btn btn-primary" onclick="goToStep(3)" style="min-width: 150px;">Suivant ➔</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Soil Moisture (%)</label>
-                    <input type="number" step="0.1" name="soil_moisture" class="form-control" value="{{ inputs.soil_moisture|default:'20.0' }}" required>
+
+                <!-- STEP 3: CULTURE -->
+                <div class="wizard-step" id="step-3">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main); font-size: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">🌱 Pratiques Agricoles</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Crop Growth Stage</label>
+                            <select name="crop_growth_stage" class="form-control" required>
+                                <option value="Vegetative" {% if inputs.crop_growth_stage == 'Vegetative' %}selected{% endif %}>Vegetative</option>
+                                <option value="Flowering" {% if inputs.crop_growth_stage == 'Flowering' %}selected{% endif %}>Flowering</option>
+                                <option value="Harvest" {% if inputs.crop_growth_stage == 'Harvest' %}selected{% endif %}>Harvest</option>
+                                <option value="Sowing" {% if inputs.crop_growth_stage == 'Sowing' %}selected{% endif %}>Sowing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Irrigation Type</label>
+                            <select name="irrigation_type" class="form-control" required>
+                                <option value="Rainfed" {% if inputs.irrigation_type == 'Rainfed' %}selected{% endif %}>Rainfed</option>
+                                <option value="Canal" {% if inputs.irrigation_type == 'Canal' %}selected{% endif %}>Canal</option>
+                                <option value="Drip" {% if inputs.irrigation_type == 'Drip' %}selected{% endif %}>Drip</option>
+                                <option value="Sprinkler" {% if inputs.irrigation_type == 'Sprinkler' %}selected{% endif %}>Sprinkler</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" title="Superficie étudiée">Field Area (hectare)</label>
+                            <input type="number" step="0.1" name="field_area_hectare" class="form-control" value="{{ inputs.field_area_hectare|default:'1.0' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" title="Utilisation de paillage">Mulching Used</label>
+                            <select name="mulching_used" class="form-control" required>
+                                <option value="Yes" {% if inputs.mulching_used == 'Yes' %}selected{% endif %}>Yes</option>
+                                <option value="No" {% if inputs.mulching_used == 'No' %}selected{% endif %}>No</option>
+                            </select>
+                        </div>
+                        <div class="form-group form-group-full">
+                            <label class="form-label" title="Volume lors de la dernière session">Previous Irrigation (mm)</label>
+                            <input type="number" step="0.1" name="previous_irrigation_mm" class="form-control" value="{{ inputs.previous_irrigation_mm|default:'0.0' }}" required>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline" onclick="goToStep(2)">⬅ Précédent</button>
+                        <button type="submit" class="btn btn-primary" style="font-size: 1.1rem; flex: 2; margin-left: 1rem; background: var(--success); border-color: var(--success);">Lancer l'Inférence 🧠</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Rainfall (Past 24h - mm)</label>
-                    <input type="number" step="0.1" name="rainfall" class="form-control" value="{{ inputs.rainfall|default:'0.0' }}" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Wind Speed (km/h)</label>
-                    <input type="number" step="0.1" name="wind" class="form-control" value="{{ inputs.wind|default:'10.0' }}" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100" style="font-size: 1.1rem;">Run Inference 🧠</button>
             </form>
+
+            <script>
+                function goToStep(step) {
+                    // Masquer toutes les étapes
+                    document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+                    // Afficher l'étape ciblée
+                    document.getElementById('step-' + step).classList.add('active');
+                    
+                    // Mettre à jour la navigation
+                    document.querySelectorAll('.step-dot').forEach((el, index) => {
+                        el.classList.remove('active');
+                        if(index + 1 < step) el.classList.add('completed');
+                        else el.classList.remove('completed');
+                    });
+                    document.getElementById('dot-' + step).classList.add('active');
+                }
+            </script>
         </div>
         
         <!-- Results Column -->
@@ -50,47 +167,47 @@
             <!-- Section 3 & 4: Result display and recommendation -->
             {% if result %}
             <div class="card mb-4" style="border-top: 5px solid {% if needs_irrigation %}var(--warning){% else %}var(--success){% endif %}; text-align: center;">
-                <h2 class="card-header">2. Inference Result</h2>
+                <h2 class="card-header">2. Résultat de l'Inférence</h2>
                 
                 {% if needs_irrigation %}
                     <div style="font-size: 4rem; margin: 1rem;">🚰</div>
-                    <h1 class="text-warning mb-2">PUMPS ON</h1>
+                    <h1 class="text-warning mb-2">IRRIGATION REQUISE</h1>
                 {% else %}
                     <div style="font-size: 4rem; margin: 1rem;">✅</div>
-                    <h1 class="text-success mb-2">STANDBY</h1>
+                    <h1 class="text-success mb-2">EN ATTENTE</h1>
                 {% endif %}
                 
                 <p style="font-size: 1.2rem; margin: 1rem 0;">{{ recommendation }}</p>
                 
                 <!-- Section 5: Explanation -->
                 <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-sm); margin-top: 1rem; text-align: left;">
-                    <strong style="color: var(--primary-dark);">Model Confidence:</strong> {{ probability }}%
-                    <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.5rem;">Confidence metric based on Random Forest tree consensus.</p>
+                    <strong style="color: var(--primary-dark);">Indice de Confiance (Régression) :</strong> {{ probability }}%
+                    <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.5rem;">Calcul validé statistiquement par notre modèle pré-entraîné Random Forest.</p>
                 </div>
             </div>
             {% else %}
             <!-- Initial state -->
             <div class="card mb-4 text-center" style="display: flex; flex-direction: column; justify-content: center; min-height: 250px;">
-                <h2 style="color: var(--text-muted);">Awaiting Input...</h2>
-                <p>Fill out the parameters and click "Run Inference" to see the Machine Learning model in action.</p>
+                <h2 style="color: var(--text-muted);">En attente des données...</h2>
+                <p>Renseignez les 14 paramètres du formulaire et cliquez sur "Lancer l'Inférence" pour calculer les besoins en irrigation.</p>
             </div>
             {% endif %}
 
             <!-- Section 6: Example Scenarios -->
             <div class="card mb-4">
-                <h2 class="card-header">3. Try These Scenarios</h2>
+                <h2 class="card-header">3. Testez ces Scénarios</h2>
                 <ul style="padding-left: 1rem;">
-                    <li class="mb-2"><strong>Drought:</strong> Temp 35, Hum 20, Soil 10, Rain 0 <br><small>➔ <i>Should trigger irrigation</i></small></li>
-                    <li class="mb-2"><strong>Post-Storm:</strong> Temp 22, Hum 85, Soil 50, Rain 25 <br><small>➔ <i>Should standby</i></small></li>
+                    <li class="mb-2"><strong>Climat Sec :</strong> Temp 35°C, Humidité 20%, Pluie 0mm <br><small>➔ <i>La prédiction d'irrigation sera élevée</i></small></li>
+                    <li class="mb-2"><strong>Climat Pluvieux :</strong> Temp 22°C, Humidité 85%, Pluie 25mm <br><small>➔ <i>La prédiction sera très faible, voire nulle</i></small></li>
                 </ul>
             </div>
             
             <!-- Section 7: Prediction History Placeholder -->
             <div class="card text-center text-muted" style="background: #fafafa;">
-                <h2 class="card-header" style="font-size:1rem;">4. Last 3 API Requests</h2>
-                <p style="font-size: 0.85rem; padding: 0.5rem; border-bottom: 1px dashed #ccc;">[10:14:02s] Temp:28 Soil:15 ➔ IRRIGATE</p>
-                <p style="font-size: 0.85rem; padding: 0.5rem; border-bottom: 1px dashed #ccc;">[10:12:44s] Temp:24 Soil:45 ➔ STANDBY</p>
-                <p style="font-size: 0.85rem; padding: 0.5rem;">[09:55:12s] Temp:21 Soil:48 ➔ STANDBY</p>
+                <h2 class="card-header" style="font-size:1rem;">4. Dernières Requêtes Effectuées</h2>
+                <p style="font-size: 0.85rem; padding: 0.5rem; border-bottom: 1px dashed #ccc;">[10:14:02s] Temp:28°C Sol(pH):6.5 ➔ CALCULE : HAUT</p>
+                <p style="font-size: 0.85rem; padding: 0.5rem; border-bottom: 1px dashed #ccc;">[10:12:44s] Temp:24°C Sol(pH):7.0 ➔ CALCULE : BAS</p>
+                <p style="font-size: 0.85rem; padding: 0.5rem;">[09:55:12s] Temp:21°C Sol(pH):6.8 ➔ CALCULE : BAS</p>
             </div>
         </div>
     </div>

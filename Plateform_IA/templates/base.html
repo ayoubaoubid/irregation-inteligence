@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Smart Irrigation System{% endblock %}</title>
+    <title>{% block title %}Système d'Irrigation Intelligent{% endblock %}</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,21 +19,21 @@
     <nav class="navbar">
         <a href="{% url 'home' %}" class="nav-brand">
             <div class="brand-icon">I</div>
-            Smart Irrigation
+            Irrigation Intelligente
         </a>
         <ul class="nav-links">
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'problem' %}">Problem & Solution</a></li>
-            <li><a href="{% url 'dataset' %}">Dataset</a></li>
-            <li><a href="{% url 'analysis' %}">Visualization</a></li>
-            <li><a href="{% url 'prediction' %}">Prediction</a></li>
-            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-            <li><a href="{% url 'field_monitoring' %}">Field Monitoring</a></li>
-            <li><a href="{% url 'about' %}">About</a></li>
+            <li><a href="{% url 'home' %}">Accueil</a></li>
+            <li><a href="{% url 'problem' %}">Problème & Solution</a></li>
+            <li><a href="{% url 'dataset' %}">Le Dataset</a></li>
+            <li><a href="{% url 'analysis' %}">Analytique</a></li>
+            <li><a href="{% url 'prediction' %}">Prédiction ML</a></li>
+            <li><a href="{% url 'dashboard' %}">Tableau de bord</a></li>
+            <li><a href="{% url 'field_monitoring' %}">Supervision (IoT)</a></li>
+            <li><a href="{% url 'about' %}">À Propos</a></li>
         </ul>
         <div class="nav-right">
             <span id="theme-toggle" style="font-size: 1.2rem; cursor: pointer; user-select: none;">🌙</span>
-            <a href="{% url 'prediction' %}" class="btn btn-outline" style="border-radius: var(--radius-pill); padding: 0.5rem 1.2rem;">Try Prediction</a>
+            <a href="{% url 'prediction' %}" class="btn btn-outline" style="border-radius: var(--radius-pill); padding: 0.5rem 1.2rem;">Tester l'IA</a>
         </div>
     </nav>
 
@@ -47,15 +47,15 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>Smart Irrigation System</h3>
-                <p>AI-Powered Agriculture Data Aggregator. Optimizing water usage via machine learning.</p>
+                <h3>Système d'Irrigation</h3>
+                <p>Agrégation Data pour l'Agriculture. Optimisation de l'utilisation de l'eau par apprentissage automatique.</p>
             </div>
             <div class="footer-section">
-                <h3>Quick Links</h3>
+                <h3>Liens Rapides</h3>
                 <ul style="list-style: none;">
-                    <li class="mb-1"><a href="{% url 'prediction' %}">Prediction Engine</a></li>
-                    <li class="mb-1"><a href="{% url 'dashboard' %}">Live Dashboard</a></li>
-                    <li class="mb-1"><a href="{% url 'analysis' %}">Data Analysis</a></li>
+                    <li class="mb-1"><a href="{% url 'prediction' %}">Moteur de Prédiction</a></li>
+                    <li class="mb-1"><a href="{% url 'dashboard' %}">Tableau de Bord Live</a></li>
+                    <li class="mb-1"><a href="{% url 'analysis' %}">Analyse de Données</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -65,7 +65,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2026 Smart Irrigation System Project. All rights reserved.
+            &copy; 2026 Système d'Irrigation Intelligent. Tous droits réservés.
         </div>
     </footer>
 

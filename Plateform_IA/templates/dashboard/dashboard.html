@@ -21,12 +21,12 @@
     <!-- Section 1 & 2: Alerts and Real-Time Summary -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
         <div>
-            <h1 class="section-title" style="margin-bottom:0; border: none;">Control Center</h1>
-            <p class="section-subtitle" style="margin-bottom: 0;">Live telemetry for Sector Alpha</p>
+            <h1 class="section-title" style="margin-bottom:0; border: none;">Centre de Contrôle IoT</h1>
+            <p class="section-subtitle" style="margin-bottom: 0;">Télémétrie en temps réel (Secteur Alpha)</p>
         </div>
         <div style="text-align: right;">
-            <p style="font-family: monospace; color: var(--text-muted);">Last Sync: <span id="sync-time">Just Now</span></p>
-            <p><strong>System Status:</strong> <span class="status-indicator status-ok" id="status-dot"></span> <span id="status-text" class="text-success">ONLINE</span></p>
+            <p style="font-family: monospace; color: var(--text-muted);">Dernière Synchro : <span id="sync-time">À l'instant</span></p>
+            <p><strong>Statut Système :</strong> <span class="status-indicator status-ok" id="status-dot"></span> <span id="status-text" class="text-success">EN LIGNE</span></p>
         </div>
     </div>
 
@@ -34,38 +34,38 @@
         <div style="display: flex; align-items: center; gap: 1rem;">
             <span style="font-size: 1.5rem;">⚠️</span>
             <div>
-                <strong>Warning:</strong> Soil moisture in Zone 3 is approaching critical threshold (18%).
-                <p style="font-size: 0.85rem; margin-top:0.2rem;">Model predicts necessary irrigation within 4 hours.</p>
+                <strong>Alerte :</strong> L'humidité du sol (Zone 3) approche du seuil critique (18%).
+                <p style="font-size: 0.85rem; margin-top:0.2rem;">L'IA de régression recommande une irrigation sous 4 heures.</p>
             </div>
         </div>
-        <button class="btn btn-primary" onclick="dismissAlert()">Acknowledge</button>
+        <button class="btn btn-primary" onclick="dismissAlert()">Acquitter l'Alerte</button>
     </div>
 
     <!-- Section 3: Data Widgets -->
     <div class="grid-4 mb-4">
         <!-- Soil Moisture Status -->
         <div class="card text-center">
-            <div class="widget-label">Avg Soil Moisture</div>
+            <div class="widget-label">Humidité Moyenne Sol</div>
             <div class="widget-value text-primary" id="val-soil">22.4%</div>
-            <p class="text-muted" style="font-size: 0.85rem;">Optimal range: 20-35%</p>
+            <p class="text-muted" style="font-size: 0.85rem;">Plage Optimale : 20-35%</p>
         </div>
         <!-- Env Summary: Temp -->
         <div class="card text-center">
-            <div class="widget-label">Air Temperature</div>
+            <div class="widget-label">Température Ambiante</div>
             <div class="widget-value text-danger" id="val-temp">32.1°C</div>
-            <p class="text-muted" style="font-size: 0.85rem;">High evaporation risk</p>
+            <p class="text-muted" style="font-size: 0.85rem;">Haut risque d'évaporation</p>
         </div>
         <!-- Env Summary: Hum -->
         <div class="card text-center">
-            <div class="widget-label">Relative Humidity</div>
+            <div class="widget-label">Humidité Relative (Air)</div>
             <div class="widget-value text-info" id="val-hum">41.0%</div>
-            <p class="text-muted" style="font-size: 0.85rem;">Decreasing trend</p>
+            <p class="text-muted" style="font-size: 0.85rem;">Tendance à la baisse</p>
         </div>
         <!-- Efficiency Metrics -->
         <div class="card text-center">
-            <div class="widget-label">Efficiency Score</div>
+            <div class="widget-label">Score d'Efficience (Eau)</div>
             <div class="widget-value text-success">98.5%</div>
-            <p class="text-muted" style="font-size: 0.85rem;">Based on 7-day water use</p>
+            <p class="text-muted" style="font-size: 0.85rem;">Données sur les 7 derniers jours</p>
         </div>
     </div>
 
@@ -73,8 +73,8 @@
         <!-- Section 4: Irrigation History Chart -->
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 class="card-header" style="margin-bottom:0; border:none; padding:0;">24h Moisture Timeline</h2>
-                <div style="font-size: 0.8rem; background: var(--bg-color); padding: 0.2rem 0.5rem; border-radius: 4px;">Live Updates</div>
+                <h2 class="card-header" style="margin-bottom:0; border:none; padding:0;">Évolution de l'Humidité H-24</h2>
+                <div style="font-size: 0.8rem; background: var(--bg-color); padding: 0.2rem 0.5rem; border-radius: 4px;">Graphe en Direct</div>
             </div>
             <div style="position: relative; height: 350px; width: 100%;">
                 <canvas id="moistureHistoryChart"></canvas>
@@ -84,30 +84,30 @@
         <!-- Section 5: Water Usage Stats & Alerts History -->
         <div>
             <div class="card mb-4">
-                <h2 class="card-header">Water Usage Summary (Current Week)</h2>
+                <h2 class="card-header">Consommation en Eau (Cette Semaine)</h2>
                 <div class="grid-2 text-center" style="margin-top: 1.5rem;">
                     <div>
                         <h3 class="text-primary" style="font-size: 2rem;">1,450 L</h3>
-                        <p class="text-muted">Total Dispensed</p>
+                        <p class="text-muted">Total Distribué</p>
                     </div>
                     <div>
                         <h3 class="text-success" style="font-size: 2rem;">-320 L</h3>
-                        <p class="text-muted">Saved vs Timer baseline</p>
+                        <p class="text-muted">Économisés grâce à l'IA</p>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="card-header" style="font-size:1rem;">System Logs</h2>
+                <h2 class="card-header" style="font-size:1rem;">Journaux Système (Logs)</h2>
                 <ul style="list-style: none; font-size: 0.9rem;">
                     <li class="mb-2" style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
-                        <span class="text-muted">[08:00 AM]</span> Model executed. Prediction: STANDBY.
+                        <span class="text-muted">[08:00 AM]</span> Modèle ML exécuté. ➔ EN ATTENTE.
                     </li>
                     <li class="mb-2" style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
-                        <span class="text-muted">[06:30 AM]</span> Scheduled Sensor Sync completed. 0 errors.
+                        <span class="text-muted">[06:30 AM]</span> Synchro IoT terminée avec succès (0 erreurs).
                     </li>
                     <li class="mb-2" style="border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
-                        <span style="color:var(--info);">[02:15 AM]</span> Automated cycle complete: Sector B (45 mins).
+                        <span style="color:var(--info);">[02:15 AM]</span> Cycle de pompage terminé : Secteur B (45 mins).
                     </li>
                 </ul>
             </div>
@@ -130,14 +130,14 @@
         const ctx = document.getElementById('moistureHistoryChart').getContext('2d');
         
         let initialData = [35, 34, 32, 30, 28, 25, 23, 22.4];
-        let labels = ['-7h', '-6h', '-5h', '-4h', '-3h', '-2h', '-1h', 'Now'];
+        let labels = ['-7h', '-6h', '-5h', '-4h', '-3h', '-2h', '-1h', 'Maintenant'];
 
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Soil Moisture (%)',
+                    label: 'Humidité du Sol (%)',
                     data: initialData,
                     borderColor: '#2b7a78',
                     backgroundColor: 'rgba(43, 122, 120, 0.1)',
@@ -155,7 +155,7 @@
                 plugins: {
                     annotation: {
                         annotations: {
-                            line1: { type: 'line', yMin: 20, yMax: 20, borderColor: 'rgb(255, 99, 132)', borderWidth: 2, borderDash: [5, 5], label: { content: 'Critical Threshold', enabled: true, position: 'end' }}
+                            line1: { type: 'line', yMin: 20, yMax: 20, borderColor: 'rgb(255, 99, 132)', borderWidth: 2, borderDash: [5, 5], label: { content: 'Seuil Critique', enabled: true, position: 'end' }}
                         }
                     }
                 }
