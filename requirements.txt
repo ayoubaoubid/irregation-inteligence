@@ -1,6 +1,2 @@
 Django>=5.2,<5.3
-<<<<<<< HEAD
-pandas
-=======
 pandas>=2.2,<3.0
->>>>>>> 9568d776c04d0d3a23ec37a16a7a81fb7ebd4836
