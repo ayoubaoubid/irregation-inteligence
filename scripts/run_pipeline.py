@@ -12,30 +12,42 @@ DATA_DIR = ROOT_DIR / "DataOps" / "Statics"
 DJANGO_DIR = ROOT_DIR / "Plateform_IA"
 
 DATASETS = {
-    "cleaned_irrigation_prediction.csv": {
-        "required_columns": {
-            "Soil_Type",
-            "Temperature_C",
-            "Humidity",
-            "Rainfall_mm",
-            "Irrigation_Need",
-        }
-    },
-    "preprocessed_irrigation_data.csv": {
-        "required_columns": {
-            "Soil_pH",
-            "Temperature_C",
-            "Humidity",
-            "Irrigation_Need",
-        }
-    },
     "irrigation_prediction.csv": {
         "required_columns": {
-            "Soil_Type",
-            "Temperature_C",
-            "Humidity",
-            "Rainfall_mm",
-            "Irrigation_Need",
+         'Soil_pH',
+         'Soil_Moisture',
+         'Organic_Carbon',
+         'Electrical_Conductivity',
+         'Temperature_C',
+         'Humidity',
+         'Rainfall_mm',
+         'Sunlight_Hours',
+         'Wind_Speed_kmh',
+         'Crop_Growth_Stage',
+         'Irrigation_Type',
+         'Field_Area_hectare',
+         'Mulching_Used',
+         'Previous_Irrigation_mm',
+         'Irrigation_Need',
+        }
+    },
+    "irrigation_prediction_processed.csv": {
+        "required_columns": {
+'Soil_pH', 'Soil_Moisture', 'Organic_Carbon', 'Electrical_Conductivity',
+       'Temperature_C', 'Humidity', 'Rainfall_mm', 'Sunlight_Hours',
+       'Wind_Speed_kmh', 'Crop_Growth_Stage_Vegetative','Crop_Growth_Stage_Flowering','Crop_Growth_Stage_Sowing','Crop_Growth_Stage_Harvest',
+         'Irrigation_Type_Drip','Irrigation_Type_Sprinkler','Irrigation_Type_Rainfed','Irrigation_Type_Canal',
+       'Field_Area_hectare', 'Mulching_Used_Yes','Mulching_Used_No', 'Previous_Irrigation_mm',
+       'Irrigation_Need',
+        }
+    },
+    "irrigation_prediction_Variables_Important.csv": {
+        "required_columns": {
+'Soil_pH', 'Soil_Moisture', 'Organic_Carbon', 'Electrical_Conductivity',
+       'Temperature_C', 'Humidity', 'Rainfall_mm', 'Sunlight_Hours',
+       'Wind_Speed_kmh', 'Crop_Growth_Stage', 'Irrigation_Type',
+       'Field_Area_hectare', 'Mulching_Used', 'Previous_Irrigation_mm',
+       'Irrigation_Need',
         }
     },
 }
