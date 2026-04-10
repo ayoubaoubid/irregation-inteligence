@@ -30,9 +30,9 @@ jobs:
       # 🔹 Vérification pipeline DVC (SAFE)
       - name: Check DVC pipeline status
         run: dvc status
-      
-      - name: Pull DVC data
-        run: dvc pull
+
+      - name: Run DVC pipeline (train model)
+        run: dvc repro
 
       # 🔹 Tests unitaires
       - name: Run tests
