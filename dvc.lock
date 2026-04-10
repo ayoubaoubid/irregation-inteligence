@@ -1,0 +1,68 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python scripts/train.py
+    deps:
+    - path: DataOps/Statics/irrigation_prediction_processed.csv
+      hash: md5
+      md5: 19b9b9ca9f28e4a26e540c4f68acc199
+      size: 4871770
+    - path: params.yml
+      hash: md5
+      md5: c0def3906e764495d804885f59e6efb5
+      size: 264
+    - path: scripts/train.py
+      hash: md5
+      md5: 922c49083219b815a16dcb7c0311d282
+      size: 3337
+    outs:
+    - path: models/best_model.pkl
+      hash: md5
+      md5: 4b9cb90ffa93d88c773a7b58fa4429c7
+      size: 18782849
+    - path: models/classes.pkl
+      hash: md5
+      md5: b1cf54b34128114d2f9788c4c72e16f3
+      size: 249
+    - path: models/features.pkl
+      hash: md5
+      md5: c1009816ba5e8879039c26d35f66c497
+      size: 462
+    - path: models/scaler.pkl
+      hash: md5
+      md5: e912501a42e43dff191c3c36f797a944
+      size: 1807
+  test:
+    cmd: pytest tests/
+    deps:
+    - path: models/best_model.pkl
+      hash: md5
+      md5: 4b9cb90ffa93d88c773a7b58fa4429c7
+      size: 18782849
+    - path: models/classes.pkl
+      hash: md5
+      md5: b1cf54b34128114d2f9788c4c72e16f3
+      size: 249
+    - path: models/features.pkl
+      hash: md5
+      md5: c1009816ba5e8879039c26d35f66c497
+      size: 462
+    - path: models/scaler.pkl
+      hash: md5
+      md5: e912501a42e43dff191c3c36f797a944
+      size: 1807
+    - path: tests/test_model.py
+      hash: md5
+      md5: 736249f9e0db79a7ecb7abde54a7e0ed
+      size: 1594
+  evaluate:
+    cmd: python scripts/evaluate.py
+    deps:
+    - path: models/best_model.pkl
+      hash: md5
+      md5: 4b9cb90ffa93d88c773a7b58fa4429c7
+      size: 18782849
+    - path: scripts/evaluate.py
+      hash: md5
+      md5: 7bff31c9f580c9a97a6e51eccc3650e7
+      size: 1827
