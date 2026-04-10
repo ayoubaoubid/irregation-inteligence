@@ -1,10 +1,11 @@
-name: MLOps Pipeline
+name: CI MLOps Pipeline
 
 on:
   push:
     branches:
       - main
       - master
+      - MLOps
   pull_request:
 
 jobs:
@@ -24,6 +25,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install dvc pytest mlflow scikit-learn pandas numpy
 
-      - name: Run automated pipeline
-        run: python scripts/run_pipeline.py
+      # 🔹 Vérification pipeline DVC (SAFE)
+      - name: Check DVC pipeline status
+        run: dvc status
+
+      # 🔹 Tests unitaires
+      - name: Run tests
+        run: pytest tests/

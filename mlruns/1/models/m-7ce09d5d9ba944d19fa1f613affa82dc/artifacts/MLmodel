@@ -1,0 +1,23 @@
+artifact_path: file:C:/Users/HP/Desktop/MLOPS/irregation-inteligence/mlruns/1/models/m-7ce09d5d9ba944d19fa1f613affa82dc/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.2
+    skops_trusted_types: null
+mlflow_version: 3.10.1
+model_id: m-7ce09d5d9ba944d19fa1f613affa82dc
+model_size_bytes: 1014679
+model_uuid: m-7ce09d5d9ba944d19fa1f613affa82dc
+prompts: null
+run_id: 06752817802b4419ae15eba5cf75d148
+utc_time_created: '2026-04-10 20:44:20.679834'
