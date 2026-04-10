@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import yaml
 import joblib
 import mlflow
@@ -14,12 +15,14 @@ from sklearn.neighbors import KNeighborsClassifier
 
 
 # Load parameters
-with open("irregation-inteligence/params.yml", "r") as f:
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+params_path = os.path.join(BASE_DIR, "params.yml")
+with open(params_path, "r") as f:
     params = yaml.safe_load(f)
 
 
 # Load dataset
-df = pd.read_csv("irregation-inteligence/DataOps/Statics/irrigation_prediction_processed.csv")
+df = pd.read_csv("DataOps/Statics/irrigation_prediction_processed.csv")
 
 # Encode target
 le = LabelEncoder()
@@ -102,17 +105,17 @@ print("Real:", y_test[0])
 
 
 # Save artifacts
-joblib.dump(best_model, "irregation-inteligence/models/best_model.pkl")
-joblib.dump(scaler, "irregation-inteligence/models/scaler.pkl")
-joblib.dump(X.columns.tolist(), "irregation-inteligence/models/features.pkl")
-joblib.dump(le.classes_, "irregation-inteligence/models/classes.pkl")
+joblib.dump(best_model, "models/best_model.pkl")
+joblib.dump(scaler, "models/scaler.pkl")
+joblib.dump(X.columns.tolist(), "models/features.pkl")
+joblib.dump(le.classes_, "models/classes.pkl")
 
 
 # Final MLflow log
 with mlflow.start_run(run_name="BEST_MODEL"):
     mlflow.log_param("best_model", best_name)
     mlflow.log_metric("best_f1", best_score)
-    mlflow.sklearn.log_model(best_model, "best_model")
+    mlflow.sklearn.log_model(best_model, "best_model",registered_model_name="Irrigation_Best_Model")
 
 print("Training finished")
 print("Best model:", best_name)

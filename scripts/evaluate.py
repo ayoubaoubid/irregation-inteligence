@@ -8,7 +8,7 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
-df = pd.read_csv("irregation-inteligence/DataOps/Statics/irrigation_prediction_processed.csv")
+df = pd.read_csv("DataOps/Statics/irrigation_prediction_processed.csv")
 
 mapping = {0: "Low", 1: "Medium", 2: "High"}
 y = df["Irrigation_Need"]
@@ -19,9 +19,9 @@ print(" Classes présentes :", y.unique())
 # =========================
 # 📦 LOAD MODEL + SCALER
 # =========================
-model = joblib.load("irregation-inteligence/models/best_model.pkl")
-scaler = joblib.load("irregation-inteligence/models/scaler.pkl")
-FEATURES = joblib.load("irregation-inteligence/models/features.pkl")
+model = joblib.load("models/best_model.pkl")
+scaler = joblib.load("models/scaler.pkl")
+FEATURES = joblib.load("models/features.pkl")
 
 # =========================
 # ⚠️ ALIGN FEATURES
