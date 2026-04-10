@@ -2,31 +2,22 @@ __pycache__/
 *.py[cod]
 *.pyc
 
-
 .venv/
 venv/
 .env
 
-
 .pytest_cache/
 .mypy_cache/
-
 
 models/*.pkl
 models/*.joblib
 
-
-
 mlruns/
 mlflow.db
-
 
 .vscode/
 .idea/
 .DS_Store
 
-
 *.log
-
-
 dvc-storage/
