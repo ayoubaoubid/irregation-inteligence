@@ -1,12 +1,44 @@
+# =========================
+# Python cache
+# =========================
 __pycache__/
 *.py[cod]
 *.pyc
-models/*.pkl
-db.sqlite3
+
+# =========================
+# Environments
+# =========================
 .venv/
 venv/
 .env
+
+# =========================
+# Pytest / typing cache
+# =========================
 .pytest_cache/
 .mypy_cache/
-Plateform_IA/staticfiles/
-.mlruns/
+
+# =========================
+# ML models (handled by DVC)
+# =========================
+models/*.pkl
+models/*.joblib
+
+
+# =========================
+# MLflow tracking
+# =========================
+mlruns/
+mlflow.db
+
+# =========================
+# IDE / OS
+# =========================
+.vscode/
+.idea/
+.DS_Store
+
+# =========================
+# Logs
+# =========================
+*.log
