@@ -25,3 +25,5 @@ Pipeline CI:
 
 - le workflow GitHub Actions est dans `.github/workflows/mlops-pipeline.yml`
 - il se lance automatiquement sur chaque `push` et `pull_request`
+- avant `dvc repro`, la CI execute `dvc pull`
+- la CI ne peut pas utiliser un remote local comme `../dvc-storage`; il faut un remote DVC partage accessible depuis GitHub Actions, puis executer `dvc push` depuis votre machine

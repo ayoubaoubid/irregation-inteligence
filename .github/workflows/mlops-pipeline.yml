@@ -27,13 +27,22 @@ jobs:
           pip install -r requirements.txt
           pip install dvc pytest mlflow scikit-learn pandas numpy
 
-      # 🔹 Vérification pipeline DVC (SAFE)
+      - name: Validate DVC remote configuration
+        run: |
+          if grep -q "../dvc-storage" .dvc/config; then
+            echo "CI cannot use the local DVC remote '../dvc-storage'."
+            echo "Configure a shared remote reachable from GitHub Actions, then run 'dvc push' from your machine."
+            exit 1
+          fi
+
+      - name: Pull DVC data
+        run: dvc pull
+
       - name: Check DVC pipeline status
         run: dvc status
 
-      - name: Run DVC pipeline (train model)
+      - name: Run DVC pipeline
         run: dvc repro
 
-      # 🔹 Tests unitaires
       - name: Run tests
         run: pytest tests/
