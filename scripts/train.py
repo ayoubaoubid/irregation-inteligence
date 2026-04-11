@@ -103,7 +103,7 @@ sample = X_test[0:1]
 print("Prediction:", best_model.predict(sample)[0])
 print("Real:", y_test[0])
 
-
+os.makedirs("models", exist_ok=True)
 # Save artifacts
 joblib.dump(best_model, "models/best_model.pkl")
 joblib.dump(scaler, "models/scaler.pkl")
