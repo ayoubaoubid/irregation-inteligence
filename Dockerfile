@@ -1,11 +1,11 @@
-FROM python:3.10
+FROM python:3.12
 
 # working directory
 WORKDIR /app
 
 # install dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt --timeout 300
 
 # copy project
 COPY . .
