@@ -10,3 +10,4 @@ joblib
 mlflow
 dvc
 pyYaml
+requests

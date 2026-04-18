@@ -18,7 +18,7 @@ stages:
     outs:
     - path: models/best_model.pkl
       hash: md5
-      md5: 4b9cb90ffa93d88c773a7b58fa4429c7
+      md5: 55171550cceb75d1fe2faf00c4114345
       size: 18782849
     - path: models/classes.pkl
       hash: md5
@@ -30,14 +30,14 @@ stages:
       size: 462
     - path: models/scaler.pkl
       hash: md5
-      md5: e912501a42e43dff191c3c36f797a944
-      size: 1807
+      md5: 70d45421b733ff6a19235901394e36cd
+      size: 1759
   test:
     cmd: pytest tests/
     deps:
     - path: models/best_model.pkl
       hash: md5
-      md5: 4b9cb90ffa93d88c773a7b58fa4429c7
+      md5: 55171550cceb75d1fe2faf00c4114345
       size: 18782849
     - path: models/classes.pkl
       hash: md5
@@ -49,8 +49,8 @@ stages:
       size: 462
     - path: models/scaler.pkl
       hash: md5
-      md5: e912501a42e43dff191c3c36f797a944
-      size: 1807
+      md5: 70d45421b733ff6a19235901394e36cd
+      size: 1759
     - path: tests/test_model.py
       hash: md5
       md5: 1ffbbf1f6f3630f9b64e17f883984568
@@ -60,7 +60,7 @@ stages:
     deps:
     - path: models/best_model.pkl
       hash: md5
-      md5: 4b9cb90ffa93d88c773a7b58fa4429c7
+      md5: 55171550cceb75d1fe2faf00c4114345
       size: 18782849
     - path: scripts/evaluate.py
       hash: md5
