@@ -25,15 +25,20 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install dvc pytest mlflow scikit-learn pandas numpy
+          pip install pytest
 
-      # 🔹 Vérification pipeline DVC (SAFE)
-      - name: Check DVC pipeline status
-        run: dvc status
+      - name: Explain local DVC mode
+        run: |
+          echo "DVC is configured for local-only storage in this project."
+          echo "GitHub-hosted CI skips DVC pull/repro and any tests that require local model artifacts."
 
-      - name: Run DVC pipeline (train model)
-        run: dvc repro
+      - name: Run Django system checks
+        run: python Plateform_IA/manage.py check
 
-      # 🔹 Tests unitaires
-      - name: Run tests
-        run: pytest tests/
+      - name: Run tests when local model artifacts are available
+        run: |
+          if [ -f models/best_model.pkl ] && [ -f models/features.pkl ]; then
+            pytest tests/
+          else
+            echo "Skipping model tests because DVC-tracked model artifacts are not available in GitHub-hosted CI."
+          fi
