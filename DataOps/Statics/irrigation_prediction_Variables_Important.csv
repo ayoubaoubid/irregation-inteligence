@@ -9999,3 +9999,5 @@ Soil_pH,Soil_Moisture,Organic_Carbon,Electrical_Conductivity,Temperature_C,Humid
 4.97,60.63,0.99,1.3,36.68,68.16,2384.87,10.75,13.4,Harvest,Canal,10.08,Yes,116.36,Low
 7.12,44.33,1.56,1.08,31.5,64.83,2397.01,4.03,3.05,Harvest,Rainfed,11.11,Yes,118.17,Low
 5.65,62.25,1.48,3.0,35.71,45.33,177.69,10.93,12.32,Harvest,Canal,11.32,No,98.88,Medium
+6.5,-0.01,0.01,0.01,0.01,-0.05,0.01,-0.01,-0.06,Sowing,Canal,-0.01,Yes,0.01,Low
+6.5,-0.01,0.01,0.01,0.01,-0.05,0.01,-0.01,-0.06,Sowing,Canal,-0.01,Yes,0.01,Low
