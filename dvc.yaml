@@ -27,7 +27,7 @@ stages:
       - models/best_model.pkl
 
       # Initialisation
-      # dvc init
+      dvc init
 
       # Ajouter uniquement les données brutes
       # dvc add DataOps/Statics/preprocessed_irrigation_data.csv
