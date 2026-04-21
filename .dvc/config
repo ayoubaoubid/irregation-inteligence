@@ -2,6 +2,6 @@
     site_cache_dir = .dvc/site-cache
     remote = myremote
 ['remote "storage"']
-    url = ../dvc-storage
+    url = gdrive://1VinICl7fYKjedDlRv2P4PFQVIsJoas_G
 ['remote "myremote"']
     url = gdrive://YOUR_FOLDER_ID
