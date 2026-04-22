@@ -2,9 +2,10 @@ __pycache__/
 *.py[cod]
 *.pyc
 
+# gestion des secrets
 .venv/
 venv/
-.env
+*.env
 
 .pytest_cache/
 .mypy_cache/
