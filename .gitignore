@@ -1,6 +1,10 @@
 __pycache__/
 *.py[cod]
 *.pyc
+*.pyo
+*.pyd
+.DS_Store
+
 
 .venv/
 venv/
