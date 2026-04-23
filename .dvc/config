@@ -5,3 +5,5 @@
     url = ../dvc-storage
 ['remote "myremote"']
     url = gdrive://YOUR_FOLDER_ID
+['remote "origin"']
+    url = https://dagshub.com/ayoubaoubid/irregation-inteligence.dvc
