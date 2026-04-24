@@ -6,3 +6,4 @@ urlpatterns = [
     path('analysis/', views.analysis, name='analysis'),
     path('add-data/', views.add_data, name='add_data'),
 ]
+

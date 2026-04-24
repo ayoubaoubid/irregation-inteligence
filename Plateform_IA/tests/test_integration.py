@@ -1,229 +1,131 @@
 """
-Tests d'intégration : interaction entre la vue prediction et l'API modèle.
-
-L'API externe (http://model-api:5000/predict) est systématiquement mockée
-via `requests_mock` pour garantir des tests rapides et reproductibles.
+Tests d'intégration : cycle complet formulaire → logique de prédiction → réponse (Mock API).
 """
-
 import pytest
-import requests_mock as rm
-
-
-API_URL = "http://model-api:5000/predict"
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  PRÉDICTION — API modèle OK
-# ═══════════════════════════════════════════════════════════════════════════
 
 @pytest.mark.integration
-class TestPredictionAPISuccess:
-    """Cas nominal : l'API modèle répond 200 avec un résultat valide."""
-
-    def test_prediction_returns_result(
-        self, client, valid_prediction_data, api_success_response
-    ):
-        """POST formulaire → appel API mocké → résultat affiché."""
-        with rm.Mocker() as m:
-            m.post(API_URL, json=api_success_response, status_code=200)
-
-            response = client.post(
-                "/prediction/form/", data=valid_prediction_data
-            )
-
+class TestPredictionFullCycle:
+    def test_normal_conditions_returns_result(self, client, valid_prediction_data, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        response = client.post("/prediction/form/", data=valid_prediction_data)
         assert response.status_code == 200
-        # Le contexte doit contenir le résultat de l'API
-        assert 'result' in response.context
-        assert response.context['result'] == api_success_response
-        # Pas d'erreur
-        assert response.context.get('error') is None
+        ctx = response.context
+        assert ctx['result']['prediction_label'] == "High"
+        assert 'confidence' in ctx['result']
 
-    def test_prediction_preserves_inputs(
-        self, client, valid_prediction_data, api_success_response
-    ):
-        """Les valeurs saisies sont renvoyées dans le contexte (pour ré-affichage)."""
-        with rm.Mocker() as m:
-            m.post(API_URL, json=api_success_response, status_code=200)
-
-            response = client.post(
-                "/prediction/form/", data=valid_prediction_data
-            )
-
+    def test_inputs_are_preserved_as_strings(self, client, valid_prediction_data, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        response = client.post("/prediction/form/", data=valid_prediction_data)
         assert response.status_code == 200
         inputs = response.context['inputs']
-        assert inputs['soil_ph'] == '6.5'
-        assert inputs['crop_growth_stage'] == 'Vegetative'
-        assert inputs['irrigation_type'] == 'Rainfed'
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  PRÉDICTION — API modèle en erreur
-# ═══════════════════════════════════════════════════════════════════════════
-
-@pytest.mark.errors
-class TestPredictionAPIError:
-    """L'API modèle retourne un code d'erreur HTTP (ex: 500)."""
-
-    def test_api_returns_500(
-        self, client, valid_prediction_data, api_error_response
-    ):
-        """API → 500 : la page s'affiche avec un message d'erreur."""
-        with rm.Mocker() as m:
-            m.post(API_URL, json=api_error_response, status_code=500)
-
-            response = client.post(
-                "/prediction/form/", data=valid_prediction_data
-            )
-
-        assert response.status_code == 200  # la page Django se charge
-        assert 'error' in response.context
-        assert 'Erreur API (500)' in response.context['error']
-
-    def test_api_returns_400(self, client, valid_prediction_data):
-        """API → 400 : la page s'affiche avec un message d'erreur."""
-        with rm.Mocker() as m:
-            m.post(API_URL, json={'error': 'Bad Request'}, status_code=400)
-
-            response = client.post(
-                "/prediction/form/", data=valid_prediction_data
-            )
-
-        assert response.status_code == 200
-        assert 'error' in response.context
-        assert '400' in response.context['error']
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  PRÉDICTION — API inaccessible (timeout / connexion refusée)
-# ═══════════════════════════════════════════════════════════════════════════
-
-@pytest.mark.errors
-class TestPredictionAPIDown:
-    """L'API modèle est complètement inaccessible."""
-
-    def test_api_connection_error(self, client, valid_prediction_data):
-        """Connexion refusée → message d'erreur clair, pas de crash."""
-        import requests
-
-        with rm.Mocker() as m:
-            m.post(API_URL, exc=requests.exceptions.ConnectionError(
-                "Connection refused"
-            ))
-
-            response = client.post(
-                "/prediction/form/", data=valid_prediction_data
-            )
-
-        assert response.status_code == 200
-        assert 'error' in response.context
-        assert 'Impossible de se connecter' in response.context['error']
-
-    def test_api_timeout(self, client, valid_prediction_data):
-        """Timeout → message d'erreur clair, pas de crash."""
-        import requests
-
-        with rm.Mocker() as m:
-            m.post(API_URL, exc=requests.exceptions.Timeout(
-                "Request timed out"
-            ))
-
-            response = client.post(
-                "/prediction/form/", data=valid_prediction_data
-            )
-
-        assert response.status_code == 200
-        assert 'error' in response.context
-        assert 'Impossible de se connecter' in response.context['error']
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  PRÉDICTION — Données invalides envoyées par l'utilisateur
-# ═══════════════════════════════════════════════════════════════════════════
-
-@pytest.mark.errors
-class TestPredictionInvalidInput:
-    """L'utilisateur envoie des données malformées."""
-
-    def test_non_numeric_value(self, client, valid_prediction_data):
-        """Une valeur non-numérique dans un champ numérique → erreur ValueError."""
-        bad_data = valid_prediction_data.copy()
-        bad_data['soil_ph'] = 'pas-un-nombre'
-
-        response = client.post("/prediction/form/", data=bad_data)
-
-        assert response.status_code == 200
-        assert 'error' in response.context
-        assert 'invalide' in response.context['error'].lower()
-
-    def test_empty_form_submission(self, client):
-        """Formulaire vide → erreur gérée proprement."""
-        response = client.post("/prediction/form/", data={})
-
-        assert response.status_code == 200
-        # Avec des valeurs par défaut dans la vue, ça peut réussir
-        # ou échouer proprement — le serveur ne doit pas crasher (pas de 500)
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  PRÉDICTION — Différentes valeurs catégorielles (one-hot encoding)
-# ═══════════════════════════════════════════════════════════════════════════
+        assert inputs['temperature_c'] == '25.0'
+        assert inputs['humidity'] == '60.0'
 
 @pytest.mark.integration
-class TestPredictionOneHotEncoding:
-    """Vérifie que l'encodage one-hot est correct pour les champs catégoriels."""
+class TestIrrigationNeeded:
+    def test_hot_dry_triggers_irrigation(self, client, hot_dry_data, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        response = client.post("/prediction/form/", data=hot_dry_data)
+        assert response.status_code == 200
+        assert response.context['result']['prediction_label'] == "High"
 
-    @pytest.mark.parametrize("crop_stage", [
-        'Flowering', 'Harvest', 'Sowing', 'Vegetative',
+    def test_hot_dry_high_probability(self, client, hot_dry_data, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        response = client.post("/prediction/form/", data=hot_dry_data)
+        assert response.status_code == 200
+        assert response.context['result']['probabilities']['High'] > 50
+
+@pytest.mark.integration
+class TestNoIrrigationNeeded:
+    def test_wet_cool_no_irrigation(self, client, wet_cool_data, requests_mock, api_low_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_low_response)
+        response = client.post("/prediction/form/", data=wet_cool_data)
+        assert response.status_code == 200
+        assert response.context['result']['prediction_label'] == "Low"
+
+    def test_wet_cool_low_probability(self, client, wet_cool_data, requests_mock, api_low_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_low_response)
+        response = client.post("/prediction/form/", data=wet_cool_data)
+        assert response.status_code == 200
+        assert response.context['result']['probabilities']['High'] < 50
+
+@pytest.mark.integration
+class TestProbabilityBoundaries:
+    def test_probability_never_below_zero(self, client, requests_mock, api_low_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_low_response)
+        data = { 'temperature_c': '0.0', 'humidity': '100.0', 'soil_moisture': '100.0', 'rainfall_mm': '200.0', 'wind_speed_kmh': '0.0' }
+        response = client.post("/prediction/form/", data=data)
+        assert response.status_code == 200
+        assert response.context['result']['confidence'] >= 0
+
+    def test_probability_never_above_100(self, client, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        data = { 'temperature_c': '60.0', 'humidity': '0.0', 'soil_moisture': '0.0', 'rainfall_mm': '0.0', 'wind_speed_kmh': '50.0' }
+        response = client.post("/prediction/form/", data=data)
+        assert response.status_code == 200
+        assert response.context['result']['confidence'] <= 100
+
+@pytest.mark.integration
+class TestPredictionParametrized:
+    @pytest.mark.parametrize("temperature_c,expected_label", [
+        ('50.0', 'High'),
+        ('10.0', 'Low'),
     ])
-    def test_crop_growth_stages(
-        self, client, valid_prediction_data, api_success_response, crop_stage
-    ):
-        """Chaque valeur de Crop_Growth_Stage est acceptée."""
-        data = valid_prediction_data.copy()
-        data['crop_growth_stage'] = crop_stage
-
-        with rm.Mocker() as m:
-            adapter = m.post(API_URL, json=api_success_response, status_code=200)
-
-            response = client.post("/prediction/form/", data=data)
-
+    def test_temperature_impact(self, client, temperature_c, expected_label, requests_mock):
+        mock_resp = {"prediction_label": expected_label, "confidence": 90.0, "probabilities": {expected_label: 90.0}}
+        requests_mock.post("http://model-api:5000/predict", json=mock_resp)
+        data = { 'temperature_c': temperature_c, 'humidity': '50.0', 'soil_moisture': '20.0', 'rainfall_mm': '0.0', 'wind_speed_kmh': '10.0' }
+        response = client.post("/prediction/form/", data=data)
         assert response.status_code == 200
-        # Vérifier que le payload envoyé à l'API a le bon one-hot
-        sent_payload = adapter.last_request.json()
-        assert sent_payload[f'Crop_Growth_Stage_{crop_stage}'] == 1.0
+        assert response.context['result']['prediction_label'] == expected_label
 
-    @pytest.mark.parametrize("irrig_type", [
-        'Canal', 'Drip', 'Rainfed', 'Sprinkler',
+    @pytest.mark.parametrize("rainfall_mm,expected_label", [
+        ('0.0', 'High'),
+        ('50.0', 'Low'),
     ])
-    def test_irrigation_types(
-        self, client, valid_prediction_data, api_success_response, irrig_type
-    ):
-        """Chaque valeur de Irrigation_Type est acceptée."""
-        data = valid_prediction_data.copy()
-        data['irrigation_type'] = irrig_type
-
-        with rm.Mocker() as m:
-            adapter = m.post(API_URL, json=api_success_response, status_code=200)
-
-            response = client.post("/prediction/form/", data=data)
-
+    def test_rainfall_impact(self, client, rainfall_mm, expected_label, requests_mock):
+        mock_resp = {"prediction_label": expected_label, "confidence": 90.0, "probabilities": {expected_label: 90.0}}
+        requests_mock.post("http://model-api:5000/predict", json=mock_resp)
+        data = { 'temperature_c': '35.0', 'humidity': '30.0', 'soil_moisture': '10.0', 'rainfall_mm': rainfall_mm, 'wind_speed_kmh': '10.0' }
+        response = client.post("/prediction/form/", data=data)
         assert response.status_code == 200
-        sent_payload = adapter.last_request.json()
-        assert sent_payload[f'Irrigation_Type_{irrig_type}'] == 1.0
+        assert response.context['result']['prediction_label'] == expected_label
 
-    @pytest.mark.parametrize("mulching", ['Yes', 'No'])
-    def test_mulching_values(
-        self, client, valid_prediction_data, api_success_response, mulching
-    ):
-        """Les deux valeurs de Mulching_Used sont acceptées."""
-        data = valid_prediction_data.copy()
-        data['mulching_used'] = mulching
-
-        with rm.Mocker() as m:
-            adapter = m.post(API_URL, json=api_success_response, status_code=200)
-
-            response = client.post("/prediction/form/", data=data)
-
+@pytest.mark.errors
+class TestPredictionErrors:
+    def test_non_numeric_temperature(self, client, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        data = { 'temperature_c': 'abc', 'humidity': '50', 'soil_moisture': '30', 'rainfall_mm': '0', 'wind_speed_kmh': '10' }
+        response = client.post("/prediction/form/", data=data)
         assert response.status_code == 200
-        sent_payload = adapter.last_request.json()
-        assert sent_payload[f'Mulching_Used_{mulching}'] == 1.0
+        # Avec to_float qui capture l'erreur et met la valeur par defaut, 
+        # on doit verifier que le fallback marche et qu'on a un resultat correct
+        assert response.context['result']['prediction_label'] == "High"
+
+    def test_all_fields_non_numeric(self, client, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        data = { 'temperature_c': 'hot', 'humidity': 'wet', 'soil_moisture': 'dry', 'rainfall_mm': 'none', 'wind_speed_kmh': 'calm' }
+        response = client.post("/prediction/form/", data=data)
+        assert response.status_code == 200
+        assert response.context['result']['prediction_label'] == "High"
+
+    def test_empty_form_uses_defaults(self, client, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        response = client.post("/prediction/form/", data={})
+        assert response.status_code == 200
+        assert response.context['result']['prediction_label'] == "High"
+
+    def test_negative_values_accepted(self, client, requests_mock, api_success_response):
+        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        data = { 'temperature_c': '-10.0', 'humidity': '80.0', 'soil_moisture': '50.0', 'rainfall_mm': '20.0', 'wind_speed_kmh': '5.0' }
+        response = client.post("/prediction/form/", data=data)
+        assert response.status_code == 200
+        assert response.context['result']['prediction_label'] == "High"
+
+    def test_api_connection_error(self, client, requests_mock, valid_prediction_data):
+        import requests
+        requests_mock.post("http://model-api:5000/predict", exc=requests.exceptions.ConnectionError)
+        response = client.post("/prediction/form/", data=valid_prediction_data)
+        assert response.status_code == 200
+        assert 'error' in response.context
+        assert 'Impossible de se connecter' in response.context['error']

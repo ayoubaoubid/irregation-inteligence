@@ -1,33 +1,20 @@
 """
 Fixtures partagées pour tous les tests pytest.
-
-- `client` : client HTTP Django (sans base de données).
-- `valid_prediction_data` : données de formulaire valides pour la prédiction.
-- `api_success_response` : réponse JSON simulée d'une API modèle réussie.
-- `mock_api_success` / `mock_api_error` / `mock_api_timeout` : mocks requests.
 """
 
 import pytest
 from django.test import Client
 
-
-# ── Django test client (pas de DB nécessaire) ──────────────────────────────
-
 @pytest.fixture
 def client():
-    """Retourne un client Django pour simuler des requêtes HTTP."""
     return Client()
-
-
-# ── Données de formulaire valides ──────────────────────────────────────────
 
 @pytest.fixture
 def valid_prediction_data():
-    """Données POST réalistes pour le formulaire de prédiction."""
     return {
         'soil_ph': '6.5',
         'soil_moisture': '30.0',
-        'organic_carbon': '0.8',
+        'organic_carbon': '1.0',
         'electrical_conductivity': '1.5',
         'temperature_c': '25.0',
         'humidity': '60.0',
@@ -35,50 +22,46 @@ def valid_prediction_data():
         'sunlight_hours': '8.0',
         'wind_speed_kmh': '10.0',
         'crop_growth_stage': 'Vegetative',
-        'irrigation_type': 'Rainfed',
+        'irrigation_type': 'Drip',
         'field_area_hectare': '1.0',
-        'mulching_used': 'Yes',
-        'previous_irrigation_mm': '0.0',
+        'mulching_used': 'No',
+        'previous_irrigation_mm': '0.0'
     }
-
 
 @pytest.fixture
-def valid_add_data_form():
-    """Données POST réalistes pour le formulaire d'ajout de données."""
+def hot_dry_data():
     return {
-        'Soil_pH': '6.5',
-        'Soil_Moisture': '30.0',
-        'Organic_Carbon': '0.8',
-        'Electrical_Conductivity': '1.5',
-        'Temperature_C': '25.0',
-        'Humidity': '60.0',
-        'Rainfall_mm': '0.0',
-        'Sunlight_Hours': '8.0',
-        'Wind_Speed_kmh': '10.0',
-        'Crop_Growth_Stage': 'Vegetative',
-        'Irrigation_Type': 'Rainfed',
-        'Field_Area_hectare': '1.0',
-        'Mulching_Used': 'Yes',
-        'Previous_Irrigation_mm': '0.0',
-        'Irrigation_Need': 'Yes',
+        'temperature_c': '45.0',
+        'humidity': '10.0',
+        'soil_moisture': '5.0',
+        'rainfall_mm': '0.0',
+        'wind_speed_kmh': '25.0',
     }
 
-
-# ── Réponses API simulées ─────────────────────────────────────────────────
+@pytest.fixture
+def wet_cool_data():
+    return {
+        'temperature_c': '15.0',
+        'humidity': '90.0',
+        'soil_moisture': '80.0',
+        'rainfall_mm': '50.0',
+        'wind_speed_kmh': '5.0',
+    }
 
 @pytest.fixture
 def api_success_response():
-    """Réponse JSON attendue quand l'API modèle fonctionne."""
     return {
-        'prediction': 'High',
-        'probability': 0.87,
-        'message': 'Irrigation fortement recommandée',
+        "prediction_label": "High",
+        "confidence": 85.5,
+        "probabilities": {"High": 85.5, "Medium": 10.0, "Low": 4.5},
+        "prediction_id": "test-pred-123"
     }
 
-
 @pytest.fixture
-def api_error_response():
-    """Réponse JSON renvoyée quand l'API modèle retourne une erreur 500."""
+def api_low_response():
     return {
-        'error': 'Internal Server Error',
+        "prediction_label": "Low",
+        "confidence": 90.0,
+        "probabilities": {"High": 2.0, "Medium": 8.0, "Low": 90.0},
+        "prediction_id": "test-pred-456"
     }
