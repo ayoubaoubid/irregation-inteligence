@@ -33,12 +33,12 @@ stages:
       md5: 9cc02a03c94a08267c0f6fa2dce95014
       size: 1807
   test:
-    cmd: pytest tests/
+    cmd: python -m pytest tests/
     deps:
     - path: models/best_model.pkl
       hash: md5
-      md5: 55171550cceb75d1fe2faf00c4114345
-      size: 18782849
+      md5: 563fe1a9709ef8974590ddd7fd358653
+      size: 17868881
     - path: models/classes.pkl
       hash: md5
       md5: b1cf54b34128114d2f9788c4c72e16f3
@@ -49,8 +49,8 @@ stages:
       size: 462
     - path: models/scaler.pkl
       hash: md5
-      md5: 70d45421b733ff6a19235901394e36cd
-      size: 1759
+      md5: 9cc02a03c94a08267c0f6fa2dce95014
+      size: 1807
     - path: tests/test_model.py
       hash: md5
       md5: 1ffbbf1f6f3630f9b64e17f883984568
