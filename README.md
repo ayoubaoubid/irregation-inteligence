@@ -25,6 +25,8 @@ Pipeline CI:
 
 - le workflow GitHub Actions est dans `.github/workflows/mlops-pipeline.yml`
 - il se lance automatiquement sur chaque `push` et `pull_request`
-- en mode DVC local seulement, la CI GitHub n'execute pas `dvc pull` ni `dvc repro`
+- les datasets de `DataOps/Statics` sont suivis par DVC, pas directement par Git
+- le remote DVC par defaut pointe vers DagsHub
+- la CI GitHub n'execute pas `dvc pull` ni `dvc repro`
 - la CI garde des verifications compatibles cloud, comme `manage.py check`
 - les tests qui dependent des artefacts de modele locaux sont ignores si `models/` n'est pas disponible

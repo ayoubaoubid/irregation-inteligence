@@ -1,9 +1,5 @@
 [core]
     site_cache_dir = .dvc/site-cache
-    remote = storage
-['remote "storage"']
-    url = ../dvc-storage
-['remote "myremote"']
-    url = gdrive://YOUR_FOLDER_ID
+    remote = origin
 ['remote "origin"']
     url = https://dagshub.com/ayoubaoubid/irregation-inteligence.dvc
