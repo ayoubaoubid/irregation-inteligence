@@ -25,7 +25,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-            pip install "dvc[http]"
+          pip install pytest
+          pip install "dvc[http]"
 
       - name: Configure DagsHub remote auth
         run: |
@@ -34,9 +35,18 @@ jobs:
           dvc remote modify origin password "${{ secrets.DAGSHUB_TOKEN }}"
 
       - name: Pull DVC data
+        id: dvc_pull
+        continue-on-error: true
         run: dvc pull
 
+      - name: Explain DVC fallback
+        if: steps.dvc_pull.outcome != 'success'
+        run: |
+          echo "DVC pull could not restore remote artifacts."
+          echo "Continuing with cloud-safe checks only."
+
       - name: Run DVC pipeline
+        if: steps.dvc_pull.outcome == 'success'
         run: dvc repro
 
       - name: Run Django system checks

@@ -30,8 +30,8 @@ Pipeline CI:
 - il se lance automatiquement sur chaque `push` et `pull_request`
 - les datasets de `DataOps/Statics` sont suivis par DVC, pas directement par Git
 - le remote DVC par defaut pointe vers DagsHub
-- la CI GitHub n'execute pas `dvc pull` ni `dvc repro`
-- la CI garde des verifications compatibles cloud, comme `manage.py check`
+- la CI GitHub tente `dvc pull`, puis lance `dvc repro` seulement si les artefacts distants sont disponibles
+- la CI garde un mode de secours compatible cloud, comme `manage.py check`, si le remote DVC n'est pas encore synchronise
 - les tests qui dependent des artefacts de modele locaux sont ignores si `models/` n'est pas disponible
 
 Pipeline data/model local recommande:
