@@ -21,7 +21,7 @@ stages:
       - models/classes.pkl
 
   test:
-    cmd: pytest tests/
+    cmd: python -m pytest tests/
     deps:
       - tests/test_model.py
       - models/best_model.pkl
