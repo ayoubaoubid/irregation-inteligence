@@ -3,3 +3,4 @@
     remote = origin
 ['remote "origin"']
     url = https://dagshub.com/ayoubaoubid/irregation-inteligence.dvc
+    jobs = 1
