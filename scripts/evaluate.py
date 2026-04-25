@@ -1,71 +1,63 @@
-import pandas as pd
+import os
+from pathlib import Path
+
 import joblib
 import mlflow
+import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
-    f1_score,
     classification_report,
-    confusion_matrix
+    confusion_matrix,
+    f1_score,
 )
 
-df = pd.read_csv("DataOps/Statics/irrigation_prediction_processed.csv")
 
-mapping = {0: "Low", 1: "Medium", 2: "High"}
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+
+def configure_mlflow() -> None:
+    tracking_uri = os.getenv("MLFLOW_TRACKING_URI")
+    if tracking_uri:
+        mlflow.set_tracking_uri(tracking_uri)
+        return
+
+    mlruns_dir = BASE_DIR / "mlruns"
+    mlruns_dir.mkdir(parents=True, exist_ok=True)
+    mlflow.set_tracking_uri(mlruns_dir.resolve().as_uri())
+
+
+df = pd.read_csv(BASE_DIR / "DataOps" / "Statics" / "irrigation_prediction_processed.csv")
 y = df["Irrigation_Need"]
 X = df.drop("Irrigation_Need", axis=1)
 
-print(" Classes présentes :", y.unique())
+print("Classes presentes:", y.unique())
 
-# =========================
-# 📦 LOAD MODEL + SCALER
-# =========================
-model = joblib.load("models/best_model.pkl")
-scaler = joblib.load("models/scaler.pkl")
-FEATURES = joblib.load("models/features.pkl")
+model = joblib.load(BASE_DIR / "models" / "best_model.pkl")
+scaler = joblib.load(BASE_DIR / "models" / "scaler.pkl")
+features = joblib.load(BASE_DIR / "models" / "features.pkl")
 
-# =========================
-# ⚠️ ALIGN FEATURES
-# =========================
-X = X.reindex(columns=FEATURES, fill_value=0)
-
-# =========================
-# ⚙️ SCALING (CRUCIAL)
-# =========================
+X = X.reindex(columns=features, fill_value=0)
 X_scaled = scaler.transform(X)
-
-# =========================
-# 🔥 PREDICTION
-# =========================
 preds = model.predict(X_scaled)
 
-# =========================
-# 📊 METRICS
-# =========================
 acc = accuracy_score(y, preds)
 f1 = f1_score(y, preds, average="weighted")
 
-print("\n Accuracy :", acc)
-print(" F1-score :", f1)
-
-print("\n Classification Report :")
+print("\nAccuracy:", acc)
+print("F1-score:", f1)
+print("\nClassification Report:")
 print(classification_report(y, preds))
-
-print("\n Confusion Matrix :")
+print("\nConfusion Matrix:")
 print(confusion_matrix(y, preds))
 
-# =========================
-# 🧪 TEST RAPIDE (1 SAMPLE)
-# =========================
-print("\n TEST SAMPLE :")
-print("Real :", y.iloc[15677])
-print("Pred :", preds[15677])
+print("\nTest sample:")
+print("Real:", y.iloc[0])
+print("Pred:", preds[0])
 
-# =========================
-# 📊 MLflow LOG
-# =========================
+configure_mlflow()
 mlflow.set_experiment("Irrigation_MLOps_Experiment")
-
 with mlflow.start_run(run_name="evaluation"):
     mlflow.log_metric("accuracy", acc)
     mlflow.log_metric("f1_score", f1)
-print("\n Evaluation terminée")
+
+print("\nEvaluation terminee")

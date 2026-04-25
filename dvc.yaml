@@ -1,4 +1,13 @@
 stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+      - scripts/preprocess.py
+      - DataOps/Statics/irrigation_prediction.csv
+    outs:
+      - DataOps/Statics/irrigation_prediction_Variables_Important.csv
+      - DataOps/Statics/irrigation_prediction_processed.csv
+
   train:
     cmd: python scripts/train.py
     deps:
