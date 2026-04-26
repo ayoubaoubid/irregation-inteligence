@@ -86,7 +86,22 @@ jobs:
       - name: Start services
         run: |
           docker compose -f docker-compose.yml up -d
-          sleep 10   # laisser le temps aux services de démarrer
+          
+
+      - name: Smoke test — Nginx (port 7000)
+        run: |
+          curl --fail --retry 5 --retry-delay 5 \
+               --max-time 10 \
+               http://localhost:7000/ \
+            && echo "Nginx → Django : OK"
+            
+ 
+      - name: Smoke test — route /api/predict/ via Nginx
+        run: |
+          curl --fail --retry 5 --retry-delay 5 \
+               --max-time 10 \
+               http://localhost:7000/api/predict/ \
+            && echo "Nginx → Model API : OK"
 
       # Smoke test : vérifier que les services répondent
       - name: Test back-end health
