@@ -1,4 +1,13 @@
 stages:
+  preprocess:
+    cmd: python scripts/preprocess.py
+    deps:
+      - scripts/preprocess.py
+      - DataOps/Statics/irrigation_prediction.csv
+    outs:
+      - DataOps/Statics/irrigation_prediction_Variables_Important.csv
+      - DataOps/Statics/irrigation_prediction_processed.csv
+
   train:
     cmd: python scripts/train.py
     deps:
@@ -12,7 +21,7 @@ stages:
       - models/classes.pkl
 
   test:
-    cmd: pytest tests/
+    cmd: python -m pytest tests/
     deps:
       - tests/test_model.py
       - models/best_model.pkl
@@ -26,19 +35,4 @@ stages:
       - scripts/evaluate.py
       - models/best_model.pkl
 
-      # Initialisation
-      # dvc init
-
-      # Ajouter uniquement les données brutes
-      # dvc add DataOps/Statics/preprocessed_irrigation_data.csv
-
-      # Commit
-      # git add .
-      # git commit -m "Init DVC + data tracking"
-
-      # Lancer pipeline
-      #dvc repro
-
-      # Sauvegarder résultats DVC
-      # git add dvc.lock models/.gitignore
-      # git commit -m "Run pipeline: train + evaluate"
+      

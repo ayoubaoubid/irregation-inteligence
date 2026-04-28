@@ -2,8 +2,8 @@
 
 :root {
     /* Color Palette - Matching the screenshots */
-    --primary: #598d66;       /* Sage/Muted green */
-    --primary-light: #7cb18a; 
+    --primary: #87ab69;       /* Sage/Muted green */
+    --primary-light: #a3c585; 
     --primary-dark: #1b3829;  /* Deep dark forest green */
     --secondary: #e59c5d;     /* Orange/Earthy */
     --accent: #93c5fd;        /* Light blue for water */
@@ -16,7 +16,7 @@
     --text-light: #e2e8e4;
     --border-color: #e5e7e0;
     
-    --success: #10b981;
+    --success: #87ab69;
     --warning: #f59e0b;
     --danger: #ef4444;
     --info: #3b82f6;
@@ -25,7 +25,7 @@
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
     --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
-    --shadow-glow: 0 0 20px rgba(89, 141, 102, 0.2);
+    --shadow-glow: 0 0 20px rgba(135, 171, 105, 0.2);
     
     --radius-sm: 8px;
     --radius-md: 16px;
@@ -45,10 +45,10 @@ body.dark-mode {
     --text-muted: #95a39b;
     --text-light: #445048;
     --border-color: #38423b;
-    --primary-dark: #7cb18a;
+    --primary-dark: #a3c585;
     
     /* Slightly dim buttons in dark mode for comfort */
-    --primary: #4a7a58; 
+    --primary: #87ab69; 
 }
 
 * {
@@ -219,7 +219,7 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1rem;
 }
 
-.dark-widget-label { font-size: 0.75rem; text-transform: uppercase; color: #a3b8ad; letter-spacing: 1px; margin-bottom: 0.5rem;}
+.dark-widget-label { font-size: 0.75rem; text-transform: uppercase; color: #a3c585; letter-spacing: 1px; margin-bottom: 0.5rem;}
 .dark-widget-value { font-size: 2.5rem; font-weight: 800; font-family: var(--font-heading); display: flex; align-items: baseline; gap: 0.2rem;}
 
 /* Progress Bar */

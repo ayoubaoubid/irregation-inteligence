@@ -1,13 +1,15 @@
 import csv
-import os
 from django.shortcuts import render
 from django.conf import settings
+
 
 def dataset(request):
     return render(request, 'dataset/dataset.html')
 
+
 def analysis(request):
     return render(request, 'dataset/analysis.html')
+
 
 def add_data(request):
     if request.method == 'POST':
@@ -26,15 +28,22 @@ def add_data(request):
             request.POST.get('Field_Area_hectare'),
             request.POST.get('Mulching_Used'),
             request.POST.get('Previous_Irrigation_mm'),
-            request.POST.get('Irrigation_Need')
+            request.POST.get('Irrigation_Need'),
         ]
-        
-        # Adding to the static CSV
-        csv_path = r'd:\MLOPS_env\irregation-inteligence\DataOps\Statics\irrigation_prediction_Variables_Important.csv'
+
+        # Keep dataset ingestion project-relative so local runs and containers use the same path.
+        csv_path = (
+            settings.BASE_DIR.parent
+            / 'DataOps'
+            / 'Statics'
+            / 'irrigation_prediction_Variables_Important.csv'
+        )
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+
         with open(csv_path, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(data)
-            
+
         return render(request, 'dataset/add_data.html', {'success': True})
-        
+
     return render(request, 'dataset/add_data.html')

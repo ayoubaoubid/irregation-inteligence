@@ -26,11 +26,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
+          pip install "dvc[http]"
 
-      - name: Explain local DVC mode
+      - name: Configure DagsHub remote auth
         run: |
-          echo "DVC is configured for local-only storage in this project."
-          echo "GitHub-hosted CI skips DVC pull/repro and any tests that require local model artifacts."
+          dvc remote modify origin auth basic
+          dvc remote modify origin user "${{ secrets.DAGSHUB_USERNAME }}"
+          dvc remote modify origin password "${{ secrets.DAGSHUB_TOKEN }}"
+
+      - name: Pull DVC data
+        id: dvc_pull
+        continue-on-error: true
+        run: dvc pull
+
+      - name: Explain DVC fallback
+        if: steps.dvc_pull.outcome != 'success'
+        run: |
+          echo "DVC pull could not restore remote artifacts."
+          echo "Continuing with cloud-safe checks only."
+
+      - name: Run DVC pipeline
+        if: steps.dvc_pull.outcome == 'success'
+        run: dvc repro
 
       - name: Run Django system checks
         run: python Plateform_IA/manage.py check

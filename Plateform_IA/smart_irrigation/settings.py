@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-ww)7*w*cu7_fkl_5oc-cb55$(ztbhh911lsya=wx(sce@_@yn+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '192.168.1.11',  # ton IP locale
+    '*',             # ou ceci pour autoriser tout (plus simple)
+]
 
 
 # Application definition
@@ -40,7 +45,6 @@ INSTALLED_APPS = [
     'core',
     'dataset',
     'prediction',
-    'dashboard',
 ]
 
 MIDDLEWARE = [
