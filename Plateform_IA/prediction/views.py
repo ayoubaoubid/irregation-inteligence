@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 
 import requests
+from django.conf import settings
 
 
 def to_float(value, default=0.0):
@@ -71,7 +72,7 @@ def prediction(request):
                 'Mulching_Used_Yes': 1.0 if mulching == 'Yes' else 0.0,
             }
 
-            api_url = "http://model-api:5000/predict"
+            api_url = settings.MODEL_API_PREDICT_URL
 
             try:
                 response = requests.post(api_url, json=payload)

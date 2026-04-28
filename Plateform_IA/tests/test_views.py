@@ -3,6 +3,7 @@ Tests de chargement des vues (pages) et de soumission de formulaires.
 """
 
 import pytest
+from django.conf import settings
 
 
 @pytest.mark.views
@@ -47,13 +48,13 @@ class TestPredictionPages:
 @pytest.mark.forms
 class TestPredictionForm:
     def test_valid_prediction_returns_result(self, client, valid_prediction_data, requests_mock, api_success_response):
-        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        requests_mock.post(settings.MODEL_API_PREDICT_URL, json=api_success_response)
         response = client.post("/prediction/form/", data=valid_prediction_data)
         assert response.status_code == 200
         assert response.context['result']['prediction_label'] == "High"
 
     def test_prediction_preserves_inputs(self, client, valid_prediction_data, requests_mock, api_success_response):
-        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        requests_mock.post(settings.MODEL_API_PREDICT_URL, json=api_success_response)
         response = client.post("/prediction/form/", data=valid_prediction_data)
         assert response.status_code == 200
         inputs = response.context['inputs']
@@ -61,7 +62,7 @@ class TestPredictionForm:
         assert inputs['humidity'] == '60.0'
 
     def test_prediction_irrigation_needed(self, client, requests_mock, api_success_response):
-        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        requests_mock.post(settings.MODEL_API_PREDICT_URL, json=api_success_response)
         data = {
             'temperature_c': '45.0',
             'humidity': '10.0',
@@ -74,7 +75,7 @@ class TestPredictionForm:
         assert response.context['result']['prediction_label'] == "High"
 
     def test_prediction_no_irrigation_needed(self, client, requests_mock, api_low_response):
-        requests_mock.post("http://model-api:5000/predict", json=api_low_response)
+        requests_mock.post(settings.MODEL_API_PREDICT_URL, json=api_low_response)
         data = {
             'temperature_c': '15.0',
             'humidity': '90.0',
@@ -90,7 +91,7 @@ class TestPredictionForm:
 @pytest.mark.errors
 class TestPredictionInvalidInput:
     def test_non_numeric_value(self, client, requests_mock, api_success_response):
-        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        requests_mock.post(settings.MODEL_API_PREDICT_URL, json=api_success_response)
         bad_data = {
             'temperature_c': 'pas-un-nombre',
             'humidity': '50',
@@ -103,7 +104,7 @@ class TestPredictionInvalidInput:
         assert response.context['result']['prediction_label'] == "High"
 
     def test_empty_form_uses_defaults(self, client, requests_mock, api_success_response):
-        requests_mock.post("http://model-api:5000/predict", json=api_success_response)
+        requests_mock.post(settings.MODEL_API_PREDICT_URL, json=api_success_response)
         response = client.post("/prediction/form/", data={})
         assert response.status_code == 200
         assert response.context['result']['prediction_label'] == "High"
