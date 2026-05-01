@@ -45,6 +45,42 @@
     #zone-delta { top: 70%; left: 50%; width: 45%; height: 25%; background-color: rgba(220, 53, 69, 0.7); } /* Critical */
     
     .panel-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid #eee; }
+
+    .field-map-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0 1rem;
+        gap: 1rem;
+    }
+
+    .field-legend {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+        .field-map {
+            height: 420px;
+        }
+
+        .field-map-header,
+        .panel-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .zone-name {
+            font-size: 0.95rem;
+        }
+
+        .zone-data {
+            font-size: 0.75rem;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -57,9 +93,9 @@
     <div class="grid-2">
         <!-- Section 2 & 3: Map Placeholder & Soil Zones -->
         <div class="card" style="padding: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 1rem;">
+            <div class="field-map-header">
                 <h2 style="font-size: 1.2rem; color: var(--primary);">Vue Topologique</h2>
-                <div style="display: flex; gap: 1rem; font-size: 0.85rem;">
+                <div class="field-legend">
                     <span style="display: flex; align-items: center; gap: 4px;"><div style="width:12px;height:12px;background:#28a745;border-radius:50%;"></div> Optimal</span>
                     <span style="display: flex; align-items: center; gap: 4px;"><div style="width:12px;height:12px;background:#ffc107;border-radius:50%;"></div> Zone d'Alerte</span>
                     <span style="display: flex; align-items: center; gap: 4px;"><div style="width:12px;height:12px;background:#dc3545;border-radius:50%;"></div> Critique / Irriguez</span>

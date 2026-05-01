@@ -8,3 +8,6 @@ numpy
 scikit-learn
 joblib
 mlflow
+dvc
+pyYaml
+requests

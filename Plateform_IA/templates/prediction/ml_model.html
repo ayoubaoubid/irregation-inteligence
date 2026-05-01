@@ -2,6 +2,14 @@
 
 {% block title %}Machine Learning Model | Smart Irrigation{% endblock %}
 
+{% block extra_css %}
+<style>
+    .confusion-table-wrap {
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1: ML Objective -->
@@ -50,7 +58,7 @@
     <!-- Section 7: Confusion Matrix -->
     <div class="card mb-4">
         <h2 class="card-header text-center">7. Matrice de Confusion (Données Inconnues)</h2>
-        <div style="display: flex; justify-content: center; margin-top: 1rem;">
+        <div class="confusion-table-wrap" style="display: flex; justify-content: center; margin-top: 1rem;">
             <table style="border-collapse: collapse; text-align: center; font-size: 1.1rem;">
                 <tr>
                     <td></td>

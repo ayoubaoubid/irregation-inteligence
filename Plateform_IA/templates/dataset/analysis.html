@@ -36,68 +36,62 @@
 {% block content %}
 <section class="section" style="margin-top: 1rem;">
     <h1 class="section-title">Analyse Exhaustive du Dataset</h1>
-    <p class="section-subtitle mb-4">9 Visualisations avancées représentant les corrélations de nos données agricoles expertes.</p>
+    <p class="section-subtitle mb-4">Visualisations r&eacute;elles construites &agrave; partir du dataset agricole.</p>
 
-    <!-- Row 1 -->
     <div class="grid-2">
         <div class="viz-card">
             <h2 class="viz-title">1. Distribution de la Demande en Eau</h2>
-            <p class="viz-subtitle">Bar Chart — Variable Cible (Irrigation_Need)</p>
+            <p class="viz-subtitle">Bar Chart - Variable cible `Irrigation_Need`</p>
             <div class="chart-container"><canvas id="chart1"></canvas></div>
         </div>
         <div class="viz-card">
-            <h2 class="viz-title">2. Méthodes d'Irrigation</h2>
-            <p class="viz-subtitle">Horizontal Bar Chart — Fréquence de chaque Irrigation_Type</p>
+            <h2 class="viz-title">2. M&eacute;thodes d'Irrigation</h2>
+            <p class="viz-subtitle">Horizontal Bar Chart - Fr&eacute;quence de chaque `Irrigation_Type`</p>
             <div class="chart-container"><canvas id="chart2"></canvas></div>
         </div>
     </div>
 
-    <!-- Row 2 -->
     <div class="grid-2">
         <div class="viz-card">
-            <h2 class="viz-title">3. Utilisation du Paillage (Mulching)</h2>
-            <p class="viz-subtitle">Pie Chart — Proportion de parcelles utilisant le paillage</p>
+            <h2 class="viz-title">3. Utilisation du Paillage</h2>
+            <p class="viz-subtitle">Pie Chart - Proportion des parcelles selon `Mulching_Used`</p>
             <div class="chart-container"><canvas id="chart3"></canvas></div>
         </div>
         <div class="viz-card">
-            <h2 class="viz-title">4. Stades de Croissance des Cultures</h2>
-            <p class="viz-subtitle">Doughnut Chart — Répartition par Crop_Growth_Stage</p>
+            <h2 class="viz-title">4. Stades de Croissance</h2>
+            <p class="viz-subtitle">Doughnut Chart - R&eacute;partition de `Crop_Growth_Stage`</p>
             <div class="chart-container"><canvas id="chart4"></canvas></div>
         </div>
     </div>
 
-    <!-- Row 3 -->
     <div class="viz-card">
-        <h2 class="viz-title">5. Humidité du Sol vs Température</h2>
-        <p class="viz-subtitle">Scatter Plot — Selon la criticité du besoin en eau (Irrigation_Need)</p>
+        <h2 class="viz-title">5. Humidit&eacute; du Sol vs Temp&eacute;rature</h2>
+        <p class="viz-subtitle">Scatter Plot - `Soil_Moisture` et `Temperature_C` group&eacute;s par `Irrigation_Need`</p>
         <div class="chart-container" style="height: 400px;"><canvas id="chart5"></canvas></div>
     </div>
 
-    <!-- Row 4 -->
     <div class="viz-card">
-        <h2 class="viz-title">6. Paramètres Climatiques selon le Besoin</h2>
-        <p class="viz-subtitle">Line Chart — Normalisation de Rainfall, Humidity et Sunlight_Hours</p>
+        <h2 class="viz-title">6. Param&egrave;tres Climatiques selon le Besoin</h2>
+        <p class="viz-subtitle">Line Chart - Moyennes normalis&eacute;es de `Rainfall_mm`, `Humidity` et `Sunlight_Hours`</p>
         <div class="chart-container" style="height: 400px;"><canvas id="chart6"></canvas></div>
     </div>
 
-    <!-- Row 5 -->
     <div class="grid-2">
          <div class="viz-card">
             <h2 class="viz-title">7. Profils Multi-Variables par Irrigation</h2>
-            <p class="viz-subtitle">Radar Chart — Comparaison Drip, Flood, Sprinkler (Valeurs normalisées)</p>
+            <p class="viz-subtitle">Radar Chart - Profils normalis&eacute;s par `Irrigation_Type`</p>
             <div class="chart-container"><canvas id="chart7"></canvas></div>
         </div>
         <div class="viz-card">
             <h2 class="viz-title">8. Composition Hydrique par Croissance</h2>
-            <p class="viz-subtitle">Stacked Bar Chart — Irrigation_Need selon Crop_Growth_Stage</p>
+            <p class="viz-subtitle">Stacked Bar Chart - `Irrigation_Need` selon `Crop_Growth_Stage`</p>
             <div class="chart-container"><canvas id="chart8"></canvas></div>
         </div>
     </div>
 
-    <!-- Row 6 -->
     <div class="viz-card">
-        <h2 class="viz-title">9. Pluviométrie, Humidité & Taille Parcelles</h2>
-        <p class="viz-subtitle">Bubble Chart — Pluviométrie (X), Humidité Sol (Y), Taille (Bulle) et Besoin (Couleur)</p>
+        <h2 class="viz-title">9. Pluviom&eacute;trie, Humidit&eacute; &amp; Taille Parcelles</h2>
+        <p class="viz-subtitle">Bubble Chart - `Rainfall_mm`, `Soil_Moisture`, `Field_Area_hectare` et `Irrigation_Need`</p>
         <div class="chart-container" style="height: 450px;"><canvas id="chart9"></canvas></div>
     </div>
 
@@ -108,144 +102,160 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Universal defaults for dark/light mode integration
         const isDarkMode = document.body.classList.contains('dark-mode');
         Chart.defaults.color = isDarkMode ? '#b5b5b5' : '#666';
         Chart.defaults.font.family = 'var(--font-body, "Inter", sans-serif)';
-        
+
         const gridConfig = { color: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' };
-        
-        // Colors for Irrigation_Need [Low, Medium, High, Very High]
-        const colNeed = ['#28a745', '#ffc107', '#fd7e14', '#dc3545'];
-        
-        // Colors for Irrigation_Type [Drip, Sprinkler, Flood, Subsurface]
-        const colType = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2'];
-        
-        // 1. BAR CHART: Irrigation_Need
+        const chart1Labels = JSON.parse('{{ chart1_labels|escapejs }}');
+        const chart1Values = JSON.parse('{{ chart1_values|escapejs }}');
+        const chart2Labels = JSON.parse('{{ chart2_labels|escapejs }}');
+        const chart2Values = JSON.parse('{{ chart2_values|escapejs }}');
+        const chart3Labels = JSON.parse('{{ chart3_labels|escapejs }}');
+        const chart3Values = JSON.parse('{{ chart3_values|escapejs }}');
+        const chart4Labels = JSON.parse('{{ chart4_labels|escapejs }}');
+        const chart4Values = JSON.parse('{{ chart4_values|escapejs }}');
+        const chart5Datasets = JSON.parse('{{ chart5_datasets|escapejs }}');
+        const chart6Data = JSON.parse('{{ chart6_data|escapejs }}');
+        const chart7Data = JSON.parse('{{ chart7_data|escapejs }}');
+        const chart8Data = JSON.parse('{{ chart8_data|escapejs }}');
+        const chart9Datasets = JSON.parse('{{ chart9_datasets|escapejs }}');
+
+        const needColors = ['#87ab69', '#ffc107', '#fd7e14'];
+        const bubbleColors = [
+            'rgba(40, 167, 69, 0.6)',
+            'rgba(255, 193, 7, 0.6)',
+            'rgba(253, 126, 20, 0.6)'
+        ];
+
         new Chart(document.getElementById('chart1'), {
             type: 'bar',
             data: {
-                labels: ['Low', 'Medium', 'High', 'Very High'],
+                labels: chart1Labels,
                 datasets: [{
-                    label: 'Nombre d\'occurrences',
-                    data: [4000, 3500, 2000, 500],
-                    backgroundColor: colNeed,
+                    label: "Nombre d'occurrences",
+                    data: chart1Values,
+                    backgroundColor: needColors,
                     borderRadius: 6
                 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { x: { grid: { display: false } }, y: { grid: gridConfig, title: { display: true, text: 'Occurrences' } } }
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: gridConfig, title: { display: true, text: 'Occurrences' } }
+                }
             }
         });
 
-        // 2. HORIZONTAL BAR CHART: Irrigation_Type
         new Chart(document.getElementById('chart2'), {
             type: 'bar',
             data: {
-                labels: ['Drip', 'Sprinkler', 'Flood', 'Subsurface'],
+                labels: chart2Labels,
                 datasets: [{
-                    label: 'Fréquence d\'Utilisation',
-                    data: [4500, 3000, 1500, 1000],
-                    backgroundColor: colType,
+                    label: "Fréquence d'utilisation",
+                    data: chart2Values,
+                    backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2'],
                     borderRadius: 6
                 }]
             },
             options: {
                 indexAxis: 'y',
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { x: { grid: gridConfig, title: { display: true, text: 'Fréquence' } }, y: { grid: { display: false } } }
+                scales: {
+                    x: { grid: gridConfig, title: { display: true, text: 'Fréquence' } },
+                    y: { grid: { display: false } }
+                }
             }
         });
 
-        // 3. PIE CHART: Mulching_Used
         new Chart(document.getElementById('chart3'), {
             type: 'pie',
             data: {
-                labels: ['Yes (65%)', 'No (35%)'],
+                labels: chart3Labels,
                 datasets: [{
-                    data: [65, 35],
+                    data: chart3Values,
                     backgroundColor: ['#2ca02c', '#d62728'],
                     borderWidth: 2,
                     borderColor: 'transparent'
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
         });
 
-        // 4. DOUGHNUT CHART: Crop_Growth_Stage
         new Chart(document.getElementById('chart4'), {
             type: 'doughnut',
             data: {
-                labels: ['Seedling', 'Vegetative', 'Flowering', 'Maturity'],
+                labels: chart4Labels,
                 datasets: [{
-                    data: [15, 40, 25, 20],
+                    data: chart4Values,
                     backgroundColor: ['#9edae5', '#17becf', '#dbdb8d', '#bcbd22'],
                     borderWidth: 2,
                     borderColor: 'transparent'
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: { legend: { position: 'bottom' } }
+            }
         });
 
-        // 5. SCATTER PLOT: Soil_Moisture vs Temp
-        const genScatter = (num, moistMin, moistMax, tMin, tMax) => 
-            Array.from({length: num}, () => ({ x: moistMin + Math.random()*(moistMax-moistMin), y: tMin + Math.random()*(tMax-tMin) }));
-        
         new Chart(document.getElementById('chart5'), {
             type: 'scatter',
             data: {
-                datasets: [
-                    { label: 'Low Need', data: genScatter(40, 60, 90, 15, 25), backgroundColor: colNeed[0], pointRadius: 5 },
-                    { label: 'Medium Need', data: genScatter(40, 40, 65, 20, 32), backgroundColor: colNeed[1], pointRadius: 5 },
-                    { label: 'High Need', data: genScatter(40, 20, 45, 28, 38), backgroundColor: colNeed[2], pointRadius: 5 },
-                    { label: 'Very High Need', data: genScatter(40, 5, 25, 32, 45), backgroundColor: colNeed[3], pointRadius: 5 }
-                ]
+                datasets: chart5Datasets.map((dataset, index) => ({
+                    ...dataset,
+                    backgroundColor: needColors[index],
+                    pointRadius: 4
+                }))
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { 
-                    x: { grid: gridConfig, title: { display: true, text: 'Soil Moisture (%)' } }, 
-                    y: { grid: gridConfig, title: { display: true, text: 'Temperature (°C)' } } 
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: gridConfig, title: { display: true, text: 'Soil Moisture (%)' } },
+                    y: { grid: gridConfig, title: { display: true, text: 'Temperature (°C)' } }
                 }
             }
         });
 
-        // 6. LINE CHART: Climat normalized
         new Chart(document.getElementById('chart6'), {
             type: 'line',
             data: {
-                labels: ['Low', 'Medium', 'High', 'Very High'],
-                datasets: [
-                    { label: 'Rainfall (Norm 0-1)', data: [0.95, 0.60, 0.20, 0.02], borderColor: '#1f77b4', tension: 0.4, fill: false, borderWidth: 3 },
-                    { label: 'Humidity (Norm 0-1)', data: [0.85, 0.65, 0.45, 0.25], borderColor: '#2ca02c', tension: 0.4, fill: false, borderWidth: 3 },
-                    { label: 'Sunlight Hours (Norm 0-1)', data: [0.30, 0.50, 0.80, 0.95], borderColor: '#ff7f0e', tension: 0.4, fill: false, borderWidth: 3 }
-                ]
+                labels: chart6Data.labels,
+                datasets: chart6Data.datasets.map((dataset) => ({
+                    ...dataset,
+                    tension: 0.4,
+                    fill: false,
+                    borderWidth: 3
+                }))
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { 
-                    x: { grid: { display: false }, title: { display: true, text: 'Irrigation Need Class' } }, 
-                    y: { grid: gridConfig, title: { display: true, text: 'Indice Normalisé (0 - 1)' }, min: 0, max: 1 } 
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false }, title: { display: true, text: 'Irrigation Need Class' } },
+                    y: { grid: gridConfig, title: { display: true, text: 'Indice Normalisé (0 - 1)' }, min: 0, max: 1 }
                 }
             }
         });
 
-        // 7. RADAR CHART
         new Chart(document.getElementById('chart7'), {
             type: 'radar',
-            data: {
-                labels: ['Soil Moisture', 'Soil pH (Norm)', 'Organic Carbon (Norm)', 'Conductivity (Norm)', 'Temp (Norm)', 'Humidity'],
-                datasets: [
-                    { label: 'Drip', data: [75, 65, 40, 40, 25, 60], borderColor: colType[0], backgroundColor: 'rgba(78, 121, 167, 0.2)', borderWidth: 2 },
-                    { label: 'Flood', data: [90, 75, 20, 60, 32, 75], borderColor: colType[2], backgroundColor: 'rgba(225, 87, 89, 0.2)', borderWidth: 2 },
-                    { label: 'Sprinkler', data: [80, 70, 30, 50, 28, 85], borderColor: colType[1], backgroundColor: 'rgba(242, 142, 43, 0.2)', borderWidth: 2 }
-                ]
-            },
+            data: chart7Data,
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     r: {
                         angleLines: { color: gridConfig.color },
@@ -257,56 +267,40 @@
             }
         });
 
-        // 8. STACKED BAR: Growth Stage
         new Chart(document.getElementById('chart8'), {
             type: 'bar',
-            data: {
-                labels: ['Seedling', 'Vegetative', 'Flowering', 'Maturity'],
-                datasets: [
-                    { label: 'Low Need', data: [50, 20, 10, 40], backgroundColor: colNeed[0] },
-                    { label: 'Medium Need', data: [30, 40, 30, 30], backgroundColor: colNeed[1] },
-                    { label: 'High Need', data: [15, 30, 40, 20], backgroundColor: colNeed[2] },
-                    { label: 'Very High', data: [5, 10, 20, 10], backgroundColor: colNeed[3] }
-                ]
-            },
+            data: chart8Data,
             options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { 
-                    x: { stacked: true, grid: { display: false } }, 
-                    y: { stacked: true, grid: gridConfig, title: { display: true, text: 'Pourcentage (%)' }, max: 100 } 
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false } },
+                    y: { stacked: true, grid: gridConfig, title: { display: true, text: 'Pourcentage (%)' }, max: 100 }
                 }
             }
         });
 
-        // 9. BUBBLE CHART: Rain vs Moist vs Size
-        const genBubble = (num, rainMin, rainMax, moistMin, moistMax) => 
-            Array.from({length: num}, () => ({ 
-                x: rainMin + Math.random()*(rainMax-rainMin), 
-                y: moistMin + Math.random()*(moistMax-moistMin),
-                r: 4 + Math.random()*15 // Field size representation
-            }));
-
         new Chart(document.getElementById('chart9'), {
             type: 'bubble',
             data: {
-                datasets: [
-                    { label: 'Low Need', data: genBubble(25, 40, 120, 60, 90), backgroundColor: 'rgba(40, 167, 69, 0.6)', borderColor: colNeed[0] },
-                    { label: 'Medium Need', data: genBubble(25, 15, 50, 40, 65), backgroundColor: 'rgba(255, 193, 7, 0.6)', borderColor: colNeed[1] },
-                    { label: 'High Need', data: genBubble(25, 5, 20, 20, 45), backgroundColor: 'rgba(253, 126, 20, 0.6)', borderColor: colNeed[2] },
-                    { label: 'Very High', data: genBubble(25, 0, 5, 5, 25), backgroundColor: 'rgba(220, 53, 69, 0.6)', borderColor: colNeed[3] }
-                ]
+                datasets: chart9Datasets.map((dataset, index) => ({
+                    ...dataset,
+                    backgroundColor: bubbleColors[index],
+                    borderColor: needColors[index]
+                }))
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: { 
-                    x: { grid: gridConfig, title: { display: true, text: 'Rainfall (mm)' } }, 
-                    y: { grid: gridConfig, title: { display: true, text: 'Soil Moisture (%)' } } 
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: gridConfig, title: { display: true, text: 'Rainfall (mm)' } },
+                    y: { grid: gridConfig, title: { display: true, text: 'Soil Moisture (%)' } }
                 },
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: function(ctx) { 
-                                return `Rain: ${ctx.raw.x.toFixed(1)}mm, Moist: ${ctx.raw.y.toFixed(1)}%, Area: ${(ctx.raw.r/2).toFixed(1)}ha`; 
+                            label: function(ctx) {
+                                return `Rain: ${ctx.raw.x.toFixed(1)}mm, Moist: ${ctx.raw.y.toFixed(1)}%, Area: ${ctx.raw.r.toFixed(1)}ha`;
                             }
                         }
                     }

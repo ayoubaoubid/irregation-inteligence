@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,12 @@ SECRET_KEY = 'django-insecure-ww)7*w*cu7_fkl_5oc-cb55$(ztbhh911lsya=wx(sce@_@yn+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '192.168.1.11',  # ton IP locale
+    '*',             # ou ceci pour autoriser tout (plus simple)
+]
 
 
 # Application definition
@@ -40,7 +46,6 @@ INSTALLED_APPS = [
     'core',
     'dataset',
     'prediction',
-    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +126,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MODEL_API_URL = os.getenv('MODEL_API_URL', 'http://127.0.0.1:5000').rstrip('/')
+MODEL_API_PREDICT_URL = f'{MODEL_API_URL}/predict'

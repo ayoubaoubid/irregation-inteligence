@@ -1,6 +1,9 @@
 [core]
-    remote = myremote
-['remote "storage"']
-    url = ../dvc-storage
-['remote "myremote"']
-    url = ../dvc-storage
+    site_cache_dir = .dvc/site-cache
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/ayoubaoubid/irregation-inteligence.dvc
+    jobs = 1
+    auth = basic
+    user = ayoubaoubid
+    password = 27dacc3877876c4df126b03b68e2ff5ea630345d

@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter des Données | Irrigation Intelligente{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: var(--card-bg, #ffffff);
+        border-radius: var(--radius-lg, 12px);
+        padding: 2rem;
+        box-shadow: var(--shadow-md, 0 8px 30px rgba(0,0,0,0.08));
+        max-width: 800px;
+        margin: 2rem auto;
+        border: 1px solid var(--border-color, rgba(0,0,0,0.05));
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-main, #333);
+        font-size: 0.95rem;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+        border-radius: var(--radius-sm, 6px);
+        background: var(--bg-body, #fdfdfd);
+        color: var(--text-main, #333);
+        font-family: var(--font-body, "DM Sans", sans-serif);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color, #87ab69);
+        box-shadow: 0 0 0 3px rgba(135, 171, 105, 0.2);
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+    }
+
+    .btn-submit {
+        background: var(--primary-color, #87ab69);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: var(--radius-pill, 50px);
+        cursor: pointer;
+        width: 100%;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 1rem;
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(135, 171, 105, 0.3);
+    }
+
+    .success-card {
+        background-color: var(--card-bg, #ffffff);
+        color: var(--text-main, #333);
+        padding: 3.5rem 2rem;
+        border-radius: var(--radius-lg, 16px);
+        text-align: center;
+        box-shadow: var(--shadow-md, 0 8px 30px rgba(0,0,0,0.08));
+        max-width: 480px;
+        margin: 2rem auto;
+        border: 1px solid var(--border-color, rgba(0,0,0,0.05));
+    }
+    .success-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-top: 1.8rem;
+        margin-bottom: 0.5rem;
+        font-family: var(--font-body, "DM Sans", sans-serif);
+    }
+    .success-subtitle {
+        color: var(--text-muted, #777);
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        font-family: var(--font-body, "DM Sans", sans-serif);
+    }
+    .btn-success-back {
+        display: inline-block;
+        padding: 0.8rem 1.8rem;
+        background-color: transparent;
+        border: 1px solid var(--border-color, #ddd);
+        color: var(--text-main, #333);
+        border-radius: var(--radius-sm, 8px);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+        font-family: var(--font-body, "DM Sans", sans-serif);
+    }
+    .btn-success-back:hover {
+        background-color: var(--border-color, rgba(0,0,0,0.05));
+        color: var(--primary-color, #87ab69);
+        border-color: var(--primary-color, #87ab69);
+    }
+
+    .checkmark_anim {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 3;
+        stroke: var(--primary-color, #87ab69);
+        stroke-miterlimit: 10;
+        margin: 0 auto;
+        animation: fill_anim .4s ease-in-out .4s forwards, scale_anim .3s ease-in-out .9s both;
+    }
+    .checkmark_anim__circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 3;
+        stroke-miterlimit: 10;
+        stroke: var(--primary-color, #87ab69);
+        fill: rgba(135, 171, 105, 0.06);
+        animation: stroke_anim .6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    .checkmark_anim__check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke_anim .3s cubic-bezier(0.65, 0, 0.45, 1) .8s forwards;
+    }
+
+    @keyframes stroke_anim {
+        100% { stroke-dashoffset: 0; }
+    }
+    @keyframes scale_anim {
+        0%, 100% { transform: none; }
+        50% { transform: scale3d(1.1, 1.1, 1); }
+    }
+    @keyframes fill_anim {
+        100% { box-shadow: inset 0px 0px 0px 30px rgba(135, 171, 105, 0.15); }
+    }
+    
+    .section-title-custom {
+        text-align: center;
+        margin-bottom: 0.5rem;
+        font-size: 2.2rem;
+        color: var(--text-main, #222);
+    }
+    .section-subtitle-custom {
+        text-align: center;
+        color: var(--text-muted, #666);
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 2rem;">
+    <h1 class="section-title-custom">Alimenter le Dataset</h1>
+    <p class="section-subtitle-custom">Ajoutez de nouvelles observations réelles au référentiel DataOps.</p>
+
+    <div class="form-container">
+        {% if success %}
+            <div class="success-card">
+                <svg class="checkmark_anim" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark_anim__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark_anim__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+                <h3 class="success-title">Merci !</h3>
+                <p class="success-subtitle">Vos données ont été enregistrées avec succès.</p>
+                <a href="{% url 'add_data' %}" class="btn-success-back">Ajouter une autre observation</a>
+            </div>
+        {% else %}
+            <form method="POST" action="{% url 'add_data' %}">
+                {% csrf_token %}
+                
+                <h3 style="margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color, #eee);">Paramètres du Sol</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="Soil_pH">pH du Sol</label>
+                        <input type="number" step="0.01" class="form-control" id="Soil_pH" name="Soil_pH" placeholder="Ex: 6.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Soil_Moisture">Humidité du Sol (%)</label>
+                        <input type="number" step="0.01" class="form-control" id="Soil_Moisture" name="Soil_Moisture" placeholder="Ex: 45.2" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="Organic_Carbon">Carbone Organique (%)</label>
+                        <input type="number" step="0.01" class="form-control" id="Organic_Carbon" name="Organic_Carbon" placeholder="Ex: 1.2" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Electrical_Conductivity">Conductivité Électrique (dS/m)</label>
+                        <input type="number" step="0.01" class="form-control" id="Electrical_Conductivity" name="Electrical_Conductivity" placeholder="Ex: 2.1" required>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color, #eee);">Paramètres Climatiques</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="Temperature_C">Température (°C)</label>
+                        <input type="number" step="0.01" class="form-control" id="Temperature_C" name="Temperature_C" placeholder="Ex: 25.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Humidity">Humidité (\%)</label>
+                        <input type="number" step="0.01" class="form-control" id="Humidity" name="Humidity" placeholder="Ex: 60.0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="Rainfall_mm">Précipitations (mm)</label>
+                        <input type="number" step="0.01" class="form-control" id="Rainfall_mm" name="Rainfall_mm" placeholder="Ex: 15.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Sunlight_Hours">Heures d'ensoleillement</label>
+                        <input type="number" step="0.01" class="form-control" id="Sunlight_Hours" name="Sunlight_Hours" placeholder="Ex: 8.5" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Wind_Speed_kmh">Vitesse du vent (km/h)</label>
+                    <input type="number" step="0.01" class="form-control" id="Wind_Speed_kmh" name="Wind_Speed_kmh" placeholder="Ex: 12.0" required>
+                </div>
+
+                <h3 style="margin-top: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color, #eee);">Culture et Irrigation (Label Final)</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="Crop_Growth_Stage">Stade de Croissance</label>
+                        <select class="form-control" id="Crop_Growth_Stage" name="Crop_Growth_Stage" required>
+                            <option value="" disabled selected>Sélectionner le stade</option>
+                            <option value="Vegetative">Vegetative</option>
+                            <option value="Sowing">Sowing</option>
+                            <option value="Flowering">Flowering</option>
+                            <option value="Harvest">Harvest</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Irrigation_Type">Type d'Irrigation Standard</label>
+                        <select class="form-control" id="Irrigation_Type" name="Irrigation_Type" required>
+                            <option value="" disabled selected>Sélectionner le type</option>
+                            <option value="Rainfed">Rainfed</option>
+                            <option value="Canal">Canal</option>
+                            <option value="Drip">Drip</option>
+                            <option value="Sprinkler">Sprinkler</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="Field_Area_hectare">Surface du champ (ha)</label>
+                        <input type="number" step="0.01" class="form-control" id="Field_Area_hectare" name="Field_Area_hectare" placeholder="Ex: 5.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Mulching_Used">Paillage utilisé ?</label>
+                        <select class="form-control" id="Mulching_Used" name="Mulching_Used" required>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="Previous_Irrigation_mm">Irrigation Précédente (mm)</label>
+                        <input type="number" step="0.01" class="form-control" id="Previous_Irrigation_mm" name="Previous_Irrigation_mm" placeholder="Ex: 20.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Irrigation_Need" style="color: var(--primary-color, #87ab69); font-weight: bold;">Label de Résultat (Irrigation_Need)</label>
+                        <select class="form-control" id="Irrigation_Need" name="Irrigation_Need" style="border-color: var(--primary-color, #87ab69); border-width: 2px;" required>
+                            <option value="" disabled selected>Attribuer le Label (Cible)</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Saisir de nouvelles données ✅</button>
+            </form>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

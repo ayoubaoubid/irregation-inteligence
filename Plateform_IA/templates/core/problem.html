@@ -2,6 +2,21 @@
 
 {% block title %}Crise Agricole | Irrigation Intelligente{% endblock %}
 
+{% block extra_css %}
+<style>
+    .problem-list-wrap {
+        display: flex;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .problem-list-wrap {
+            display: block;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1: Intro -->
@@ -31,7 +46,7 @@
     <!-- Section 5: Traditional irrigation limits -->
     <div class="card mb-4">
         <h2 class="card-header">4. L'Incroyable Limite des Actions Programmées Simples</h2>
-        <div style="display: flex; gap: 2rem;">
+        <div class="problem-list-wrap">
             <ul style="flex: 1; list-style-position: inside;">
                 <li class="mb-1"><strong>Chronologie d'Horloge (Timers) :</strong> Inonde les cultures lors de la temporisation absolue quoiqu'il pleuve.</li>
                 <li class="mb-1"><strong>Inspection à la Volée :</strong> La croute séchée qui rompt ne donne strictement aucun indice du taux volumétrique aqueux logé à -20cm sous racine.</li>

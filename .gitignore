@@ -1,10 +1,16 @@
 __pycache__/
 *.py[cod]
 *.pyc
+*.pyo
+*.pyd
+.DS_Store
+.coverage
 
+# gestion des secrets
 .venv/
 venv/
-.env
+*.env
+variables.env
 
 .pytest_cache/
 .mypy_cache/
@@ -21,3 +27,4 @@ mlflow.db
 
 *.log
 dvc-storage/
+.dvc/site-cache/

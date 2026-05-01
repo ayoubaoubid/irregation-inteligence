@@ -1,0 +1,19 @@
+groups:
+- name: ml_alerts
+  rules:
+
+  - alert: HighTraffic
+    expr: rate(api_requests_total[1m]) > 5
+    for: 10s
+    labels:
+      severity: warning
+    annotations:
+      description: "API traffic is high"
+
+  - alert: LowConfidence
+    expr: model_confidence < 0.6
+    for: 10s
+    labels:
+      severity: critical
+    annotations:
+      description: "Model confidence is low"

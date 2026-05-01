@@ -31,6 +31,25 @@
                 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
                 .form-group-full { grid-column: span 2; }
                 .btn-group { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; }
+
+                @media (max-width: 768px) {
+                    .step-indicator,
+                    .btn-group {
+                        flex-direction: column;
+                    }
+
+                    .form-grid {
+                        grid-template-columns: 1fr;
+                    }
+
+                    .form-group-full {
+                        grid-column: span 1;
+                    }
+
+                    .step-dot {
+                        width: 100%;
+                    }
+                }
             </style>
 
             <div class="step-indicator">
@@ -166,32 +185,62 @@
         <div>
             <!-- Section 3 & 4: Result display and recommendation -->
             {% if result %}
-            <div class="card mb-4" style="border-top: 5px solid {% if needs_irrigation %}var(--warning){% else %}var(--success){% endif %}; text-align: center;">
-                <h2 class="card-header">2. Résultat de l'Inférence</h2>
-                
-                {% if needs_irrigation %}
-                    <div style="font-size: 4rem; margin: 1rem;">🚰</div>
-                    <h1 class="text-warning mb-2">IRRIGATION REQUISE</h1>
-                {% else %}
-                    <div style="font-size: 4rem; margin: 1rem;">✅</div>
-                    <h1 class="text-success mb-2">EN ATTENTE</h1>
-                {% endif %}
-                
-                <p style="font-size: 1.2rem; margin: 1rem 0;">{{ recommendation }}</p>
-                
-                <!-- Section 5: Explanation -->
-                <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-sm); margin-top: 1rem; text-align: left;">
-                    <strong style="color: var(--primary-dark);">Indice de Confiance (Régression) :</strong> {{ probability }}%
-                    <p class="text-muted" style="font-size: 0.9rem; margin-top: 0.5rem;">Calcul validé statistiquement par notre modèle pré-entraîné Random Forest.</p>
-                </div>
-            </div>
-            {% else %}
-            <!-- Initial state -->
-            <div class="card mb-4 text-center" style="display: flex; flex-direction: column; justify-content: center; min-height: 250px;">
-                <h2 style="color: var(--text-muted);">En attente des données...</h2>
-                <p>Renseignez les 14 paramètres du formulaire et cliquez sur "Lancer l'Inférence" pour calculer les besoins en irrigation.</p>
-            </div>
-            {% endif %}
+<div class="card mb-4" style="border-top: 5px solid 
+  {% if result.prediction_label == 'high' %}#E24B4A
+  {% elif result.prediction_label == 'medium' %}#EF9F27
+  {% else %}#87ab69{% endif %}; text-align: center;">
+
+  <h2 class="card-header">2. Résultat de l'Inférence</h2>
+
+  <div style="padding: 1.5rem;">
+
+    {% if result.prediction_label == 'High' %}
+      <div style="font-size: 3rem; margin: 1rem 0;">🚰</div>
+      <h1 style="color: #E24B4A;">Besoin élevé</h1>
+      <p>Irrigation requise immédiatement. Intervenez dès que possible.</p>
+    {% elif result.prediction_label == 'Medium' %}
+      <div style="font-size: 3rem; margin: 1rem 0;">⚠️</div>
+      <h1 style="color: #EF9F27;">Besoin modéré</h1>
+      <p>Une irrigation légère est conseillée dans les prochains jours.</p>
+    {% else %}
+      <div style="font-size: 3rem; margin: 1rem 0;">✅</div>
+      <h1 style="color: #87ab69;">Besoin faible</h1>
+      <p>Aucune irrigation immédiate requise. Surveillez les conditions.</p>
+    {% endif %}
+
+    <!-- Confiance & probabilités -->
+    <div style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: left;">
+      <strong>Confiance :</strong> {{ result.confidence|floatformat:1 }}%
+
+      <div style="margin-top: 1rem;">
+        {% for label, prob in result.probabilities.items %}
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span style="min-width: 65px; font-size: 0.9rem; color: gray;">{{ label }}</span>
+          <div style="flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+            <div style="height: 100%; width: {{ prob|floatformat:0 }}%; background:
+              {% if label == 'high' %}#E24B4A
+              {% elif label == 'medium' %}#EF9F27
+              {% else %}#87ab69{% endif %};
+              border-radius: 4px;"></div>
+          </div>
+          <span style="font-size: 0.9rem; min-width: 38px; text-align: right;">{{ prob|floatformat:1 }}%</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.75rem;">
+        Calcul validé par le modèle entraîné — ID prédiction : {{ result.prediction_id }}
+      </p>
+    </div>
+
+  </div>
+</div>
+{% else %}
+<div class="card mb-4 text-center" style="min-height: 250px; display: flex; flex-direction: column; justify-content: center;">
+  <h2 style="color: gray;">En attente des données...</h2>
+  <p>Renseignez les paramètres et cliquez sur "Lancer l'Inférence".</p>
+</div>
+{% endif %}
 
             <!-- Section 6: Example Scenarios -->
             <div class="card mb-4">

@@ -1,0 +1,9 @@
+global: {}
+
+route:
+  receiver: webhook-alert
+
+receivers:
+  - name: webhook-alert
+    webhook_configs:
+      - url: "http://back-end:8000/alert"

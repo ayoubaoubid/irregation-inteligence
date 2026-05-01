@@ -1,0 +1,37 @@
+{
+  "title": "ML Monitoring Dashboard",
+  "schemaVersion": 27,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "API Requests",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(api_requests_total[1m])"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Model Confidence",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "model_confidence"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Predictions per class",
+      "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "predictions_total"
+        }
+      ]
+    }
+  ]
+}

@@ -13,13 +13,34 @@
     
     .alert-banner { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-radius: var(--radius-sm); margin-bottom: 2rem; color: #fff; animation: pulse 2s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.85; } 100% { opacity: 1; } }
+
+    .dashboard-header,
+    .chart-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header,
+        .chart-card-header,
+        .alert-banner {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .widget-value {
+            font-size: 2rem;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1 & 2: Alerts and Real-Time Summary -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div class="dashboard-header" style="margin-bottom: 1.5rem;">
         <div>
             <h1 class="section-title" style="margin-bottom:0; border: none;">Centre de Contrôle IoT</h1>
             <p class="section-subtitle" style="margin-bottom: 0;">Télémétrie en temps réel (Secteur Alpha)</p>
@@ -72,7 +93,7 @@
     <div class="grid-2 mb-4">
         <!-- Section 4: Irrigation History Chart -->
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div class="chart-card-header" style="margin-bottom: 1rem;">
                 <h2 class="card-header" style="margin-bottom:0; border:none; padding:0;">Évolution de l'Humidité H-24</h2>
                 <div style="font-size: 0.8rem; background: var(--bg-color); padding: 0.2rem 0.5rem; border-radius: 4px;">Graphe en Direct</div>
             </div>
