@@ -8,13 +8,13 @@ from datetime import datetime
 from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
 from fastapi import Request
+import traceback
 
 app = FastAPI()
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 MODEL_PATH = os.path.join(BASE_DIR, "models", "best_model.pkl")
-SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.pkl")
 FEATURES_PATH = os.path.join(BASE_DIR, "models", "features.pkl")
 
 LOG_DIR = os.path.join(BASE_DIR, "logs")
@@ -24,14 +24,19 @@ NEW_DATA_PATH = os.path.join(LOG_DIR, "new_data.csv")
 os.makedirs(LOG_DIR, exist_ok=True)
 
 model = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
 FEATURES = joblib.load(FEATURES_PATH)
+
+# CREATE new_data.csv if not exists
+if not os.path.exists(NEW_DATA_PATH):
+    with open(NEW_DATA_PATH, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(FEATURES) 
 
 CLASS_MAPPING = {0: "Low", 1: "Medium"}
 
 # PROMETHEUS
 REQUEST_COUNT = Counter("api_requests_total", "Total API Requests")
-PREDICTION_COUNT = Counter("predictions_total", "Total Predictions", ["class"])
+PREDICTION_COUNT = Counter("predictions_total", "Total Predictions", ["prediction_class"])
 CONFIDENCE_GAUGE = Gauge("model_confidence", "Prediction Confidence")
 
 
@@ -92,12 +97,17 @@ def predict(data: InputData):
     try:
         input_dict = data.model_dump()
         df = pd.DataFrame([input_dict])
-        df = df.reindex(columns=FEATURES, fill_value=0)
+        # validate columns
+        missing = set(FEATURES) - set(df.columns)
+        extra = set(df.columns) - set(FEATURES)
 
-        X_scaled = scaler.transform(df)
+        if missing:
+            return {"error": f"Missing features: {missing}"}
+
+        df = df[FEATURES]
 
         # 🔥 prediction
-        pred = int(model.predict(X_scaled)[0])
+        pred = int(model.predict(df)[0])
 
         # 🔥 store raw data for drift detection
         with open(NEW_DATA_PATH, "a", newline="") as f:
@@ -106,12 +116,12 @@ def predict(data: InputData):
 
         confidence = 1.0
         if hasattr(model, "predict_proba"):
-            probs = model.predict_proba(X_scaled)[0]
+            probs = model.predict_proba(df)[0]
             confidence = float(max(probs))
             CONFIDENCE_GAUGE.set(confidence)
 
         label = CLASS_MAPPING.get(pred, str(pred))
-        PREDICTION_COUNT.labels(class_=label).inc()
+        PREDICTION_COUNT.labels(prediction_class=label).inc()
 
         # log predictions
         with open(LOG_PATH, "a", newline="") as f:
@@ -124,4 +134,5 @@ def predict(data: InputData):
         }
 
     except Exception as e:
+        print(traceback.format_exc())
         return {"error": str(e)}

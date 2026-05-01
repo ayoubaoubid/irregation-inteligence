@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 def psi(expected, actual, buckets=10):
 
@@ -18,10 +21,13 @@ def psi(expected, actual, buckets=10):
 
 
 def monitor():
-    baseline = pd.read_csv("DataOps/Statics/irrigation_prediction_processed.csv")
-    new_data = pd.read_csv("logs/new_data.csv")
+    baseline_path = BASE_DIR / "DataOps/Statics/irrigation_prediction_processed.csv"
+    new_data_path = BASE_DIR / "logs/new_data.csv"
 
-    print("🔍 Drift Monitoring Running...\n")
+    baseline = pd.read_csv(baseline_path)
+    new_data = pd.read_csv(new_data_path)
+
+    print(" Drift Monitoring Running...\n")
 
     for col in baseline.columns:
         if col in new_data.columns:
@@ -29,4 +35,4 @@ def monitor():
             print(f"{col}: PSI = {score:.4f}")
 
             if score > 0.2:
-                print("🚨 DRIFT DETECTED on:", col)
+                print(" DRIFT DETECTED on:", col)
