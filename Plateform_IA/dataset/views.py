@@ -4,7 +4,16 @@ from collections import Counter, defaultdict
 from statistics import mean
 
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+
+
+def get_dataset_csv_path():
+    return (
+        settings.BASE_DIR.parent
+        / 'DataOps'
+        / 'Statics'
+        / 'irrigation_prediction_Variables_Important.csv'
+    )
 
 
 def dataset(request):
@@ -12,15 +21,12 @@ def dataset(request):
 
 
 def analysis(request):
-    csv_path = (
-        settings.BASE_DIR.parent
-        / 'DataOps'
-        / 'Statics'
-        / 'irrigation_prediction_Variables_Important.csv'
-    )
-
-    with open(csv_path, newline='', encoding='utf-8-sig') as file:
-        rows = list(csv.DictReader(file))
+    csv_path = get_dataset_csv_path()
+    if csv_path.exists():
+        with open(csv_path, newline='', encoding='utf-8-sig') as file:
+            rows = list(csv.DictReader(file))
+    else:
+        rows = []
 
     need_order = ['Low', 'Medium', 'High']
     irrigation_order = ['Drip', 'Sprinkler', 'Canal', 'Rainfed']
@@ -181,6 +187,7 @@ def analysis(request):
         'labels': stage_order,
         'datasets': [],
     }
+    total_rows = len(rows)
     stacked_colors = {
         'Low': '#87ab69',
         'Medium': '#ffc107',
@@ -204,7 +211,7 @@ def analysis(request):
         'chart2_labels': json.dumps(irrigation_order),
         'chart2_values': json.dumps([irrigation_type_counts.get(label, 0) for label in irrigation_order]),
         'chart3_labels': json.dumps([
-            f'{label} ({round((mulching_counts.get(label, 0) / len(rows)) * 100)}%)'
+            f'{label} ({round((mulching_counts.get(label, 0) / total_rows) * 100) if total_rows else 0}%)'
             for label in mulching_order
         ]),
         'chart3_values': json.dumps([mulching_counts.get(label, 0) for label in mulching_order]),
@@ -232,38 +239,38 @@ def analysis(request):
 
 
 def add_data(request):
+    csv_path = get_dataset_csv_path()
+    fieldnames = [
+        'Soil_pH',
+        'Soil_Moisture',
+        'Organic_Carbon',
+        'Electrical_Conductivity',
+        'Temperature_C',
+        'Humidity',
+        'Rainfall_mm',
+        'Sunlight_Hours',
+        'Wind_Speed_kmh',
+        'Crop_Growth_Stage',
+        'Irrigation_Type',
+        'Field_Area_hectare',
+        'Mulching_Used',
+        'Previous_Irrigation_mm',
+        'Irrigation_Need',
+    ]
+
     if request.method == 'POST':
-        data = [
-            request.POST.get('Soil_pH'),
-            request.POST.get('Soil_Moisture'),
-            request.POST.get('Organic_Carbon'),
-            request.POST.get('Electrical_Conductivity'),
-            request.POST.get('Temperature_C'),
-            request.POST.get('Humidity'),
-            request.POST.get('Rainfall_mm'),
-            request.POST.get('Sunlight_Hours'),
-            request.POST.get('Wind_Speed_kmh'),
-            request.POST.get('Crop_Growth_Stage'),
-            request.POST.get('Irrigation_Type'),
-            request.POST.get('Field_Area_hectare'),
-            request.POST.get('Mulching_Used'),
-            request.POST.get('Previous_Irrigation_mm'),
-            request.POST.get('Irrigation_Need'),
-        ]
+        data = {field: request.POST.get(field) for field in fieldnames}
 
-        # Keep dataset ingestion project-relative so local runs and containers use the same path.
-        csv_path = (
-            settings.BASE_DIR.parent
-            / 'DataOps'
-            / 'Statics'
-            / 'irrigation_prediction_Variables_Important.csv'
-        )
         csv_path.parent.mkdir(parents=True, exist_ok=True)
+        file_exists = csv_path.exists()
+        should_write_header = (not file_exists) or csv_path.stat().st_size == 0
 
-        with open(csv_path, mode='a', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
+        with open(csv_path, mode='a', newline='', encoding='utf-8-sig') as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            if should_write_header:
+                writer.writeheader()
             writer.writerow(data)
 
-        return render(request, 'dataset/add_data.html', {'success': True})
+        return redirect(f"{request.path}?success=1")
 
-    return render(request, 'dataset/add_data.html')
+    return render(request, 'dataset/add_data.html', {'success': request.GET.get('success') == '1'})
