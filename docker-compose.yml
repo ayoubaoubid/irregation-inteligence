@@ -9,8 +9,15 @@ services:
       - ./Plateform_IA:/app
     environment:
       - PYTHONUNBUFFERED=1
+<<<<<<< MLOps
       - SECRET_KEY=devops_pipline_@12@34@56@78
       - MODEL_API_URL=http://model-api:5000
+=======
+      - SECRET_KEY=${SECRET_KEY}
+      - MODEL_API_URL=http://model-api:5000
+    env_file:
+      - .env
+>>>>>>> main
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
