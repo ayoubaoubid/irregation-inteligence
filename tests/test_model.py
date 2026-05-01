@@ -1,16 +1,18 @@
 import joblib
 import numpy as np
 import pytest
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load model and feature info once (important fix)
-model = joblib.load("models/best_model.pkl")
-features = joblib.load("models/features.pkl")
+model = joblib.load(BASE_DIR / "models" / "best_model.pkl")
+features = joblib.load(BASE_DIR / "models" / "features.pkl")
 n_features = len(features)
 
 
 def test_model_load():  # ensures your model file exists and loads correctly
-    model = joblib.load("models/best_model.pkl")
+    model = joblib.load(BASE_DIR / "models" / "best_model.pkl")
     assert model is not None
 
 

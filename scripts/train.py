@@ -5,6 +5,7 @@ import joblib
 import mlflow
 import pandas as pd
 import yaml
+
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, f1_score
@@ -12,54 +13,85 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.svm import SVC
+from sklearn.pipeline import Pipeline
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
+DATA_PATH = BASE_DIR / "DataOps" / "Statics" / "irrigation_prediction_processed.csv"
+PARAMS_PATH = BASE_DIR / "params.yml"
+MODELS_DIR = BASE_DIR / "models"
 
-def configure_mlflow() -> None:
+
+def configure_mlflow():
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI")
+
     if tracking_uri:
         mlflow.set_tracking_uri(tracking_uri)
-        return
+    else:
+        mlflow.set_tracking_uri(f"sqlite:///{BASE_DIR / 'mlflow.db'}")
 
-    mlruns_dir = BASE_DIR / "mlruns"
-    mlruns_dir.mkdir(parents=True, exist_ok=True)
-    mlflow.set_tracking_uri(mlruns_dir.resolve().as_uri())
-
-
-with open(BASE_DIR / "params.yml", "r", encoding="utf-8") as handle:
-    params = yaml.safe_load(handle)
+    mlflow.set_experiment("Irrigation_MLOps_Experiment")
 
 
-df = pd.read_csv(BASE_DIR / "DataOps" / "Statics" / "irrigation_prediction_processed.csv")
+with open(PARAMS_PATH, "r", encoding="utf-8") as f:
+    params = yaml.safe_load(f)
 
-le = LabelEncoder()
-y = le.fit_transform(df["Irrigation_Need"])
+
+df = pd.read_csv(DATA_PATH)
+
+df = df[df["Irrigation_Need"] != 2].copy()
+
+if "Irrigation_Need" not in df.columns:
+    raise ValueError("Target column 'Irrigation_Need' not found")
+
+y = df["Irrigation_Need"].astype(int)
 X = df.drop("Irrigation_Need", axis=1)
 
-print("Class distribution:")
-print(pd.Series(y).value_counts())
-print("Classes mapping:", le.classes_)
+print("\n Class distribution:")
+print(y.value_counts())
+print(" Classes mapping: [0=Low, 1=Medium]")
 
-X_train, X_test, y_train, y_test = train_test_split(
+test_size = params["training"]["test_size"]
+random_state = params["training"]["random_state"]
+
+X_train_val, X_test, y_train_val, y_test = train_test_split(
     X,
     y,
-    test_size=params["training"]["test_size"],
-    random_state=params["training"]["random_state"],
+    test_size=test_size,
+    random_state=random_state,
     stratify=y,
 )
 
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+val_size = 0.2
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X_train_val,
+    y_train_val,
+    test_size=val_size,
+    random_state=random_state,
+    stratify=y_train_val,
+)
 
 models = {
-    "LogisticRegression": LogisticRegression(**params["models"]["LogisticRegression"]),
-    "RandomForest": RandomForestClassifier(**params["models"]["RandomForest"]),
-    "GradientBoosting": GradientBoostingClassifier(**params["models"]["GradientBoosting"]),
-    "SVM": SVC(probability=True, **params["models"]["SVM"]),
-    "KNN": KNeighborsClassifier(**params["models"]["KNN"]),
+    "LogisticRegression": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", LogisticRegression(**params["models"]["LogisticRegression"]))
+    ]),
+    "RandomForest": Pipeline([
+        ("model", RandomForestClassifier(**params["models"]["RandomForest"]))
+    ]),
+    "GradientBoosting": Pipeline([
+        ("model", GradientBoostingClassifier(**params["models"]["GradientBoosting"]))
+    ]),
+    "SVM": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", SVC(probability=True, **params["models"]["SVM"]))
+    ]),
+    "KNN": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", KNeighborsClassifier(**params["models"]["KNN"]))
+    ]),
 }
 
 best_model = None
@@ -67,17 +99,17 @@ best_score = 0.0
 best_name = ""
 
 configure_mlflow()
-mlflow.set_experiment("Irrigation_MLOps_Experiment")
 
 for name, model in models.items():
     with mlflow.start_run(run_name=name):
+
         model.fit(X_train, y_train)
         preds = model.predict(X_test)
 
         acc = accuracy_score(y_test, preds)
         f1 = f1_score(y_test, preds, average="weighted")
 
-        print(name)
+        print(f"\nMODEL {name}")
         print("Accuracy:", acc)
         print("F1-score:", f1)
         print(classification_report(y_test, preds))
@@ -85,39 +117,42 @@ for name, model in models.items():
         mlflow.log_param("model", name)
         mlflow.log_metric("accuracy", acc)
         mlflow.log_metric("f1_score", f1)
-        mlflow.sklearn.log_model(model, "model")
+
+        mlflow.sklearn.log_model(model, name="model")
 
         if f1 > best_score:
             best_model = model
             best_score = f1
             best_name = name
 
-print("Sample prediction test:")
-sample = X_test[0:1]
-print("Prediction:", best_model.predict(sample)[0])
-print("Real:", y_test[0])
 
-models_dir = BASE_DIR / "models"
-models_dir.mkdir(parents=True, exist_ok=True)
-joblib.dump(best_model, models_dir / "best_model.pkl")
-joblib.dump(scaler, models_dir / "scaler.pkl")
-joblib.dump(X.columns.tolist(), models_dir / "features.pkl")
-joblib.dump(le.classes_, models_dir / "classes.pkl")
+print("\n Sample prediction test:")
+sample = X_test.iloc[[0]]
+print("Prediction:", best_model.predict(sample)[0])
+print("Real:", y_test.iloc[0])
+
+
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
+
+joblib.dump(best_model, MODELS_DIR / "best_model.pkl")
+joblib.dump(X.columns.tolist(), MODELS_DIR / "features.pkl")
+joblib.dump([0, 1], MODELS_DIR / "classes.pkl")
 
 with mlflow.start_run(run_name="BEST_MODEL"):
     mlflow.log_param("best_model", best_name)
     mlflow.log_metric("best_f1", best_score)
+
     try:
         mlflow.sklearn.log_model(
             best_model,
-            "best_model",
+            name="best_model",
             registered_model_name="Irrigation_Best_Model",
         )
-    except Exception as exc:
-        print(f"Model registry unavailable, logging artifact only: {exc}")
-        mlflow.sklearn.log_model(best_model, "best_model")
+    except Exception as e:
+        print("Registry unavailable:", e)
+        mlflow.sklearn.log_model(best_model, name="best_model")
 
-print("Training finished")
-print("Best model:", best_name)
-print("Best F1:", best_score)
-print("Classes:", le.classes_)
+print("\n Training finished")
+print(" Best model:", best_name)
+print(" Best F1:", best_score)
+print(" Classes: [0=Low, 1=Medium]")
