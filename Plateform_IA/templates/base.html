@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Système d'Irrigation Intelligent{% endblock %}</title>
-    <!-- Google Fonts -->
+    <title>{% block title %}Syst&egrave;me d'Irrigation Intelligent{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-    <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Custom CSS -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     {% block extra_css %}{% endblock %}
@@ -21,18 +18,27 @@
             <div class="brand-icon">I</div>
             Irrigation Intelligente
         </a>
-        <ul class="nav-links">
-            <li><a href="{% url 'home' %}">Accueil</a></li>
-            <li><a href="{% url 'problem' %}">Problème & Solution</a></li>
-            <li><a href="{% url 'dataset' %}">Le Dataset</a></li>
-            <li><a href="{% url 'add_data' %}">Ajouter des Données</a></li>
-            <li><a href="{% url 'analysis' %}">Analytique</a></li>
-            <li><a href="{% url 'prediction' %}">Prédiction ML</a></li>
-            <li><a href="{% url 'about' %}">À Propos</a></li>
-        </ul>
-        <div class="nav-right">
-            <span id="theme-toggle" style="font-size: 1.2rem; cursor: pointer; user-select: none;">🌙</span>
-            <a href="{% url 'prediction' %}" class="btn btn-outline" style="border-radius: var(--radius-pill); padding: 0.5rem 1.2rem;">Tester l'IA</a>
+
+        <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="nav-menu" id="nav-menu">
+            <ul class="nav-links">
+                <li><a href="{% url 'home' %}">Accueil</a></li>
+                <li><a href="{% url 'problem' %}">Probl&egrave;me &amp; Solution</a></li>
+                <li><a href="{% url 'dataset' %}">Le Dataset</a></li>
+                <li><a href="{% url 'add_data' %}">Ajouter des Donn&eacute;es</a></li>
+                <li><a href="{% url 'analysis' %}">Analytique</a></li>
+                <li><a href="{% url 'prediction' %}">Pr&eacute;diction ML</a></li>
+                <li><a href="{% url 'about' %}">&Agrave; Propos</a></li>
+            </ul>
+            <div class="nav-right">
+                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Changer le th&egrave;me">&#9790;</button>
+                <a href="{% url 'prediction' %}" class="btn btn-outline nav-cta">Tester l'IA</a>
+            </div>
         </div>
     </nav>
 
@@ -46,14 +52,14 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>Système d'Irrigation</h3>
-                <p>Agrégation Data pour l'Agriculture. Optimisation de l'utilisation de l'eau par apprentissage automatique.</p>
+                <h3>Syst&egrave;me d'Irrigation</h3>
+                <p>Agr&eacute;gation Data pour l'Agriculture. Optimisation de l'utilisation de l'eau par apprentissage automatique.</p>
             </div>
             <div class="footer-section">
                 <h3>Liens Rapides</h3>
                 <ul style="list-style: none;">
-                    <li class="mb-1"><a href="{% url 'prediction' %}">Moteur de Prédiction</a></li>
-                    <li class="mb-1"><a href="{% url 'analysis' %}">Analyse de Données</a></li>
+                    <li class="mb-1"><a href="{% url 'prediction' %}">Moteur de Pr&eacute;diction</a></li>
+                    <li class="mb-1"><a href="{% url 'analysis' %}">Analyse de Donn&eacute;es</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -63,30 +69,38 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2026 Système d'Irrigation Intelligent. Tous droits réservés.
+            &copy; 2026 Syst&egrave;me d'Irrigation Intelligent. Tous droits r&eacute;serv&eacute;s.
         </div>
     </footer>
 
     <script>
-        // Dark Mode Toggle Logic
         const toggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
-        
-        // Restore previous theme state
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        function setThemeIcon(isDark) {
+            toggleBtn.innerHTML = isDark ? '&#9728;' : '&#9790;';
+        }
+
         if (localStorage.getItem('theme') === 'dark') {
             body.classList.add('dark-mode');
-            toggleBtn.textContent = '☀️';
+            setThemeIcon(true);
+        } else {
+            setThemeIcon(false);
         }
 
         toggleBtn.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-                toggleBtn.textContent = '☀️';
-            } else {
-                localStorage.setItem('theme', 'light');
-                toggleBtn.textContent = '🌙';
-            }
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            setThemeIcon(isDark);
+        });
+
+        navToggle.addEventListener('click', () => {
+            const isOpen = navMenu.classList.toggle('open');
+            navToggle.classList.toggle('open', isOpen);
+            navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         });
     </script>
     {% block extra_js %}{% endblock %}

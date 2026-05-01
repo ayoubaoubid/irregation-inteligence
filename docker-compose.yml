@@ -2,17 +2,22 @@ services:
   back-end:
     build:
       context: ./Plateform_IA
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     ports:
       - "8000:8000"
     volumes:
       - ./Plateform_IA:/app
     environment:
       - PYTHONUNBUFFERED=1
+<<<<<<< MLOps
+      - SECRET_KEY=devops_pipline_@12@34@56@78
+      - MODEL_API_URL=http://model-api:5000
+=======
       - SECRET_KEY=${SECRET_KEY}
       - MODEL_API_URL=http://model-api:5000
     env_file:
       - .env
+>>>>>>> main
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
@@ -50,4 +55,23 @@ services:
         condition: service_healthy
       model-api:
         condition: service_healthy
+    restart: unless-stopped
+
+    prometheus:
+      image: prom/prometheus:latest
+      ports:
+        - "9090:9090"
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+        - ./alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      command:
+        - "--config.file=/etc/prometheus/prometheus.yml"
+      restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     restart: unless-stopped

@@ -5,9 +5,11 @@ Fixtures partagées pour tous les tests pytest.
 import pytest
 from django.test import Client
 
+
 @pytest.fixture
 def client():
     return Client()
+
 
 @pytest.fixture
 def valid_prediction_data():
@@ -28,6 +30,7 @@ def valid_prediction_data():
         'previous_irrigation_mm': '0.0'
     }
 
+
 @pytest.fixture
 def hot_dry_data():
     return {
@@ -37,6 +40,7 @@ def hot_dry_data():
         'rainfall_mm': '0.0',
         'wind_speed_kmh': '25.0',
     }
+
 
 @pytest.fixture
 def wet_cool_data():
@@ -48,6 +52,7 @@ def wet_cool_data():
         'wind_speed_kmh': '5.0',
     }
 
+
 @pytest.fixture
 def api_success_response():
     return {
@@ -56,6 +61,7 @@ def api_success_response():
         "probabilities": {"High": 85.5, "Medium": 10.0, "Low": 4.5},
         "prediction_id": "test-pred-123"
     }
+
 
 @pytest.fixture
 def api_low_response():
