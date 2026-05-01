@@ -2,6 +2,25 @@
 
 {% block title %}Dataset Description | Smart Irrigation{% endblock %}
 
+{% block extra_css %}
+<style>
+    .dataset-preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .dataset-preview-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="section" style="margin-top: 2rem;">
     <!-- Section 1: Intro -->
@@ -11,29 +30,6 @@
     <div class="card mb-4">
         <h2 class="card-header">1. Introduction au Dataset</h2>
         <p>Le dataset "Smart Irrigation Water Requirement Prediction" vise à optimiser l'utilisation de l'eau en agriculture. Grâce à 14 variables indépendantes clés (type de culture, propriétés du sol, micro-climat), les modèles de régression peuvent anticiper la demande en eau afin de maximiser les rendements et préserver la nappe phréatique des régions sensibles.</p>
-    </div>
-
-    <!-- Section 2: Data Sources -->
-    <div class="grid-2 mb-4">
-        <div class="card" style="border-left: 5px solid var(--primary);">
-            <h2 class="card-header">2. Sources Principales des Données</h2>
-            <ul>
-                <li class="mb-1"><strong>Capteurs Pédologiques :</strong> Sondes mesurant le pH, le carbone et l'humidité racinaire.</li>
-                <li class="mb-1"><strong>Stations Agrométéos :</strong> Télémesure des facteurs thermiques (soleil, température, vent, précipitations).</li>
-                <li class="mb-1"><strong>Pratiques de Culture :</strong> Type de culture, stade de croissance saisonnier et utilisation du paillage.</li>
-            </ul>
-        </div>
-        
-        <!-- Section 3: Preprocessing -->
-        <div class="card">
-            <h2 class="card-header">6. Prétraitement des Données (Preprocessing)</h2>
-            <p>Avant l'ingestion par les modèles, les données brutes sont préparées :</p>
-            <ul>
-                <li>Traitement des valeurs manquantes et aberrantes (Outliers).</li>
-                <li>Encodage des variables catégorielles (Cultivars, Paillage).</li>
-                <li>Mise à l'échelle (Standardisation) des variables métriques étendues.</li>
-            </ul>
-        </div>
     </div>
 
     <!-- Section 4: Features Table -->
@@ -129,7 +125,7 @@
 
     <!-- Exact Match for Image 2 (Sample Data Table) -->
     <div style="margin-top: 4rem; margin-bottom: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+        <div class="dataset-preview-header">
             <div>
                 <div style="color: var(--primary); font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; font-family: var(--font-body);">— APERÇU</div>
                 <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-main);">Extrait des Données</h2>
@@ -213,7 +209,7 @@
             <h2 class="card-header">5. Statistiques du Dataset</h2>
             <div class="grid-2">
                 <div>
-                    <h3 style="color: var(--primary); font-size: 2rem;">24,500+</h3>
+                    <h3 style="color: var(--primary); font-size: 2rem;">10000</h3>
                     <p class="text-muted">Enregistrements</p>
                 </div>
                 <div>
@@ -253,17 +249,6 @@
 }
             </pre>
         </div>
-    </div>
-
-    <!-- Section 8: Feature Eng / 9: Importance -->
-    <div class="card" style="background: var(--primary-dark); color: white;">
-        <h2 style="color: var(--accent); margin-bottom: 1rem;">7. Feature Engineering & Insight</h2>
-        <p class="mb-3">Pour optimiser la régression, un traitement des variables continues et discrètes est fondamental. Nos études mettent en exergue le rôle critique du triptyque Température-Radiations-Précipitations (Évapotranspiration), couplé à la porosité et au taux de carbone organique (Organic Carbon).</p>
-        
-        <h2 style="color: var(--accent); margin-top: 2rem; margin-bottom: 1rem;">8. Pourquoi la qualité de la donnée est critique ?</h2>
-        <p>Mettre en place une agriculture intelligente "Smart Agriculture" implique des prédictions parfaitement ancrées dans la réalité physique (Data-Driven Ecosystems). Un modèle correctement alimenté réduit considérablement la consommation de pompes à eau et combat activement l'assèchement local.</p>
-        
-        <a href="{% url 'analysis' %}" class="btn btn-primary mt-4">Explorer l'Analyse Visuelle</a>
     </div>
 
 </section>

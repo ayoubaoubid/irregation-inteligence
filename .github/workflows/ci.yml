@@ -54,7 +54,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build back-end image
         uses: docker/build-push-action@v5
@@ -79,18 +79,19 @@ jobs:
           docker compose -f docker-compose.yml up -d
           sleep 10
 
-      - name: Smoke test — Nginx (port 7000)
+      # docker-compose.yml exposes nginx on port 80:80, so curl must target localhost:80.
+      - name: Smoke test - Nginx (port 80)
         run: |
           curl --fail --retry 5 --retry-delay 5 \
                --max-time 10 \
-               http://localhost:7000/ \
+               http://localhost/ \
             && echo "Nginx -> Django : OK"
 
-      - name: Smoke test — route /api/predict/ via Nginx
+      - name: Smoke test - route /api/predict/ via Nginx
         run: |
           curl --fail --retry 5 --retry-delay 5 \
                --max-time 10 \
-               http://localhost:7000/api/predict/ \
+               http://localhost/api/predict/ \
             && echo "Nginx -> Model API : OK"
 
       - name: Test back-end health
@@ -99,12 +100,12 @@ jobs:
 
       - name: Test model-api health
         run: |
-          curl --fail --retry 3 --retry-delay 5 http://localhost:5000/health || exit 1
+          curl --fail --retry 3 --retry-delay 5 http://localhost:5000/ || exit 1
 
       - name: Show logs on failure
         if: failure()
-        run: docker compose logs
+        run: docker compose -f docker-compose.yml logs
 
       - name: Stop services
         if: always()
-        run: docker compose down
+        run: docker compose -f docker-compose.yml down
