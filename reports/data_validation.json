@@ -1,0 +1,12 @@
+{
+  "status": "ok",
+  "validated_files": [
+    {
+      "path": "DataOps\\Statics\\irrigation_prediction.csv",
+      "column_count": 20,
+      "required_column_count": 15,
+      "missing_columns": [],
+      "status": "ok"
+    }
+  ]
+}
