@@ -93,7 +93,6 @@ def trigger_dvc_pipeline_async():
                         'DataOps/Statics/irrigation_prediction_Variables_Important.csv',
                     ],
                     [sys.executable, '-m', 'dvc', 'repro'],
-                    [sys.executable, '-m', 'dvc', 'push'],
                 ):
                     log_file.write(f"[{started_at}] Running: {' '.join(command)}\n")
                     log_file.flush()
@@ -181,7 +180,7 @@ def trigger_dvc_pipeline_async():
                 log_file.write(f"[{finished_at}] DVC pipeline completed successfully\n")
                 write_dvc_status(
                     state='success',
-                    message='Le pipeline DVC, le push vers DagsHub et la synchronisation Git se sont termines avec succes.',
+                    message='Le pipeline DVC local et la synchronisation Git se sont termines avec succes. La publication DagsHub sera prise en charge par GitHub Actions.',
                     started_at=started_at,
                     finished_at=finished_at,
                 )
