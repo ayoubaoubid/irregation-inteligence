@@ -11,3 +11,5 @@ mlflow
 dvc
 pyYaml
 requests
+prometheus_fastapi_instrumentator
+django-prometheus

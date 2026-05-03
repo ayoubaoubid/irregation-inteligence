@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import joblib
 import pandas as pd
 import os
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
 
@@ -141,3 +142,6 @@ def predict(data: InputData):
             "error": str(e),
             "status": "failed"
         }
+
+
+Instrumentator().instrument(app).expose(app)
