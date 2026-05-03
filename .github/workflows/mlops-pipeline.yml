@@ -6,6 +6,7 @@ on:
       - main
       - master
       - MLOps
+      - Ettaifi_Abdelkodous
   pull_request:
 
 jobs:
@@ -48,6 +49,10 @@ jobs:
       - name: Run DVC pipeline
         if: steps.dvc_pull.outcome == 'success'
         run: dvc repro
+
+      - name: Push DVC artifacts to DagsHub
+        if: github.event_name == 'push'
+        run: dvc push
 
       - name: Run Django system checks
         run: python Plateform_IA/manage.py check
