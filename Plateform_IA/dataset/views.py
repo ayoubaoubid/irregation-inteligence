@@ -85,6 +85,13 @@ def trigger_dvc_pipeline_async():
                 log_file.flush()
 
                 for command in (
+                    [
+                        sys.executable,
+                        '-m',
+                        'dvc',
+                        'add',
+                        'DataOps/Statics/irrigation_prediction_Variables_Important.csv',
+                    ],
                     [sys.executable, '-m', 'dvc', 'repro'],
                     [sys.executable, '-m', 'dvc', 'push'],
                 ):
@@ -112,7 +119,7 @@ def trigger_dvc_pipeline_async():
                 log_file.write(git_status.stdout)
 
                 tracked_paths = [
-                    'DataOps/Statics/irrigation_prediction_Variables_Important.csv',
+                    'DataOps/Statics/irrigation_prediction_Variables_Important.csv.dvc',
                     'DataOps/Statics/irrigation_prediction_processed.csv',
                     'models/best_model.pkl',
                     'models/scaler.pkl',
