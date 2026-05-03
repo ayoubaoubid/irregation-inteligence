@@ -6,4 +6,5 @@ urlpatterns = [
     path('', include('core.urls')),
     path('dataset/', include('dataset.urls')),
     path('prediction/', include('prediction.urls')),
+    path('', include('django_prometheus.urls'))
 ]
