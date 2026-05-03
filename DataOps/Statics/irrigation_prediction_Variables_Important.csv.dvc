@@ -1,0 +1,5 @@
+outs:
+- md5: dd84b3a8bcb489acb2ce0d175e0d69c3
+  size: 874808
+  hash: md5
+  path: irrigation_prediction_Variables_Important.csv

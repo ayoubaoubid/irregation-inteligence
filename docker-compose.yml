@@ -9,7 +9,7 @@ services:
       - ./Plateform_IA:/app
     environment:
       - PYTHONUNBUFFERED=1
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_KEY=devops_pipline_@12@34@56@78
       - MODEL_API_URL=http://model-api:5000
     env_file:
       - .env

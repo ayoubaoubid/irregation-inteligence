@@ -161,6 +161,33 @@
         color: var(--text-muted, #666);
         margin-bottom: 2rem;
     }
+    .pipeline-status {
+        max-width: 800px;
+        margin: 1rem auto 0;
+        padding: 1rem 1.2rem;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        font-family: var(--font-body, "DM Sans", sans-serif);
+    }
+    .pipeline-status strong {
+        display: block;
+        margin-bottom: 0.3rem;
+    }
+    .pipeline-status-running {
+        background: rgba(255, 193, 7, 0.12);
+        border-color: rgba(255, 193, 7, 0.35);
+        color: #7a5a00;
+    }
+    .pipeline-status-success {
+        background: rgba(40, 167, 69, 0.12);
+        border-color: rgba(40, 167, 69, 0.35);
+        color: #1f6a34;
+    }
+    .pipeline-status-failed {
+        background: rgba(220, 53, 69, 0.10);
+        border-color: rgba(220, 53, 69, 0.25);
+        color: #8a2330;
+    }
 </style>
 {% endblock %}
 
@@ -168,6 +195,23 @@
 <section class="section" style="margin-top: 2rem;">
     <h1 class="section-title-custom">Alimenter le Dataset</h1>
     <p class="section-subtitle-custom">Ajoutez de nouvelles observations réelles au référentiel DataOps.</p>
+
+    {% if pipeline_status %}
+        <div class="pipeline-status pipeline-status-{{ pipeline_status.state|default:'running' }}">
+            <strong>
+                {% if pipeline_status.state == 'running' %}
+                    Pipeline lancÃ©
+                {% elif pipeline_status.state == 'success' %}
+                    Pipeline terminÃ© avec succÃ¨s
+                {% elif pipeline_status.state == 'failed' %}
+                    Pipeline en Ã©chec
+                {% else %}
+                    Statut du pipeline
+                {% endif %}
+            </strong>
+            <div>{{ pipeline_status.message }}</div>
+        </div>
+    {% endif %}
 
     <div class="form-container">
         {% if success %}
