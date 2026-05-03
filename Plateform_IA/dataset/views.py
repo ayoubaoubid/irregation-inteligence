@@ -1,10 +1,18 @@
 import csv
 import json
+import subprocess
+import sys
+import threading
 from collections import Counter, defaultdict
+from datetime import datetime
 from statistics import mean
 
 from django.conf import settings
 from django.shortcuts import redirect, render
+
+
+_DVC_PIPELINE_LOCK = threading.Lock()
+_DVC_PIPELINE_RUNNING = False
 
 
 def get_dataset_csv_path():
@@ -14,6 +22,180 @@ def get_dataset_csv_path():
         / 'Statics'
         / 'irrigation_prediction_Variables_Important.csv'
     )
+
+
+def get_project_root():
+    return settings.BASE_DIR.parent
+
+
+def get_dvc_log_path():
+    return get_project_root() / 'logs' / 'dvc_pipeline.log'
+
+
+def get_dvc_status_path():
+    return get_project_root() / 'logs' / 'dvc_pipeline_status.json'
+
+
+def write_dvc_status(state, message, started_at=None, finished_at=None):
+    status_path = get_dvc_status_path()
+    status_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        'state': state,
+        'message': message,
+        'started_at': started_at,
+        'finished_at': finished_at,
+    }
+    with open(status_path, 'w', encoding='utf-8') as status_file:
+        json.dump(payload, status_file)
+
+
+def read_dvc_status():
+    status_path = get_dvc_status_path()
+    if not status_path.exists():
+        return None
+
+    with open(status_path, 'r', encoding='utf-8') as status_file:
+        return json.load(status_file)
+
+
+def trigger_dvc_pipeline_async():
+    global _DVC_PIPELINE_RUNNING
+
+    with _DVC_PIPELINE_LOCK:
+        if _DVC_PIPELINE_RUNNING:
+            return False
+        _DVC_PIPELINE_RUNNING = True
+
+    def worker():
+        global _DVC_PIPELINE_RUNNING
+        log_path = get_dvc_log_path()
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        started_at = datetime.utcnow().isoformat(timespec='seconds')
+        project_root = get_project_root()
+
+        try:
+            write_dvc_status(
+                state='running',
+                message='Le pipeline DVC et la synchronisation Git sont en cours d execution.',
+                started_at=started_at,
+                finished_at=None,
+            )
+            with open(log_path, 'a', encoding='utf-8') as log_file:
+                log_file.write(f"\n[{started_at}] Starting DVC pipeline after add-data submission\n")
+                log_file.flush()
+
+                for command in (
+                    [sys.executable, '-m', 'dvc', 'repro'],
+                    [sys.executable, '-m', 'dvc', 'push'],
+                ):
+                    log_file.write(f"[{started_at}] Running: {' '.join(command)}\n")
+                    log_file.flush()
+                    subprocess.run(
+                        command,
+                        cwd=project_root,
+                        stdout=log_file,
+                        stderr=subprocess.STDOUT,
+                        check=True,
+                    )
+
+                git_status_cmd = ['git', 'status', '--short']
+                log_file.write(f"[{started_at}] Running: {' '.join(git_status_cmd)}\n")
+                log_file.flush()
+                git_status = subprocess.run(
+                    git_status_cmd,
+                    cwd=project_root,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    check=True,
+                )
+                log_file.write(git_status.stdout)
+
+                tracked_paths = [
+                    'DataOps/Statics/irrigation_prediction_Variables_Important.csv',
+                    'DataOps/Statics/irrigation_prediction_processed.csv',
+                    'models/best_model.pkl',
+                    'models/scaler.pkl',
+                    'models/features.pkl',
+                    'models/classes.pkl',
+                    'dvc.lock',
+                ]
+                git_add_cmd = ['git', 'add', *tracked_paths]
+                log_file.write(f"[{started_at}] Running: {' '.join(git_add_cmd)}\n")
+                log_file.flush()
+                subprocess.run(
+                    git_add_cmd,
+                    cwd=project_root,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
+                    check=True,
+                )
+
+                git_diff_cmd = ['git', 'diff', '--cached', '--quiet']
+                log_file.write(f"[{started_at}] Running: {' '.join(git_diff_cmd)}\n")
+                log_file.flush()
+                git_diff = subprocess.run(
+                    git_diff_cmd,
+                    cwd=project_root,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
+                    check=False,
+                )
+
+                if git_diff.returncode == 1:
+                    commit_message = (
+                        f"Update irrigation dataset and model artifacts {started_at}"
+                    )
+                    git_commit_cmd = ['git', 'commit', '-m', commit_message]
+                    log_file.write(f"[{started_at}] Running: {' '.join(git_commit_cmd)}\n")
+                    log_file.flush()
+                    subprocess.run(
+                        git_commit_cmd,
+                        cwd=project_root,
+                        stdout=log_file,
+                        stderr=subprocess.STDOUT,
+                        check=True,
+                    )
+
+                    git_push_cmd = ['git', 'push']
+                    log_file.write(f"[{started_at}] Running: {' '.join(git_push_cmd)}\n")
+                    log_file.flush()
+                    subprocess.run(
+                        git_push_cmd,
+                        cwd=project_root,
+                        stdout=log_file,
+                        stderr=subprocess.STDOUT,
+                        check=True,
+                    )
+                elif git_diff.returncode != 0:
+                    raise subprocess.CalledProcessError(git_diff.returncode, git_diff_cmd)
+
+                finished_at = datetime.utcnow().isoformat(timespec='seconds')
+                log_file.write(f"[{finished_at}] DVC pipeline completed successfully\n")
+                write_dvc_status(
+                    state='success',
+                    message='Le pipeline DVC, le push vers DagsHub et la synchronisation Git se sont termines avec succes.',
+                    started_at=started_at,
+                    finished_at=finished_at,
+                )
+        except subprocess.CalledProcessError as exc:
+            failed_at = datetime.utcnow().isoformat(timespec='seconds')
+            with open(log_path, 'a', encoding='utf-8') as log_file:
+                log_file.write(
+                    f"[{failed_at}] DVC pipeline failed with exit code {exc.returncode}\n"
+                )
+            write_dvc_status(
+                state='failed',
+                message=f'Le pipeline DVC a echoue avec le code {exc.returncode}. Consulte logs/dvc_pipeline.log.',
+                started_at=started_at,
+                finished_at=failed_at,
+            )
+        finally:
+            with _DVC_PIPELINE_LOCK:
+                _DVC_PIPELINE_RUNNING = False
+
+    threading.Thread(target=worker, daemon=True).start()
+    return True
 
 
 def dataset(request):
@@ -271,6 +453,21 @@ def add_data(request):
                 writer.writeheader()
             writer.writerow(data)
 
+        pipeline_started = trigger_dvc_pipeline_async()
+        if not pipeline_started:
+            write_dvc_status(
+                state='running',
+                message='Un pipeline DVC est deja en cours. Cette nouvelle donnee sera prise en compte dans ce cycle.',
+                started_at=datetime.utcnow().isoformat(timespec='seconds'),
+                finished_at=None,
+            )
         return redirect(f"{request.path}?success=1")
 
-    return render(request, 'dataset/add_data.html', {'success': request.GET.get('success') == '1'})
+    return render(
+        request,
+        'dataset/add_data.html',
+        {
+            'success': request.GET.get('success') == '1',
+            'pipeline_status': read_dvc_status(),
+        },
+    )
