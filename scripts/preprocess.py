@@ -113,17 +113,12 @@ def preprocess_dataframe(df: pd.DataFrame, random_state: int) -> tuple[pd.DataFr
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Build important-features and processed irrigation datasets."
+        description="Build the ML-ready processed irrigation dataset."
     )
     parser.add_argument(
         "--input",
-        default=str(DATA_DIR / "irrigation_prediction.csv"),
-        help="Path to the raw irrigation CSV dataset.",
-    )
-    parser.add_argument(
-        "--important-output",
         default=str(DATA_DIR / "irrigation_prediction_Variables_Important.csv"),
-        help="Path to save the selected important-feature dataset.",
+        help="Path to the selected important-feature irrigation CSV dataset.",
     )
     parser.add_argument(
         "--processed-output",
@@ -143,24 +138,21 @@ def main() -> int:
     args = parse_args()
 
     input_path = Path(args.input)
-    important_output = Path(args.important_output)
     processed_output = Path(args.processed_output)
 
     if not input_path.exists():
         raise FileNotFoundError(f"Missing input dataset: {input_path}")
 
-    important_output.parent.mkdir(parents=True, exist_ok=True)
     processed_output.parent.mkdir(parents=True, exist_ok=True)
 
-    raw_df = pd.read_csv(input_path)
-    important_df, processed_df = preprocess_dataframe(
-        raw_df, random_state=args.random_state
+    important_df = pd.read_csv(input_path)
+    _, processed_df = preprocess_dataframe(
+        important_df, random_state=args.random_state
     )
 
-    important_df.to_csv(important_output, index=False)
     processed_df.to_csv(processed_output, index=False)
 
-    print(f"Saved important dataset: {important_output} ({important_df.shape[0]} rows)")
+    print(f"Loaded important dataset: {input_path} ({important_df.shape[0]} rows)")
     print(f"Saved processed dataset: {processed_output} ({processed_df.shape[0]} rows)")
     print(f"Processed columns: {processed_df.columns.tolist()}")
     return 0
