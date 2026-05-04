@@ -75,16 +75,14 @@ stages:
     deps:
     - path: DataOps/Statics/irrigation_prediction_Variables_Important.csv
       hash: md5
-      md5: 0dceb9be938c3efb779647e5f9249cd2
-      size: 875093
-      isexec: true
+      md5: 458095ced1eeec1ab18e4417eb64eafc
+      size: 875205
     - path: scripts/preprocess.py
       hash: md5
       md5: e316d7d7d34cc90b16fe59541eef115d
       size: 4867
-      isexec: true
     outs:
     - path: DataOps/Statics/irrigation_prediction_processed.csv
       hash: md5
-      md5: b52e4671594ae5b74e5bae7558e9cc94
-      size: 4855704
+      md5: e691e2f90cd0b088f8ea97b2f3a8c981
+      size: 4876085

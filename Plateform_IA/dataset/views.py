@@ -9,12 +9,52 @@ from datetime import datetime
 from pathlib import Path
 from statistics import mean
 
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
 from django.conf import settings
 from django.shortcuts import redirect, render
 
 
 _DVC_PIPELINE_LOCK = threading.Lock()
 _DVC_PIPELINE_RUNNING = False
+
+IMPORTANT_COLUMNS = [
+    'Soil_pH',
+    'Soil_Moisture',
+    'Organic_Carbon',
+    'Electrical_Conductivity',
+    'Temperature_C',
+    'Humidity',
+    'Rainfall_mm',
+    'Sunlight_Hours',
+    'Wind_Speed_kmh',
+    'Crop_Growth_Stage',
+    'Irrigation_Type',
+    'Field_Area_hectare',
+    'Mulching_Used',
+    'Previous_Irrigation_mm',
+    'Irrigation_Need',
+]
+
+NUMERIC_COLUMNS = [
+    'Soil_pH',
+    'Soil_Moisture',
+    'Organic_Carbon',
+    'Electrical_Conductivity',
+    'Temperature_C',
+    'Humidity',
+    'Rainfall_mm',
+    'Sunlight_Hours',
+    'Wind_Speed_kmh',
+    'Field_Area_hectare',
+    'Previous_Irrigation_mm',
+]
+
+CATEGORICAL_COLUMNS = [
+    'Crop_Growth_Stage',
+    'Irrigation_Type',
+    'Mulching_Used',
+]
 
 
 def get_dataset_csv_path():
@@ -46,6 +86,10 @@ def get_dvc_log_path():
 
 def get_dvc_status_path():
     return get_project_root() / 'logs' / 'dvc_pipeline_status.json'
+
+
+def get_new_data_path():
+    return get_project_root() / 'logs' / 'new_data.csv'
 
 
 def get_pipeline_unavailable_reason():
@@ -120,6 +164,73 @@ def read_dvc_status():
             return json.loads(content)
     except (json.JSONDecodeError, OSError):
         return None
+
+
+def get_visible_pipeline_status(request):
+    pipeline_status = read_dvc_status()
+    if not pipeline_status:
+        return None
+
+    if pipeline_status.get('state') == 'running':
+        return pipeline_status
+
+    if request.GET.get('success') == '1':
+        return pipeline_status
+
+    return None
+
+
+def append_new_data_for_drift(raw_row):
+    dataset_path = get_dataset_csv_path()
+    new_data_path = get_new_data_path()
+
+    if not dataset_path.exists():
+        return
+
+    historical_df = pd.read_csv(dataset_path, encoding='utf-8-sig')
+    if historical_df.empty:
+        return
+
+    important_df = historical_df.loc[:, IMPORTANT_COLUMNS].copy().dropna().reset_index(drop=True)
+    numeric_part = important_df[NUMERIC_COLUMNS].apply(pd.to_numeric, errors='coerce')
+    categorical_part = important_df[CATEGORICAL_COLUMNS].fillna('')
+
+    scaler = StandardScaler()
+    scaled_numeric = pd.DataFrame(
+        scaler.fit_transform(numeric_part),
+        columns=NUMERIC_COLUMNS,
+        index=important_df.index,
+    )
+    encoded_categorical = pd.get_dummies(categorical_part)
+    processed_features = pd.concat([scaled_numeric, encoded_categorical], axis=1)
+
+    latest_raw = important_df.iloc[[-1]].copy()
+    latest_numeric = latest_raw[NUMERIC_COLUMNS].apply(pd.to_numeric, errors='coerce').fillna(0.0)
+    latest_scaled = pd.DataFrame(
+        scaler.transform(latest_numeric),
+        columns=NUMERIC_COLUMNS,
+        index=latest_raw.index,
+    )
+    latest_encoded = pd.get_dummies(latest_raw[CATEGORICAL_COLUMNS].fillna(''))
+    latest_encoded = latest_encoded.reindex(
+        columns=encoded_categorical.columns,
+        fill_value=0.0,
+    )
+
+    latest_processed = pd.concat([latest_scaled, latest_encoded], axis=1)
+    latest_processed = latest_processed.reindex(
+        columns=processed_features.columns,
+        fill_value=0.0,
+    )
+
+    new_data_path.parent.mkdir(parents=True, exist_ok=True)
+    should_write_header = (not new_data_path.exists()) or new_data_path.stat().st_size == 0
+    latest_processed.to_csv(
+        new_data_path,
+        mode='a',
+        header=should_write_header,
+        index=False,
+    )
 
 
 def trigger_dvc_pipeline_async():
@@ -528,23 +639,7 @@ def analysis(request):
 
 def add_data(request):
     csv_path = get_dataset_csv_path()
-    fieldnames = [
-        'Soil_pH',
-        'Soil_Moisture',
-        'Organic_Carbon',
-        'Electrical_Conductivity',
-        'Temperature_C',
-        'Humidity',
-        'Rainfall_mm',
-        'Sunlight_Hours',
-        'Wind_Speed_kmh',
-        'Crop_Growth_Stage',
-        'Irrigation_Type',
-        'Field_Area_hectare',
-        'Mulching_Used',
-        'Previous_Irrigation_mm',
-        'Irrigation_Need',
-    ]
+    fieldnames = IMPORTANT_COLUMNS
 
     if request.method == 'POST':
         data = {field: request.POST.get(field) for field in fieldnames}
@@ -558,6 +653,8 @@ def add_data(request):
             if should_write_header:
                 writer.writeheader()
             writer.writerow(data)
+
+        append_new_data_for_drift(data)
 
         pipeline_started = trigger_dvc_pipeline_async()
         if not pipeline_started:
@@ -574,6 +671,6 @@ def add_data(request):
         'dataset/add_data.html',
         {
             'success': request.GET.get('success') == '1',
-            'pipeline_status': read_dvc_status(),
+            'pipeline_status': get_visible_pipeline_status(request),
         },
     )
