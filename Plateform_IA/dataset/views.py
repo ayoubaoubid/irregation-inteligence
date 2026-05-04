@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import subprocess
 import sys
 import threading
@@ -25,6 +26,16 @@ def get_dataset_csv_path():
 
 
 def get_project_root():
+    configured_root = os.getenv('PROJECT_ROOT')
+    if configured_root:
+        return settings.BASE_DIR.__class__(configured_root)
+
+    base_dir = settings.BASE_DIR.resolve()
+    candidate_roots = [base_dir, *base_dir.parents]
+    for candidate in candidate_roots:
+        if (candidate / 'dvc.yaml').exists():
+            return candidate
+
     return settings.BASE_DIR.parent
 
 
@@ -34,6 +45,31 @@ def get_dvc_log_path():
 
 def get_dvc_status_path():
     return get_project_root() / 'logs' / 'dvc_pipeline_status.json'
+
+
+def get_pipeline_unavailable_reason():
+    project_root = get_project_root()
+    required_paths = [
+        project_root / 'dvc.yaml',
+        project_root / 'scripts',
+        project_root / 'DataOps' / 'Statics',
+    ]
+    missing_paths = [str(path) for path in required_paths if not path.exists()]
+    if missing_paths:
+        return (
+            'Le pipeline DVC est indisponible dans cet environnement. '
+            'Chemins manquants: ' + ', '.join(missing_paths)
+        )
+
+    git_dir = project_root / '.git'
+    if not git_dir.exists():
+        return (
+            "Le pipeline DVC est indisponible dans ce conteneur Docker car le depot Git "
+            "complet n'est pas monte. Monte le projet racine avec son dossier .git pour "
+            'autoriser les etapes git/dvc automatiques.'
+        )
+
+    return None
 
 
 def write_dvc_status(state, message, started_at=None, finished_at=None):
@@ -72,8 +108,23 @@ def trigger_dvc_pipeline_async():
         log_path.parent.mkdir(parents=True, exist_ok=True)
         started_at = datetime.utcnow().isoformat(timespec='seconds')
         project_root = get_project_root()
+        last_command = None
 
         try:
+            unavailable_reason = get_pipeline_unavailable_reason()
+            if unavailable_reason:
+                write_dvc_status(
+                    state='skipped',
+                    message=unavailable_reason,
+                    started_at=started_at,
+                    finished_at=started_at,
+                )
+                with open(log_path, 'a', encoding='utf-8') as log_file:
+                    log_file.write(
+                        f"\n[{started_at}] DVC pipeline skipped: {unavailable_reason}\n"
+                    )
+                return
+
             write_dvc_status(
                 state='running',
                 message='Le pipeline DVC et la synchronisation Git sont en cours d execution.',
@@ -94,6 +145,7 @@ def trigger_dvc_pipeline_async():
                     ],
                     [sys.executable, '-m', 'dvc', 'repro'],
                 ):
+                    last_command = command
                     log_file.write(f"[{started_at}] Running: {' '.join(command)}\n")
                     log_file.flush()
                     subprocess.run(
@@ -105,6 +157,7 @@ def trigger_dvc_pipeline_async():
                     )
 
                 git_status_cmd = ['git', 'status', '--short']
+                last_command = git_status_cmd
                 log_file.write(f"[{started_at}] Running: {' '.join(git_status_cmd)}\n")
                 log_file.flush()
                 git_status = subprocess.run(
@@ -127,6 +180,7 @@ def trigger_dvc_pipeline_async():
                     'dvc.lock',
                 ]
                 git_add_cmd = ['git', 'add', *tracked_paths]
+                last_command = git_add_cmd
                 log_file.write(f"[{started_at}] Running: {' '.join(git_add_cmd)}\n")
                 log_file.flush()
                 subprocess.run(
@@ -138,6 +192,7 @@ def trigger_dvc_pipeline_async():
                 )
 
                 git_diff_cmd = ['git', 'diff', '--cached', '--quiet']
+                last_command = git_diff_cmd
                 log_file.write(f"[{started_at}] Running: {' '.join(git_diff_cmd)}\n")
                 log_file.flush()
                 git_diff = subprocess.run(
@@ -153,6 +208,7 @@ def trigger_dvc_pipeline_async():
                         f"Update irrigation dataset and model artifacts {started_at}"
                     )
                     git_commit_cmd = ['git', 'commit', '-m', commit_message]
+                    last_command = git_commit_cmd
                     log_file.write(f"[{started_at}] Running: {' '.join(git_commit_cmd)}\n")
                     log_file.flush()
                     subprocess.run(
@@ -164,6 +220,7 @@ def trigger_dvc_pipeline_async():
                     )
 
                     git_push_cmd = ['git', 'push']
+                    last_command = git_push_cmd
                     log_file.write(f"[{started_at}] Running: {' '.join(git_push_cmd)}\n")
                     log_file.flush()
                     subprocess.run(
@@ -186,13 +243,30 @@ def trigger_dvc_pipeline_async():
                 )
         except subprocess.CalledProcessError as exc:
             failed_at = datetime.utcnow().isoformat(timespec='seconds')
+            failed_command = ' '.join(last_command or exc.cmd or [])
             with open(log_path, 'a', encoding='utf-8') as log_file:
                 log_file.write(
                     f"[{failed_at}] DVC pipeline failed with exit code {exc.returncode}\n"
                 )
+                if failed_command:
+                    log_file.write(f"[{failed_at}] Failed command: {failed_command}\n")
             write_dvc_status(
                 state='failed',
-                message=f'Le pipeline DVC a echoue avec le code {exc.returncode}. Consulte logs/dvc_pipeline.log.',
+                message=(
+                    f'Le pipeline DVC a echoue avec le code {exc.returncode}. '
+                    f'Commande: {failed_command or "inconnue"}. '
+                    'Consulte logs/dvc_pipeline.log.'
+                ),
+                started_at=started_at,
+                finished_at=failed_at,
+            )
+        except Exception as exc:
+            failed_at = datetime.utcnow().isoformat(timespec='seconds')
+            with open(log_path, 'a', encoding='utf-8') as log_file:
+                log_file.write(f"[{failed_at}] Unexpected pipeline error: {exc}\n")
+            write_dvc_status(
+                state='failed',
+                message=f'Le pipeline DVC a echoue: {exc}. Consulte logs/dvc_pipeline.log.',
                 started_at=started_at,
                 finished_at=failed_at,
             )

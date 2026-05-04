@@ -3,14 +3,17 @@ services:
     build:
       context: ./Plateform_IA
       dockerfile: Dockerfile
+    working_dir: /app/Plateform_IA
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - "8000:8000"
     volumes:
-      - ./Plateform_IA:/app
+      - .:/app
     environment:
       - PYTHONUNBUFFERED=1
       - SECRET_KEY=devops_pipline_@12@34@56@78
       - MODEL_API_URL=http://model-api:5000
+      - PROJECT_ROOT=/app
     env_file:
       - .env
     restart: unless-stopped
