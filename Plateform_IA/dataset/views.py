@@ -6,6 +6,7 @@ import sys
 import threading
 from collections import Counter, defaultdict
 from datetime import datetime
+from pathlib import Path
 from statistics import mean
 
 from django.conf import settings
@@ -28,7 +29,7 @@ def get_dataset_csv_path():
 def get_project_root():
     configured_root = os.getenv('PROJECT_ROOT')
     if configured_root:
-        return settings.BASE_DIR.__class__(configured_root)
+        return Path(configured_root)
 
     base_dir = settings.BASE_DIR.resolve()
     candidate_roots = [base_dir, *base_dir.parents]
@@ -72,6 +73,23 @@ def get_pipeline_unavailable_reason():
     return None
 
 
+def ensure_git_identity(project_root, log_file):
+    git_email = os.getenv('PIPELINE_GIT_EMAIL', 'pipeline@local.dev')
+    git_name = os.getenv('PIPELINE_GIT_NAME', 'DVC Pipeline')
+
+    for key, value in (
+        ('user.email', git_email),
+        ('user.name', git_name),
+    ):
+        subprocess.run(
+            ['git', 'config', '--local', key, value],
+            cwd=project_root,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            check=True,
+        )
+
+
 def write_dvc_status(state, message, started_at=None, finished_at=None):
     status_path = get_dvc_status_path()
     status_path.parent.mkdir(parents=True, exist_ok=True)
@@ -81,8 +99,12 @@ def write_dvc_status(state, message, started_at=None, finished_at=None):
         'started_at': started_at,
         'finished_at': finished_at,
     }
-    with open(status_path, 'w', encoding='utf-8') as status_file:
+    temp_path = status_path.with_suffix('.tmp')
+    with open(temp_path, 'w', encoding='utf-8') as status_file:
         json.dump(payload, status_file)
+        status_file.flush()
+        os.fsync(status_file.fileno())
+    os.replace(temp_path, status_path)
 
 
 def read_dvc_status():
@@ -90,8 +112,14 @@ def read_dvc_status():
     if not status_path.exists():
         return None
 
-    with open(status_path, 'r', encoding='utf-8') as status_file:
-        return json.load(status_file)
+    try:
+        with open(status_path, 'r', encoding='utf-8') as status_file:
+            content = status_file.read().strip()
+            if not content:
+                return None
+            return json.loads(content)
+    except (json.JSONDecodeError, OSError):
+        return None
 
 
 def trigger_dvc_pipeline_async():
@@ -170,18 +198,14 @@ def trigger_dvc_pipeline_async():
                 )
                 log_file.write(git_status.stdout)
 
+                ensure_git_identity(project_root, log_file)
+
                 tracked_paths = [
                     'DataOps/Statics/irrigation_prediction_Variables_Important.csv.dvc',
-                    'DataOps/Statics/irrigation_prediction_processed.csv',
-                    'models/best_model.pkl',
-                    'models/scaler.pkl',
-                    'models/features.pkl',
-                    'models/classes.pkl',
                     'dvc.lock',
                 ]
-                # Force add because model artifacts and processed CSVs are intentionally
-                # ignored by default but still versioned by this pipeline workflow.
-                git_add_cmd = ['git', 'add', '-f', *tracked_paths]
+                # DVC stage outputs stay out of Git; only metadata files should be staged here.
+                git_add_cmd = ['git', 'add', *tracked_paths]
                 last_command = git_add_cmd
                 log_file.write(f"[{started_at}] Running: {' '.join(git_add_cmd)}\n")
                 log_file.flush()

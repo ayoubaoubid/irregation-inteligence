@@ -14,6 +14,8 @@ services:
       - SECRET_KEY=devops_pipline_@12@34@56@78
       - MODEL_API_URL=http://model-api:5000
       - PROJECT_ROOT=/app
+      - PIPELINE_GIT_NAME=DVC Pipeline
+      - PIPELINE_GIT_EMAIL=pipeline@local.dev
     env_file:
       - .env
     restart: unless-stopped
