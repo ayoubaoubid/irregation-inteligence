@@ -89,6 +89,10 @@ def prediction(request):
                     'inputs': inputs_context
                 })
 
+            # Multiplié confidence par 100
+            if 'confidence' in api_result:
+                api_result['confidence'] = api_result['confidence'] * 100
+
             context = {
                 'result': api_result,
                 'inputs': inputs_context
