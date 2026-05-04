@@ -11,6 +11,8 @@ from sklearn.metrics import (
     f1_score,
 )
 
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
+from sklearn.model_selection import train_test_split
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
@@ -37,21 +39,34 @@ scaler = joblib.load(BASE_DIR / "models" / "scaler.pkl")
 features = joblib.load(BASE_DIR / "models" / "features.pkl")
 
 X = X.reindex(columns=features, fill_value=0)
+
 X_scaled = scaler.transform(X)
+
 preds = model.predict(X_scaled)
 
-acc = accuracy_score(y, preds)
-f1 = f1_score(y, preds, average="weighted")
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+
+# predict ONLY on test set
+preds = model.predict(X_test)
+
+acc = accuracy_score(y_test, preds)
+f1 = f1_score(y_test, preds, average="weighted")
 
 print("\nAccuracy:", acc)
 print("F1-score:", f1)
 print("\nClassification Report:")
 print(classification_report(y, preds))
+print(classification_report(y_test, preds))
 print("\nConfusion Matrix:")
-print(confusion_matrix(y, preds))
-
+print(confusion_matrix(y_test, preds))
 print("\nTest sample:")
-print("Real:", y.iloc[0])
+print("Real:", y_test.iloc[0])
 print("Pred:", preds[0])
 
 configure_mlflow()
