@@ -33,5 +33,9 @@ stages:
     deps:
       - scripts/evaluate.py
       - models/best_model.pkl
+      - params.yml                   
+    outs:
+      - metrics/evaluation.json 
+
 
       
