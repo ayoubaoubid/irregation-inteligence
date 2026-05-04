@@ -3,41 +3,43 @@ from pydantic import BaseModel
 import joblib
 import pandas as pd
 import os
-from prometheus_fastapi_instrumentator import Instrumentator
+import csv
+from datetime import datetime
+from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST
+from fastapi.responses import Response
+from fastapi import Request
+import traceback
 
 app = FastAPI()
 
-# =========================
-# 📁 PATHS
-# =========================
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 MODEL_PATH = os.path.join(BASE_DIR, "models", "best_model.pkl")
-SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.pkl")
 FEATURES_PATH = os.path.join(BASE_DIR, "models", "features.pkl")
 
-# =========================
-# 📦 LOAD MODELS
-# =========================
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+LOG_PATH = os.path.join(LOG_DIR, "predictions.csv")
+NEW_DATA_PATH = os.path.join(LOG_DIR, "new_data.csv")
+
+os.makedirs(LOG_DIR, exist_ok=True)
+
 model = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
 FEATURES = joblib.load(FEATURES_PATH)
 
-print("Model loaded successfully")
-print("Features:", FEATURES)
+# CREATE new_data.csv if not exists
+if not os.path.exists(NEW_DATA_PATH):
+    with open(NEW_DATA_PATH, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(FEATURES) 
 
-# =========================
-# 🔥 CLASS MAPPING (FIX IMPORTANT)
-# =========================
-CLASS_MAPPING = {
-    0: "Low",
-    1: "Medium",
-    2: "High"
-}
+CLASS_MAPPING = {0: "Low", 1: "Medium"}
 
-# =========================
-# 🧾 INPUT SCHEMA
-# =========================
+# PROMETHEUS
+REQUEST_COUNT = Counter("api_requests_total", "Total API Requests")
+PREDICTION_COUNT = Counter("predictions_total", "Total Predictions", ["prediction_class"])
+CONFIDENCE_GAUGE = Gauge("model_confidence", "Prediction Confidence")
+
+
 class InputData(BaseModel):
     Soil_pH: float
     Soil_Moisture: float
@@ -64,84 +66,73 @@ class InputData(BaseModel):
     Mulching_Used_No: float = 0
     Mulching_Used_Yes: float = 0
 
-# =========================
-# 🟢 HOME
-# =========================
+
 @app.get("/")
 def home():
     return {"status": "API running"}
 
-# =========================
-# 🔥 PREDICT
-# =========================
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+@app.post("/alert")
+async def alert(request: Request):
+    data = await request.json()
+
+    print(" ALERT RECEIVED FROM ALERTMANAGER:")
+    print(data)
+
+    # option: log file
+    with open("logs/alerts.log", "a") as f:
+        f.write(str(data) + "\n")
+
+    return {"status": "alert received"}
+
 @app.post("/predict")
 def predict(data: InputData):
 
+    REQUEST_COUNT.inc()
+
     try:
-        # 1. INPUT
         input_dict = data.model_dump()
-
-        # 2. DATAFRAME
         df = pd.DataFrame([input_dict])
+        # validate columns
+        missing = set(FEATURES) - set(df.columns)
+        extra = set(df.columns) - set(FEATURES)
 
-        print("\n INPUT RECEIVED:")
-        print(df)
+        if missing:
+            return {"error": f"Missing features: {missing}"}
 
-        # 3. CHECK FEATURES
-        missing_cols = set(FEATURES) - set(df.columns)
-        extra_cols = set(df.columns) - set(FEATURES)
+        df = df[FEATURES]
 
-        if missing_cols:
-            return {
-                "error": f"Missing features: {missing_cols}",
-                "status": "failed"
-            }
+        # 🔥 prediction
+        pred = int(model.predict(df)[0])
 
-        if extra_cols:
-            print(f"Extra columns ignored: {extra_cols}")
+        # 🔥 store raw data for drift detection
+        with open(NEW_DATA_PATH, "a", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(df.values.flatten())
 
-        # 4. ALIGN FEATURES
-        df = df.reindex(columns=FEATURES, fill_value=0)
-
-        print("\n ALIGNED FEATURES:")
-        print(df)
-
-        # 5. SCALE
-        X_scaled = scaler.transform(df)
-
-        # 6. PREDICT
-        pred_class_id = int(model.predict(X_scaled)[0])
-
-        # 7. PROBABILITIES
-        probs_dict = {}
-        confidence = None
-
+        confidence = 1.0
         if hasattr(model, "predict_proba"):
-            probs = model.predict_proba(X_scaled)[0]
+            probs = model.predict_proba(df)[0]
             confidence = float(max(probs))
+            CONFIDENCE_GAUGE.set(confidence)
 
-            probs_dict = {
-                str(i): float(p)
-                for i, p in enumerate(probs)
-            }
+        label = CLASS_MAPPING.get(pred, str(pred))
+        PREDICTION_COUNT.labels(prediction_class=label).inc()
 
-        # 8. CLASS LABEL (FIX HERE)
-        class_label = CLASS_MAPPING.get(pred_class_id, str(pred_class_id))
+        # log predictions
+        with open(LOG_PATH, "a", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([datetime.now(), pred, label, confidence])
 
-        # 9. RESPONSE
         return {
-            "prediction_id": pred_class_id,
-            "prediction_label": class_label,
-            "confidence": confidence,
-            "probabilities": probs_dict,
-            "status": "success"
+            "prediction": label,
+            "confidence": confidence
         }
 
     except Exception as e:
-        return {
-            "error": str(e),
-            "status": "failed"
-        }
-
-
-Instrumentator().instrument(app).expose(app)
+        print(traceback.format_exc())
+        return {"error": str(e)}
