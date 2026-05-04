@@ -179,7 +179,9 @@ def trigger_dvc_pipeline_async():
                     'models/classes.pkl',
                     'dvc.lock',
                 ]
-                git_add_cmd = ['git', 'add', *tracked_paths]
+                # Force add because model artifacts and processed CSVs are intentionally
+                # ignored by default but still versioned by this pipeline workflow.
+                git_add_cmd = ['git', 'add', '-f', *tracked_paths]
                 last_command = git_add_cmd
                 log_file.write(f"[{started_at}] Running: {' '.join(git_add_cmd)}\n")
                 log_file.flush()
