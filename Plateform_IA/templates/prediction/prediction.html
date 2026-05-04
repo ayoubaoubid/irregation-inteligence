@@ -186,19 +186,16 @@
             <!-- Section 3 & 4: Result display and recommendation -->
             {% if result %}
 <div class="card mb-4" style="border-top: 5px solid 
-  {% if result.prediction_label == 'high' %}#E24B4A
-  {% elif result.prediction_label == 'medium' %}#EF9F27
+  {% if result.prediction == 'Medium' %}#EF9F27
   {% else %}#87ab69{% endif %}; text-align: center;">
 
   <h2 class="card-header">2. Résultat de l'Inférence</h2>
 
   <div style="padding: 1.5rem;">
 
-    {% if result.prediction_label == 'High' %}
-      <div style="font-size: 3rem; margin: 1rem 0;">🚰</div>
-      <h1 style="color: #E24B4A;">Besoin élevé</h1>
-      <p>Irrigation requise immédiatement. Intervenez dès que possible.</p>
-    {% elif result.prediction_label == 'Medium' %}
+    <!-- prediction_label-->
+
+    {% if result.prediction == 'Medium' %}
       <div style="font-size: 3rem; margin: 1rem 0;">⚠️</div>
       <h1 style="color: #EF9F27;">Besoin modéré</h1>
       <p>Une irrigation légère est conseillée dans les prochains jours.</p>
@@ -210,27 +207,7 @@
 
     <!-- Confiance & probabilités -->
     <div style="background: var(--bg-color); padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: left;">
-      <strong>Confiance :</strong> {{ result.confidence|floatformat:1 }}%
-
-      <div style="margin-top: 1rem;">
-        {% for label, prob in result.probabilities.items %}
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-          <span style="min-width: 65px; font-size: 0.9rem; color: gray;">{{ label }}</span>
-          <div style="flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
-            <div style="height: 100%; width: {{ prob|floatformat:0 }}%; background:
-              {% if label == 'high' %}#E24B4A
-              {% elif label == 'medium' %}#EF9F27
-              {% else %}#87ab69{% endif %};
-              border-radius: 4px;"></div>
-          </div>
-          <span style="font-size: 0.9rem; min-width: 38px; text-align: right;">{{ prob|floatformat:1 }}%</span>
-        </div>
-        {% endfor %}
-      </div>
-
-      <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.75rem;">
-        Calcul validé par le modèle entraîné — ID prédiction : {{ result.prediction_id }}
-      </p>
+      <strong>Confiance :</strong> {{ result.confidence|floatformat:1 }}% 
     </div>
 
   </div>
