@@ -1,1 +1,1 @@
-{"state": "failed", "message": "Le pipeline DVC a echoue avec le code 128. Commande: git push. Consulte logs/dvc_pipeline.log.", "started_at": "2026-05-04T12:11:10", "finished_at": "2026-05-04T12:13:51"}
+{"state": "failed", "message": "Le pipeline DVC a echoue avec le code 255. Commande: C:\\Users\\PC\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m dvc repro. Consulte logs/dvc_pipeline.log.", "started_at": "2026-05-04T18:10:17", "finished_at": "2026-05-04T18:12:30"}
