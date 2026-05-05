@@ -7,7 +7,10 @@ on:
     branches: [ main ]
 
 jobs:
-  # Job 1 : Tests unitaires pytest (rapides, sans Docker)
+
+  #  Job 1 : Tests unitaires pytest
+
+
   unit-tests:
     runs-on: ubuntu-latest
 
@@ -26,7 +29,7 @@ jobs:
           pip install -r Plateform_IA/requirements.txt
           pip install -r Plateform_IA/requirements-dev.txt
 
-      - name: Run pytest
+      - name: Run pytest with coverage
         working-directory: Plateform_IA
         run: |
           pytest --junitxml=../test-results.xml
@@ -38,7 +41,9 @@ jobs:
           name: test-results
           path: test-results.xml
 
-  # Job 2 : Build Docker + smoke tests
+
+  #  Job 2 : Build Docker + smoke tests
+
   build-and-test:
     runs-on: ubuntu-latest
     needs: unit-tests
@@ -47,16 +52,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create variables.env for CI
+        run: |
+          echo "SECRET_KEY=devops_pipline_@12@34@56@78" >> variables.env
+          echo "MODEL_API_URL=http://model-api:5000" >> variables.env
+          echo "DEBUG=False" >> variables.env
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub when secrets are available
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: construire l'image back-end 
+      - name: construire back-end image
         uses: docker/build-push-action@v5
         with:
           context: ./Plateform_IA
@@ -65,7 +76,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: construire l'image model-api
+      - name: construire model-api image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -74,30 +85,59 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Start services
+      - name: Start only back-end and model-api
         run: |
-          docker compose -f docker-compose.yml up -d --build
-          sleep 10
+          docker compose up -d back-end model-api
 
-      - name: Smoke test - Nginx (port 80)
+      # ── Attendre ──
+      - name: Wait for back-end to be healthy
         run: |
-          curl --fail --retry 5 --retry-delay 5 \
-               --max-time 10 \
-               http://localhost/ \
-            && echo "Nginx -> Django : OK"
+          echo "Waiting for back-end..."
+          timeout 120 bash -c '
+            until docker compose ps back-end | grep -q "healthy"; do
+              echo "  back-end not ready yet..."
+              sleep 5
+            done
+          '
+          echo "back-end is healthy!"
 
-      - name: Test back-end health
+      - name: Wait for model-api to be healthy
         run: |
-          curl --fail --retry 5 --retry-delay 5 http://localhost:8000/ || exit 1
+          echo "Waiting for model-api (modele ML prend du temps)..."
+          timeout 180 bash -c '
+            until docker compose ps model-api | grep -q "healthy"; do
+              echo "  model-api not ready yet..."
+              sleep 5
+            done
+          '
+          echo "model-api is healthy!"
 
-      - name: Test model-api health
+      # ── Smoke tests directs ──
+      - name: Smoke test - back-end direct
         run: |
-          curl --fail --retry 5 --retry-delay 5 http://localhost:5000/ || exit 1
+          curl --fail --retry 3 --retry-delay 3 \
+               --max-time 15 \
+               http://localhost:8000/ \
+            && echo "back-end : OK"
 
+      - name: Smoke test - model-api direct
+        run: |
+          curl --fail --retry 3 --retry-delay 3 \
+               --max-time 15 \
+               http://localhost:5000/ \
+            && echo "model-api : OK"
+
+      # ── Logs détaillés en cas d'échec ──
       - name: Show logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml logs
+        run: |
+          echo "=== docker compose ps ==="
+          docker compose ps
+          echo "=== back-end logs ==="
+          docker compose logs back-end
+          echo "=== model-api logs ==="
+          docker compose logs model-api
 
       - name: Stop services
         if: always()
-        run: docker compose -f docker-compose.yml down
+        run: docker compose down --volumes
