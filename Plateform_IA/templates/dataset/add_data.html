@@ -225,6 +225,12 @@
                 <a href="{% url 'add_data' %}" class="btn-success-back">Ajouter une autre observation</a>
             </div>
         {% else %}
+            {% if form_errors %}
+                <div style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 10px; background: rgba(220, 53, 69, 0.08); border: 1px solid rgba(220, 53, 69, 0.2); color: #8a2330;">
+                    <strong>Le formulaire contient des erreurs.</strong>
+                    {{ form_errors }}
+                </div>
+            {% endif %}
             <form method="POST" action="{% url 'add_data' %}">
                 {% csrf_token %}
                 
@@ -232,22 +238,22 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="Soil_pH">pH du Sol</label>
-                        <input type="number" step="0.01" class="form-control" id="Soil_pH" name="Soil_pH" placeholder="Ex: 6.5" required>
+                        <input type="number" step="0.01" class="form-control" id="Soil_pH" name="Soil_pH" value="{{ submitted_data.Soil_pH|default:'' }}" placeholder="Ex: 6.5" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="Soil_Moisture">Humidité du Sol (%)</label>
-                        <input type="number" step="0.01" class="form-control" id="Soil_Moisture" name="Soil_Moisture" placeholder="Ex: 45.2" required>
+                        <input type="number" step="0.01" class="form-control" id="Soil_Moisture" name="Soil_Moisture" value="{{ submitted_data.Soil_Moisture|default:'' }}" placeholder="Ex: 45.2" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="Organic_Carbon">Carbone Organique (%)</label>
-                        <input type="number" step="0.01" class="form-control" id="Organic_Carbon" name="Organic_Carbon" placeholder="Ex: 1.2" required>
+                        <input type="number" step="0.01" class="form-control" id="Organic_Carbon" name="Organic_Carbon" value="{{ submitted_data.Organic_Carbon|default:'' }}" placeholder="Ex: 1.2" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="Electrical_Conductivity">Conductivité Électrique (dS/m)</label>
-                        <input type="number" step="0.01" class="form-control" id="Electrical_Conductivity" name="Electrical_Conductivity" placeholder="Ex: 2.1" required>
+                        <input type="number" step="0.01" class="form-control" id="Electrical_Conductivity" name="Electrical_Conductivity" value="{{ submitted_data.Electrical_Conductivity|default:'' }}" placeholder="Ex: 2.1" required>
                     </div>
                 </div>
 
@@ -255,28 +261,28 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="Temperature_C">Température (°C)</label>
-                        <input type="number" step="0.01" class="form-control" id="Temperature_C" name="Temperature_C" placeholder="Ex: 25.5" required>
+                        <input type="number" step="0.01" class="form-control" id="Temperature_C" name="Temperature_C" value="{{ submitted_data.Temperature_C|default:'' }}" placeholder="Ex: 25.5" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="Humidity">Humidité (\%)</label>
-                        <input type="number" step="0.01" class="form-control" id="Humidity" name="Humidity" placeholder="Ex: 60.0" required>
+                        <input type="number" step="0.01" class="form-control" id="Humidity" name="Humidity" value="{{ submitted_data.Humidity|default:'' }}" placeholder="Ex: 60.0" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="Rainfall_mm">Précipitations (mm)</label>
-                        <input type="number" step="0.01" class="form-control" id="Rainfall_mm" name="Rainfall_mm" placeholder="Ex: 15.0" required>
+                        <input type="number" step="0.01" class="form-control" id="Rainfall_mm" name="Rainfall_mm" value="{{ submitted_data.Rainfall_mm|default:'' }}" placeholder="Ex: 15.0" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="Sunlight_Hours">Heures d'ensoleillement</label>
-                        <input type="number" step="0.01" class="form-control" id="Sunlight_Hours" name="Sunlight_Hours" placeholder="Ex: 8.5" required>
+                        <input type="number" step="0.01" class="form-control" id="Sunlight_Hours" name="Sunlight_Hours" value="{{ submitted_data.Sunlight_Hours|default:'' }}" placeholder="Ex: 8.5" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="Wind_Speed_kmh">Vitesse du vent (km/h)</label>
-                    <input type="number" step="0.01" class="form-control" id="Wind_Speed_kmh" name="Wind_Speed_kmh" placeholder="Ex: 12.0" required>
+                    <input type="number" step="0.01" class="form-control" id="Wind_Speed_kmh" name="Wind_Speed_kmh" value="{{ submitted_data.Wind_Speed_kmh|default:'' }}" placeholder="Ex: 12.0" required>
                 </div>
 
                 <h3 style="margin-top: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color, #eee);">Culture et Irrigation (Label Final)</h3>
@@ -286,20 +292,20 @@
                         <label class="form-label" for="Crop_Growth_Stage">Stade de Croissance</label>
                         <select class="form-control" id="Crop_Growth_Stage" name="Crop_Growth_Stage" required>
                             <option value="" disabled selected>Sélectionner le stade</option>
-                            <option value="Vegetative">Vegetative</option>
-                            <option value="Sowing">Sowing</option>
-                            <option value="Flowering">Flowering</option>
-                            <option value="Harvest">Harvest</option>
+                            <option value="Vegetative" {% if submitted_data.Crop_Growth_Stage == 'Vegetative' %}selected{% endif %}>Vegetative</option>
+                            <option value="Sowing" {% if submitted_data.Crop_Growth_Stage == 'Sowing' %}selected{% endif %}>Sowing</option>
+                            <option value="Flowering" {% if submitted_data.Crop_Growth_Stage == 'Flowering' %}selected{% endif %}>Flowering</option>
+                            <option value="Harvest" {% if submitted_data.Crop_Growth_Stage == 'Harvest' %}selected{% endif %}>Harvest</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="Irrigation_Type">Type d'Irrigation Standard</label>
                         <select class="form-control" id="Irrigation_Type" name="Irrigation_Type" required>
                             <option value="" disabled selected>Sélectionner le type</option>
-                            <option value="Rainfed">Rainfed</option>
-                            <option value="Canal">Canal</option>
-                            <option value="Drip">Drip</option>
-                            <option value="Sprinkler">Sprinkler</option>
+                            <option value="Rainfed" {% if submitted_data.Irrigation_Type == 'Rainfed' %}selected{% endif %}>Rainfed</option>
+                            <option value="Canal" {% if submitted_data.Irrigation_Type == 'Canal' %}selected{% endif %}>Canal</option>
+                            <option value="Drip" {% if submitted_data.Irrigation_Type == 'Drip' %}selected{% endif %}>Drip</option>
+                            <option value="Sprinkler" {% if submitted_data.Irrigation_Type == 'Sprinkler' %}selected{% endif %}>Sprinkler</option>
                         </select>
                     </div>
                 </div>
@@ -307,13 +313,13 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="Field_Area_hectare">Surface du champ (ha)</label>
-                        <input type="number" step="0.01" class="form-control" id="Field_Area_hectare" name="Field_Area_hectare" placeholder="Ex: 5.0" required>
+                        <input type="number" step="0.01" class="form-control" id="Field_Area_hectare" name="Field_Area_hectare" value="{{ submitted_data.Field_Area_hectare|default:'' }}" placeholder="Ex: 5.0" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="Mulching_Used">Paillage utilisé ?</label>
                         <select class="form-control" id="Mulching_Used" name="Mulching_Used" required>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
+                            <option value="Yes" {% if submitted_data.Mulching_Used == 'Yes' %}selected{% endif %}>Yes</option>
+                            <option value="No" {% if submitted_data.Mulching_Used == 'No' %}selected{% endif %}>No</option>
                         </select>
                     </div>
                 </div>
@@ -321,15 +327,15 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label" for="Previous_Irrigation_mm">Irrigation Précédente (mm)</label>
-                        <input type="number" step="0.01" class="form-control" id="Previous_Irrigation_mm" name="Previous_Irrigation_mm" placeholder="Ex: 20.0" required>
+                        <input type="number" step="0.01" class="form-control" id="Previous_Irrigation_mm" name="Previous_Irrigation_mm" value="{{ submitted_data.Previous_Irrigation_mm|default:'' }}" placeholder="Ex: 20.0" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="Irrigation_Need" style="color: var(--primary-color, #87ab69); font-weight: bold;">Label de Résultat (Irrigation_Need)</label>
                         <select class="form-control" id="Irrigation_Need" name="Irrigation_Need" style="border-color: var(--primary-color, #87ab69); border-width: 2px;" required>
                             <option value="" disabled selected>Attribuer le Label (Cible)</option>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
+                            <option value="Low" {% if submitted_data.Irrigation_Need == 'Low' %}selected{% endif %}>Low</option>
+                            <option value="Medium" {% if submitted_data.Irrigation_Need == 'Medium' %}selected{% endif %}>Medium</option>
+                            <option value="High" {% if submitted_data.Irrigation_Need == 'High' %}selected{% endif %}>High</option>
                         </select>
                     </div>
                 </div>

@@ -1,1 +1,1 @@
-{"state": "failed", "message": "Le pipeline DVC a echoue avec le code 255. Commande: C:\\Users\\PC\\AppData\\Local\\Programs\\Python\\Python310\\python.exe -m dvc repro. Consulte logs/dvc_pipeline.log.", "started_at": "2026-05-04T18:10:17", "finished_at": "2026-05-04T18:12:30"}
+{"state": "success", "message": "Le pipeline DVC local s est termine avec succes. Les changements sont prets en local pour une publication Git manuelle ou via GitHub Actions.", "started_at": "2026-05-05T16:59:54", "finished_at": "2026-05-05T17:01:44"}

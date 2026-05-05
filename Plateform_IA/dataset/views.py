@@ -14,6 +14,8 @@ from sklearn.preprocessing import StandardScaler
 from django.conf import settings
 from django.shortcuts import redirect, render
 
+from .forms import AddDataForm
+
 
 _DVC_PIPELINE_LOCK = threading.Lock()
 _DVC_PIPELINE_RUNNING = False
@@ -630,7 +632,21 @@ def add_data(request):
     fieldnames = IMPORTANT_COLUMNS
 
     if request.method == 'POST':
-        data = {field: request.POST.get(field) for field in fieldnames}
+        form = AddDataForm(request.POST)
+        if not form.is_valid():
+            return render(
+                request,
+                'dataset/add_data.html',
+                {
+                    'success': False,
+                    'pipeline_status': get_visible_pipeline_status(request),
+                    'form_errors': form.errors,
+                    'submitted_data': request.POST,
+                },
+                status=400,
+            )
+
+        data = {field: form.cleaned_data[field] for field in fieldnames}
 
         csv_path.parent.mkdir(parents=True, exist_ok=True)
         file_exists = csv_path.exists()
@@ -660,5 +676,7 @@ def add_data(request):
         {
             'success': request.GET.get('success') == '1',
             'pipeline_status': get_visible_pipeline_status(request),
+            'form_errors': None,
+            'submitted_data': {},
         },
     )
