@@ -136,3 +136,8 @@ def predict(data: InputData):
     except Exception as e:
         print(traceback.format_exc())
         return {"error": str(e)}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
