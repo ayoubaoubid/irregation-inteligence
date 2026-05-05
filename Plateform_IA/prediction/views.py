@@ -89,8 +89,7 @@ def prediction(request):
                     'inputs': inputs_context
                 })
 
-            # Multiplier confidence par 100 seulement si l'API retourne un décimal (ex: 0.62)
-            # Si la valeur est déjà > 1, elle est déjà en % — on ne touche pas
+
             if 'confidence' in api_result and api_result['confidence'] <= 1:
                 api_result['confidence'] = api_result['confidence'] * 100
 
