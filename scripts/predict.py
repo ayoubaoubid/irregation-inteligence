@@ -106,10 +106,10 @@ def predict(data: InputData):
 
         df = df[FEATURES]
 
-        # 🔥 prediction
+        # prediction
         pred = int(model.predict(df)[0])
 
-        # 🔥 store raw data for drift detection
+        # store raw data for drift detection
         with open(NEW_DATA_PATH, "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(df.values.flatten())
