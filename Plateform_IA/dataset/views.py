@@ -266,7 +266,7 @@ def trigger_dvc_pipeline_async():
 
             write_dvc_status(
                 state='running',
-                message='Le pipeline DVC et la synchronisation Git sont en cours d execution.',
+                message='Le pipeline DVC local et la preparation du commit Git sont en cours d execution.',
                 started_at=started_at,
                 finished_at=None,
             )
@@ -355,18 +355,6 @@ def trigger_dvc_pipeline_async():
                         stderr=subprocess.STDOUT,
                         check=True,
                     )
-
-                    git_push_cmd = ['git', 'push']
-                    last_command = git_push_cmd
-                    log_file.write(f"[{started_at}] Running: {' '.join(git_push_cmd)}\n")
-                    log_file.flush()
-                    subprocess.run(
-                        git_push_cmd,
-                        cwd=project_root,
-                        stdout=log_file,
-                        stderr=subprocess.STDOUT,
-                        check=True,
-                    )
                 elif git_diff.returncode != 0:
                     raise subprocess.CalledProcessError(git_diff.returncode, git_diff_cmd)
 
@@ -374,7 +362,7 @@ def trigger_dvc_pipeline_async():
                 log_file.write(f"[{finished_at}] DVC pipeline completed successfully\n")
                 write_dvc_status(
                     state='success',
-                    message='Le pipeline DVC local et la synchronisation Git se sont termines avec succes. La publication DagsHub sera prise en charge par GitHub Actions.',
+                    message='Le pipeline DVC local s est termine avec succes. Les changements sont prets en local pour une publication Git manuelle ou via GitHub Actions.',
                     started_at=started_at,
                     finished_at=finished_at,
                 )
