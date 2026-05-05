@@ -5,78 +5,83 @@ stages:
     deps:
     - path: DataOps/Statics/irrigation_prediction_processed.csv
       hash: md5
-      md5: b52e4671594ae5b74e5bae7558e9cc94
-      size: 4855704
+      md5: 7175cac875d11b975368978207eb1e30
+      size: 4876251
     - path: params.yml
       hash: md5
       md5: c0def3906e764495d804885f59e6efb5
       size: 264
-      isexec: true
     - path: scripts/train.py
       hash: md5
-      md5: db183e18dc6d100f0000588b3f613731
-      size: 3895
-      isexec: true
+      md5: c9867fbb9ed799658222012f1ff7482e
+      size: 4525
     outs:
     - path: models/best_model.pkl
       hash: md5
-      md5: 05f3b822705431fe233d3ceba674f2d9
-      size: 18096657
+      md5: 03c3381964fc733a5d9ef5a88a9ade75
+      size: 144305
     - path: models/classes.pkl
       hash: md5
-      md5: b1cf54b34128114d2f9788c4c72e16f3
-      size: 249
+      md5: 03fc0e2d86b19926f576dc760261d6ae
+      size: 20
     - path: models/features.pkl
       hash: md5
       md5: c1009816ba5e8879039c26d35f66c497
       size: 462
     - path: models/scaler.pkl
       hash: md5
-      md5: 3492990fd1a30d4903235d0016b57e53
-      size: 1759
+      md5: 9747216c16b404fc07d1e0a87b810195
+      size: 1807
   test:
     cmd: python -m pytest tests/
     deps:
     - path: models/best_model.pkl
       hash: md5
-      md5: 05f3b822705431fe233d3ceba674f2d9
-      size: 18096657
+      md5: 03c3381964fc733a5d9ef5a88a9ade75
+      size: 144305
     - path: models/classes.pkl
       hash: md5
-      md5: b1cf54b34128114d2f9788c4c72e16f3
-      size: 249
+      md5: 03fc0e2d86b19926f576dc760261d6ae
+      size: 20
     - path: models/features.pkl
       hash: md5
       md5: c1009816ba5e8879039c26d35f66c497
       size: 462
     - path: models/scaler.pkl
       hash: md5
-      md5: 3492990fd1a30d4903235d0016b57e53
-      size: 1759
+      md5: 9747216c16b404fc07d1e0a87b810195
+      size: 1807
     - path: tests/test_model.py
       hash: md5
       md5: 1ffbbf1f6f3630f9b64e17f883984568
       size: 1651
-      isexec: true
   evaluate:
     cmd: python scripts/evaluate.py
     deps:
     - path: models/best_model.pkl
       hash: md5
-      md5: 05f3b822705431fe233d3ceba674f2d9
-      size: 18096657
+      md5: 03c3381964fc733a5d9ef5a88a9ade75
+      size: 144305
+    - path: params.yml
+      hash: md5
+      md5: c0def3906e764495d804885f59e6efb5
+      size: 264
     - path: scripts/evaluate.py
       hash: md5
-      md5: 900d0ab20e1991a1236dee272c59c2b7
-      size: 1680
-      isexec: true
+      md5: c71b28abd850cccb027b09a3bcfb8483
+      size: 2258
+    outs:
+    - path: metrics/evaluation.json
+      hash: md5
+      md5: 5b6c52a59b6134d23aded492ddf1babf
+      size: 246
   preprocess:
     cmd: python scripts/preprocess.py
     deps:
     - path: DataOps/Statics/irrigation_prediction_Variables_Important.csv
       hash: md5
-      md5: 458095ced1eeec1ab18e4417eb64eafc
-      size: 875205
+      md5: 15f02f92b521a4bc79e1c400c30fdc42
+      size: 875432
     - path: scripts/preprocess.py
       hash: md5
       md5: e316d7d7d34cc90b16fe59541eef115d
@@ -84,5 +89,5 @@ stages:
     outs:
     - path: DataOps/Statics/irrigation_prediction_processed.csv
       hash: md5
-      md5: e691e2f90cd0b088f8ea97b2f3a8c981
-      size: 4876085
+      md5: 7175cac875d11b975368978207eb1e30
+      size: 4876251

@@ -5,15 +5,14 @@ import joblib
 import mlflow
 import pandas as pd
 import yaml
-
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -39,7 +38,6 @@ with open(PARAMS_PATH, "r", encoding="utf-8") as f:
 
 
 df = pd.read_csv(DATA_PATH)
-
 df = df[df["Irrigation_Need"] != 2].copy()
 
 if "Irrigation_Need" not in df.columns:
@@ -74,35 +72,42 @@ X_train, X_val, y_train, y_val = train_test_split(
 )
 
 models = {
-    "LogisticRegression": Pipeline([
-        ("scaler", StandardScaler()),
-        ("model", LogisticRegression(**params["models"]["LogisticRegression"]))
-    ]),
-    "RandomForest": Pipeline([
-        ("model", RandomForestClassifier(**params["models"]["RandomForest"]))
-    ]),
-    "GradientBoosting": Pipeline([
-        ("model", GradientBoostingClassifier(**params["models"]["GradientBoosting"]))
-    ]),
-    "SVM": Pipeline([
-        ("scaler", StandardScaler()),
-        ("model", SVC(probability=True, **params["models"]["SVM"]))
-    ]),
-    "KNN": Pipeline([
-        ("scaler", StandardScaler()),
-        ("model", KNeighborsClassifier(**params["models"]["KNN"]))
-    ]),
+    "LogisticRegression": Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("model", LogisticRegression(**params["models"]["LogisticRegression"])),
+        ]
+    ),
+    "RandomForest": Pipeline(
+        [("model", RandomForestClassifier(**params["models"]["RandomForest"]))]
+    ),
+    "GradientBoosting": Pipeline(
+        [("model", GradientBoostingClassifier(**params["models"]["GradientBoosting"]))]
+    ),
+    "SVM": Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("model", SVC(probability=True, **params["models"]["SVM"])),
+        ]
+    ),
+    "KNN": Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("model", KNeighborsClassifier(**params["models"]["KNN"])),
+        ]
+    ),
 }
 
 best_model = None
 best_score = 0.0
 best_name = ""
+export_scaler = StandardScaler()
+export_scaler.fit(X_train)
 
 configure_mlflow()
 
 for name, model in models.items():
     with mlflow.start_run(run_name=name):
-
         model.fit(X_train, y_train)
         preds = model.predict(X_test)
 
@@ -117,7 +122,6 @@ for name, model in models.items():
         mlflow.log_param("model", name)
         mlflow.log_metric("accuracy", acc)
         mlflow.log_metric("f1_score", f1)
-
         mlflow.sklearn.log_model(model, name="model")
 
         if f1 > best_score:
@@ -135,8 +139,11 @@ print("Real:", y_test.iloc[0])
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 joblib.dump(best_model, MODELS_DIR / "best_model.pkl")
+joblib.dump(export_scaler, MODELS_DIR / "scaler.pkl")
 joblib.dump(X.columns.tolist(), MODELS_DIR / "features.pkl")
-joblib.dump([0, 1], MODELS_DIR / "classes.pkl")
+joblib.dump(sorted(y.unique().tolist()), MODELS_DIR / "classes.pkl")
+
+print(" Scaler saved")
 
 with mlflow.start_run(run_name="BEST_MODEL"):
     mlflow.log_param("best_model", best_name)
