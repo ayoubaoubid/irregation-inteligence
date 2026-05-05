@@ -4,6 +4,7 @@ from pathlib import Path
 import joblib
 import mlflow
 import pandas as pd
+import numpy as np
 import yaml
 
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -134,7 +135,19 @@ print("Real:", y_test.iloc[0])
 
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
+scaler = best_model.named_steps.get("scaler", None)
 joblib.dump(best_model, MODELS_DIR / "best_model.pkl")
+
+if scaler is not None:
+    joblib.dump(scaler, MODELS_DIR / "scaler.pkl")
+    print(" Scaler saved from pipeline")
+else:
+    # créer un scaler "dummy" entraîné
+    dummy_scaler = StandardScaler()
+    dummy_scaler.fit(np.zeros((1, X.shape[1])))
+    joblib.dump(dummy_scaler, MODELS_DIR / "scaler.pkl")
+    print(" Dummy scaler created and saved")
+
 joblib.dump(X.columns.tolist(), MODELS_DIR / "features.pkl")
 joblib.dump([0, 1], MODELS_DIR / "classes.pkl")
 
