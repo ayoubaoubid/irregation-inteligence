@@ -17,7 +17,7 @@ services:
       - PIPELINE_GIT_NAME=DVC Pipeline
       - PIPELINE_GIT_EMAIL=pipeline@local.dev
     env_file:
-      - .env
+      - variables.env
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]

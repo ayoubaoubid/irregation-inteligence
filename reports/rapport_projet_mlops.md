@@ -42,6 +42,42 @@ Le depot contient plusieurs repertoires representatifs de cette architecture. Le
 
 ### 2.3 Pipeline DVC
 Le pipeline comprend quatre etapes principales.
+
+#### Schema de la boucle de retroaction (Data Feedback Loop)
+Le diagramme suivant illustre le flux d'amelioration continue du modele par l'ajout de donnees reelles :
+
+```mermaid
+graph TD
+    A[Utilisateur: add_data.html] -->|Saisie Formulaire| B[Django View: add_data]
+    B -->|Ecriture| C[variable_important.csv]
+    C -->|DVC Add| D[Versionnement DVC]
+    D -->|DVC Repro| E[Pipeline DataOps]
+    E -->|Entrainement| F[Nouveau Modele .pkl]
+    F -->|Validation| G[Plateforme Mise a Jour]
+    G -->|Feedback| A
+```
+
+#### Schema ASCII detaille (Loop Feedback)
+```text
+        [ UTILISATEUR FINAL ]
+                 |
+                 | 1. Saisie Formulaire (add_data.html)
+                 V
+        [ DJANGO BACKEND ]
+                 |
+                 | 2. Ecriture variable_important.csv
+                 V
+        [ DATAOPS / DVC ] <------------------+
+                 |                           |
+                 | 3. dvc add / dvc repro    | 5. Synchronisation (Git)
+                 V                           |
+        [ REPO GITHUB / DAGSHUB ] -----------+
+                 |
+                 | 4. Nouveau Modele d'IA
+                 V
+        [ FASTAPI ML MODEL ]
+```
+
 - `preprocess` : preparation du dataset final a partir du jeu de donnees suivi.
 - `train` : entrainement des modeles et generation des artefacts.
 - `test` : execution des tests automatiques.
@@ -102,12 +138,12 @@ Le projet s'appuie sur DVC pour suivre les jeux de donnees et les artefacts prod
 MLflow est utilise pour journaliser les parametres, les metriques et les modeles. Cette integration apporte une trace des essais realises et facilite la comparaison entre approches de modelisation.
 
 ### 5.3 Automatisation apres ajout de donnees
-La vue `add_data` de l'application Django permet d'ajouter une nouvelle observation au fichier CSV principal. Une fois la ligne enregistree, un worker asynchrone declenche automatiquement :
-- `dvc add` sur le dataset suivi ;
-- `dvc repro` pour rejouer le pipeline ;
-- `git add`, `git commit` et `git push` pour versionner les metadonnees mises a jour.
+La vue `add_data` de l'application Django permet d'ajouter une nouvelle observation au fichier CSV principal (`irrigation_prediction_Variables_Important.csv`). Une fois la ligne enregistree, un worker asynchrone declenche automatiquement :
+- `dvc add` sur le dataset suivi pour mettre a jour le fichier `.dvc` ;
+- `dvc repro` pour rejouer l'ensemble du pipeline (pretraitement, entrainement, evaluation) ;
+- `git add`, `git commit` et `git push` pour versionner les metadonnees (`dvc.lock` et `.dvc`) sur le depot distant.
 
-Cette logique rend l'application capable de prendre en compte de nouvelles donnees sans intervention manuelle sur les principales etapes locales.
+Cette boucle de retroaction permet au modele de s'ameliorer continuellement avec des donnees reelles collectees directement sur le terrain par les utilisateurs de la plateforme. Elle assure que le pipeline de production reste synchronise avec les dernieres observations disponibles.
 
 ### 5.4 Integration continue
 Le workflow `mlops-pipeline.yml` configure une chaine CI sur GitHub Actions. Celle-ci installe les dependances, configure l'acces au remote DVC, tente un `dvc pull`, execute `dvc repro` lorsque les artefacts distants sont disponibles, puis lance des controles Django et des tests conditionnels. Une etape `dvc push` est egalement prevue lors des evenements de type `push`, ce qui deplace la publication vers DagsHub hors du serveur applicatif.

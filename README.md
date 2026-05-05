@@ -7,6 +7,7 @@ Pipeline automatique minimale pour ce projet MLOps:
 3. entrainement + evaluation du modele via DVC
 4. verification Django avec `manage.py check`
 5. execution des tests Django
+6. **Boucle de retroaction** : Ajout de donnees via l'application -> `dvc add` -> `dvc repro` -> `git push`
 
 Lancer en local:
 
