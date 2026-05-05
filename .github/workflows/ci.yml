@@ -86,7 +86,7 @@ jobs:
           cache-to: type=gha,mode=max
 
             # ── Démarrer les services sans healthcheck ──
-      - name: Start back-end and model-api
+      - name: commencer back-end et model-api
         run: |
           docker compose up -d back-end model-api
           echo "Services started, waiting 60s for model to load..."
@@ -104,32 +104,33 @@ jobs:
           '
           echo "back-end is ready!"
       
-      - name: attend pour model-api (endpoint /docs)
+      # Vérifier que model-api répond sur /health (endpoint dédié)
+      - name: Wait for model-api
         run: |
           timeout 60 bash -c '
-            until curl -sf http://localhost:5000/docs > /dev/null 2>&1; do
+            until curl -sf http://localhost:5000/health > /dev/null 2>&1; do
               echo "  model-api not ready..."
               sleep 5
             done
           '
           echo "model-api is ready!"
-      
-      # ── Smoke tests directs ──
-      - name: Smoke test - back-end direct
+
+      # Smoke tests directs
+      - name: Smoke test - back-end
         run: |
           curl --fail --retry 3 --retry-delay 3 \
                --max-time 15 \
                http://localhost:8000/ \
             && echo "back-end : OK"
-      
-      - name: Smoke test - model-api (via /docs)
+
+      - name: Smoke test - model-api (health)
         run: |
           curl --fail --retry 3 --retry-delay 3 \
                --max-time 15 \
-               http://localhost:5000/docs \
+               http://localhost:5000/health \
             && echo "model-api : OK"
 
-      # ── Logs détaillés en cas d'échec ──
+      # Logs détaillés en cas d'échec
       - name: Show logs on failure
         if: failure()
         run: |
